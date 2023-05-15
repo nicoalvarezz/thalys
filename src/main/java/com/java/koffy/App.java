@@ -1,6 +1,7 @@
 package com.java.koffy;
 
 import com.java.koffy.router.Router;
+import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 
@@ -25,5 +26,9 @@ public class App {
     public void startServer() throws Exception {
         server.start();
         server.join();
+    }
+
+    public String getRequest() {
+        return server.getRequestLog().toString();
     }
 }

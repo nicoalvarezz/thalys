@@ -19,11 +19,23 @@ public class Router extends AbstractHandler {
     private Object action;
 
     public void get(String uri, Supplier<Object> action) {
-        this.rotues.put(HttpMethod.GET, new HashMap<>(){{ put(uri, action); }});
+        rotues.put(HttpMethod.GET, new HashMap<>(){{ put(uri, action); }});
     }
 
     public void post(String uri, Supplier<Object> action) {
-        this.rotues.put(HttpMethod.POST, new HashMap<>(){{ put(uri, action); }});
+        rotues.put(HttpMethod.POST, new HashMap<>(){{ put(uri, action); }});
+    }
+
+    public void put(String uri, Supplier<Object> action) {
+        rotues.put(HttpMethod.POST, new HashMap<>(){{ put(uri, action); }});
+    }
+
+    public void patch(String uri, Supplier<Object> action) {
+        rotues.put(HttpMethod.POST, new HashMap<>(){{ put(uri, action); }});
+    }
+
+    public void delete(String uri, Supplier<Object> action) {
+        rotues.put(HttpMethod.POST, new HashMap<>(){{ put(uri, action); }});
     }
 
     @Override
@@ -32,10 +44,12 @@ public class Router extends AbstractHandler {
         String uri = request.getRequestURI();
 
         if (rotues.get(HttpMethod.valueOf(method)).get(uri) == null) {
-            throw new HttpNotFoundException("Method not found");
+            httpServletResponse.setStatus(404);
+            httpServletResponse.setContentType("text/plain");
+            return;
         }
 
-        this.action = rotues.get(HttpMethod.valueOf(method)).get(uri).get();
+        action = rotues.get(HttpMethod.valueOf(method)).get(uri).get();
 
         httpServletResponse.setContentType("text/plain");
         httpServletResponse.getWriter().println(action);
