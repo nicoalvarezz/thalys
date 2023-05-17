@@ -22,8 +22,6 @@ public class Main {
             return "hello world: " + sum;
         });
 
-        router.post("/test", () -> "POST OK");
-
         app.startServer();
     }
 }
