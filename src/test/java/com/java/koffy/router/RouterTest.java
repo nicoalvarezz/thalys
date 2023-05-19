@@ -80,7 +80,7 @@ public class RouterTest {
         }
     }
 
-//    @Te
+//    @Test
 //    public void testResolveMultipleBasicRoutesWithDifferentHttpMethods() throws IOException, ServletException {
 //        HashMap<HttpMethod, Map<String, Supplier<Object>>> routes = new HashMap<>(){{
 //            put(HttpMethod.GET, new HashMap<>() {{ put("/test", () -> "get"); put("/random/get", () -> "get"); }});

@@ -8,40 +8,44 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
 public class Router extends AbstractHandler {
 
-    private Map<HttpMethod, Map<String, Supplier<Object>>> routes = new HashMap<>();
+    private Map<HttpMethod, ArrayList<Route>> routes = new HashMap<>();
     private Object action;
 
     public Router() {
         for (HttpMethod method : HttpMethod.values()) {
-            routes.put(method, new HashMap<>());
+            routes.put(method, new ArrayList<>());
         }
     }
 
-    public void get(String uri, Supplier<Object> action) {
-        routes.get(HttpMethod.GET).put(uri, action);
+    private void registerRoute(HttpMethod method, String uri, Supplier<Object> action) {
+        routes.get(method).add(new Route(uri, action));
     }
 
+    public void get(String uri, Supplier<Object> action) {
+        registerRoute(HttpMethod.GET, uri, action);
+    }
 
     public void post(String uri, Supplier<Object> action) {
-        routes.get(HttpMethod.POST).put(uri, action);
+        registerRoute(HttpMethod.POST, uri, action);
     }
 
     public void put(String uri, Supplier<Object> action) {
-        routes.get(HttpMethod.PUT).put(uri, action);
+        registerRoute(HttpMethod.PUT, uri, action);
     }
 
     public void patch(String uri, Supplier<Object> action) {
-        routes.get(HttpMethod.PATCH).put(uri, action);
+        registerRoute(HttpMethod.PATCH, uri, action);
     }
 
     public void delete(String uri, Supplier<Object> action) {
-        routes.get(HttpMethod.DELETE).put(uri, action);
+        registerRoute(HttpMethod.DELETE, uri, action);
     }
 
     @Override
@@ -49,17 +53,17 @@ public class Router extends AbstractHandler {
         String method = request.getMethod();
         String uri = request.getRequestURI();
 
-        if (routes.get(HttpMethod.valueOf(method)).get(uri) == null) {
-            httpServletResponse.setStatus(404);
-            httpServletResponse.setContentType("text/plain");
-            return;
+        for (Route route : routes.get(HttpMethod.valueOf(method))) {
+            if (route.matches(uri)) {
+                action = route.getAction().get();
+                httpServletResponse.setContentType("text/plain");
+                httpServletResponse.getWriter().println(action);
+                request.setHandled(true);
+            }
         }
 
-        action = routes.get(HttpMethod.valueOf(method)).get(uri).get();
-
+        httpServletResponse.setStatus(404);
         httpServletResponse.setContentType("text/plain");
-        httpServletResponse.getWriter().println(action);
-        request.setHandled(true);
     }
 }
 
