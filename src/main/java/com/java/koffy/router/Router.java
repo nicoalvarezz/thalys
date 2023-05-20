@@ -18,10 +18,16 @@ public class Router extends AbstractHandler {
     private Map<HttpMethod, ArrayList<Route>> routes = new HashMap<>();
     private Object action;
 
+    private Route currentRoute;
+
     public Router() {
         for (HttpMethod method : HttpMethod.values()) {
             routes.put(method, new ArrayList<>());
         }
+    }
+
+    public Route getCurrentRoute() {
+        return currentRoute;
     }
 
     private void registerRoute(HttpMethod method, String uri, Supplier<Object> action) {
@@ -55,6 +61,7 @@ public class Router extends AbstractHandler {
 
         for (Route route : routes.get(HttpMethod.valueOf(method))) {
             if (route.matches(uri)) {
+                this.currentRoute = route;
                 action = route.getAction().get();
                 httpServletResponse.setContentType("text/plain");
                 httpServletResponse.getWriter().println(action);
@@ -66,6 +73,3 @@ public class Router extends AbstractHandler {
         httpServletResponse.setContentType("text/plain");
     }
 }
-
-
-

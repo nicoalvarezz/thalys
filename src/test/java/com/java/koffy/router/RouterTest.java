@@ -4,23 +4,19 @@ import com.java.koffy.http.HttpMethod;
 import org.eclipse.jetty.server.Request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class RouterTest {
 
@@ -28,8 +24,7 @@ public class RouterTest {
     private Request mockRequest;
     private HttpServletRequest mockHttpServletRequest;
     private HttpServletResponse mockHttpServletResponse;
-
-    PrintWriter mockPrintWriter;
+    private PrintWriter mockPrintWriter;
 
     @BeforeEach
     void setUp() {
@@ -54,7 +49,8 @@ public class RouterTest {
 
         router.handle(null, mockRequest, mockHttpServletRequest, mockHttpServletResponse);
 
-        verify(mockHttpServletResponse.getWriter()).println(action.get());
+        assertEquals(uri, router.getCurrentRoute().getUri());
+        assertEquals(action.get(), router.getCurrentRoute().getAction().get());
         
     }
 
@@ -76,7 +72,9 @@ public class RouterTest {
 
             router.handle(null, mockRequest, mockHttpServletRequest, mockHttpServletResponse);
 
-            verify(mockHttpServletResponse.getWriter()).println(routes.get(uri).get());
+            assertEquals(uri, router.getCurrentRoute().getUri());
+            assertEquals(routes.get(uri).get(), router.getCurrentRoute().getAction().get());
+
         }
     }
 

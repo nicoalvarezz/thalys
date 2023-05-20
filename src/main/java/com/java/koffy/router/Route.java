@@ -39,11 +39,11 @@ public class Route {
     }
 
     public boolean matches(String uri) {
-        return Pattern.compile(String.format("^%s$", regex)).matcher(uri).matches();
+        return Pattern.compile(String.format("^%s/?$", regex)).matcher(uri).matches();
     }
 
     public boolean hasParameters() {
-        return this.parameters.isEmpty();
+        return !this.parameters.isEmpty();
     }
 
     public Map<String, String> parseParameter(String uri) {
