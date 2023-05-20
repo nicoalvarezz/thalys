@@ -1,7 +1,6 @@
 package com.java.koffy;
 
 import com.java.koffy.router.Router;
-import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 
