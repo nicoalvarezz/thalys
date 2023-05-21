@@ -1,19 +1,15 @@
 package com.java.koffy.router;
 
 import com.java.koffy.http.HttpMethod;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.handler.AbstractHandler;
+import com.java.koffy.http.HttpNotFoundException;
+import com.java.koffy.http.Request;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class Router extends AbstractHandler {
+public class Router {
 
     private Map<HttpMethod, ArrayList<Route>> routes = new HashMap<>();
     private Object action;
@@ -54,22 +50,12 @@ public class Router extends AbstractHandler {
         registerRoute(HttpMethod.DELETE, uri, action);
     }
 
-    @Override
-    public void handle(String s, Request request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, ServletException {
-        String method = request.getMethod();
-        String uri = request.getRequestURI();
-
-        for (Route route : routes.get(HttpMethod.valueOf(method))) {
-            if (route.matches(uri)) {
-                this.currentRoute = route;
-                action = route.getAction().get();
-                httpServletResponse.setContentType("text/plain");
-                httpServletResponse.getWriter().println(action);
-                request.setHandled(true);
+    public Route resolve(Request request) {
+        for (Route route : routes.get(request.getMethod())) {
+            if (route.matches(request.getUri())) {
+                return route;
             }
         }
-
-        httpServletResponse.setStatus(404);
-        httpServletResponse.setContentType("text/plain");
+        throw new HttpNotFoundException("Route not found");
     }
 }
