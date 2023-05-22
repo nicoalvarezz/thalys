@@ -1,8 +1,9 @@
-package com.java.koffy.router;
+package com.java.koffy.routing;
 
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.HttpNotFoundException;
 import com.java.koffy.http.Request;
+import com.java.koffy.http.Response;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,9 +13,6 @@ import java.util.function.Supplier;
 public class Router {
 
     private Map<HttpMethod, ArrayList<Route>> routes = new HashMap<>();
-    private Object action;
-
-    private Route currentRoute;
 
     public Router() {
         for (HttpMethod method : HttpMethod.values()) {
@@ -22,31 +20,27 @@ public class Router {
         }
     }
 
-    public Route getCurrentRoute() {
-        return currentRoute;
-    }
-
-    private void registerRoute(HttpMethod method, String uri, Supplier<Object> action) {
+    private void registerRoute(HttpMethod method, String uri, Supplier<Response> action) {
         routes.get(method).add(new Route(uri, action));
     }
 
-    public void get(String uri, Supplier<Object> action) {
+    public void get(String uri, Supplier<Response> action) {
         registerRoute(HttpMethod.GET, uri, action);
     }
 
-    public void post(String uri, Supplier<Object> action) {
+    public void post(String uri, Supplier<Response> action) {
         registerRoute(HttpMethod.POST, uri, action);
     }
 
-    public void put(String uri, Supplier<Object> action) {
+    public void put(String uri, Supplier<Response> action) {
         registerRoute(HttpMethod.PUT, uri, action);
     }
 
-    public void patch(String uri, Supplier<Object> action) {
+    public void patch(String uri, Supplier<Response> action) {
         registerRoute(HttpMethod.PATCH, uri, action);
     }
 
-    public void delete(String uri, Supplier<Object> action) {
+    public void delete(String uri, Supplier<Response> action) {
         registerRoute(HttpMethod.DELETE, uri, action);
     }
 

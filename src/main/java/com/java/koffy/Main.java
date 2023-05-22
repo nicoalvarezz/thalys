@@ -1,7 +1,9 @@
 package com.java.koffy;
 
-import com.java.koffy.Server.Server;
-import com.java.koffy.router.Router;
+import com.java.koffy.Server.NativeJettyServer;
+import com.java.koffy.http.Response;
+import com.java.koffy.routing.Router;
+import org.json.JSONObject;
 
 public class Main {
 
@@ -9,15 +11,15 @@ public class Main {
         Router newRouter = new Router();
 
         newRouter.get("/test", () -> {
-            int a = 1;
-            int b = 2;
-            int sum = a + b;
-            return "hello world: " + sum;
+            Response response = new Response();
+            response.setHeader("Content-Type", "application/json");
+            response.setContent(new JSONObject().put("message", "GET OK").toString());
+            return response;
         });
 
-        newRouter.post("/test", () -> "POST OK");
+        newRouter.post("/test", Response::new);
 
-        Server server = new Server(8080);
+        NativeJettyServer server = new NativeJettyServer(8080);
         server.setRouter(newRouter);
         server.startServer();
     }
