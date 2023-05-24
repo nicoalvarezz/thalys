@@ -2,8 +2,8 @@ package com.java.koffy.routing;
 
 import com.java.koffy.Server.Server;
 import com.java.koffy.http.HttpMethod;
-import com.java.koffy.http.Request;
-import com.java.koffy.http.Response;
+import com.java.koffy.http.KoffyRequest;
+import com.java.koffy.http.KoffyResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,7 +22,7 @@ public class RouterTest {
 
     private Router router;
     private final Server mockServer = mock(Server.class);
-    private final Request mockRequest = mock(Request.class);
+    private final KoffyRequest mockRequest = mock(KoffyRequest.class);
 
     @BeforeEach
     void setUp() {
@@ -36,10 +36,8 @@ public class RouterTest {
         when(mockRequest.getUri()).thenReturn(uri);
     }
 
-    private Response testsResponse(String content) {
-        Response response = new Response();
-        response.setContent(content);
-        return response;
+    private KoffyResponse testsJsonResponse(String key, String value) {
+        return KoffyResponse.jsonResponse(200, new HashMap<>() {{ put(key, value); }});
     }
 
     private String actualContent() {
@@ -49,7 +47,7 @@ public class RouterTest {
     @Test
     public void testResolveBasicRoute() {
         String uri = "/test";
-        Supplier<Response> action = () -> testsResponse("test");
+        Supplier<KoffyResponse> action = () -> testsJsonResponse("message", "test");
 
         router.get(uri, action);
         mockingRouterHandling(uri, HttpMethod.GET);
@@ -60,11 +58,11 @@ public class RouterTest {
 
     @Test
     public void tesResolveMultipleBasicRoutes() {
-        HashMap<String, Supplier<Response>> routes = new HashMap<>() {{
-            put("/test", () -> testsResponse("test"));
-            put("/foo", () -> testsResponse("foo"));
-            put("/bar", () -> testsResponse("bar"));
-            put("/long/nested/route", () -> testsResponse("long nested route"));
+        HashMap<String, Supplier<KoffyResponse>> routes = new HashMap<>() {{
+            put("/test", () -> testsJsonResponse("message", "test"));
+            put("/foo", () -> testsJsonResponse("message", "test"));
+            put("/bar", () -> testsJsonResponse("message", "test"));
+            put("/long/nested/route", () -> testsJsonResponse("message", "test"));
         }};
 
         for (String uri : routes.keySet()) {
@@ -101,11 +99,11 @@ public class RouterTest {
     @ParameterizedTest
     @MethodSource("uriWithActionReturns")
     public void testResolveMultipleBasicRoutesWithPostMethod(String uri, String actionReturn) {
-        router.post(uri, () -> testsResponse(actionReturn));
+        router.post(uri, () -> testsJsonResponse("message", actionReturn));
         mockingRouterHandling(uri, HttpMethod.POST);
 
         assertEquals(uri, mockServer.getUri());
-        assertEquals(testsResponse(actionReturn).getContent(), actualContent());
+        assertEquals(testsJsonResponse("message", actionReturn).getContent(), actualContent());
 
 
     }
@@ -113,30 +111,30 @@ public class RouterTest {
     @ParameterizedTest
     @MethodSource("uriWithActionReturns")
     public void testResolveMultipleBasicRoutesWithPutMethod(String uri, String actionReturn) {
-        router.put(uri, () -> testsResponse(actionReturn));
+        router.put(uri, () -> testsJsonResponse("message", actionReturn));
         mockingRouterHandling(uri, HttpMethod.PUT);
 
         assertEquals(uri, mockServer.getUri());
-        assertEquals(testsResponse(actionReturn).getContent(), actualContent());
+        assertEquals(testsJsonResponse("message", actionReturn).getContent(), actualContent());
     }
 
     @ParameterizedTest
     @MethodSource("uriWithActionReturns")
     public void testResolveMultipleBasicRoutesWithPatchMethod(String uri, String actionReturn) {
-        router.patch(uri, () -> testsResponse(actionReturn));
+        router.patch(uri, () -> testsJsonResponse("message", actionReturn));
         mockingRouterHandling(uri, HttpMethod.PATCH);
 
         assertEquals(uri, mockServer.getUri());
-        assertEquals(testsResponse(actionReturn).getContent(), actualContent());
+        assertEquals(testsJsonResponse("message", actionReturn).getContent(), actualContent());
     }
 
     @ParameterizedTest
     @MethodSource("uriWithActionReturns")
     public void testResolveMultipleBasicRoutesWithDeleteMethod(String uri, String actionReturn) {
-        router.delete(uri, () -> testsResponse(actionReturn));
+        router.delete(uri, () -> testsJsonResponse("message", actionReturn));
         mockingRouterHandling(uri, HttpMethod.DELETE);
 
         assertEquals(uri, mockServer.getUri());
-        assertEquals(testsResponse(actionReturn).getContent(), actualContent());
+        assertEquals(testsJsonResponse("message", actionReturn).getContent(), actualContent());
     }
 }

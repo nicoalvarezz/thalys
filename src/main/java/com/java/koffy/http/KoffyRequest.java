@@ -2,14 +2,11 @@ package com.java.koffy.http;
 
 import java.util.Map;
 
-public class Request {
+public class KoffyRequest {
 
     private String uri;
-
     private HttpMethod method;
-
     private Map<String, String> data;
-
     private Map<String, String> query;
 
     public String getUri() {

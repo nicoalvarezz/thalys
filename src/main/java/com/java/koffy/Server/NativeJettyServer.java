@@ -2,7 +2,9 @@ package com.java.koffy.Server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.koffy.http.HttpMethod;
-import com.java.koffy.http.Response;
+import com.java.koffy.http.HttpNotFoundException;
+import com.java.koffy.http.KoffyRequest;
+import com.java.koffy.http.KoffyResponse;
 import com.java.koffy.routing.Router;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -20,19 +22,13 @@ import java.util.Map;
 public class NativeJettyServer extends AbstractHandler implements Server {
 
     private String uri;
-
     private HttpMethod method;
-
     private Map<String, String> data;
-
     private Map<String, String> query;
-
-    private com.java.koffy.http.Request koffyRequest = new com.java.koffy.http.Request();
-
+    private KoffyRequest koffyRequest = new KoffyRequest();
+    private KoffyResponse koffyResponse;
     private final org.eclipse.jetty.server.Server jettyServer;
-
     private static ObjectMapper MAPPER = new ObjectMapper();
-
     private Router router;
 
     public NativeJettyServer(int serverPort) {
@@ -74,16 +70,17 @@ public class NativeJettyServer extends AbstractHandler implements Server {
     @Override
     public void handle(String s, Request request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         createRequest(request, httpServletRequest);
-        Response response = router.resolve(koffyRequest).getAction().get();
+        createResponse();
 
-        httpServletResponse.setStatus(response.getStatus());
+        httpServletResponse.setStatus(koffyResponse.getStatus());
 
-        if (response.getContent().isEmpty()) {
-            for (String header : response.getHeaders().keySet()) {
-                httpServletResponse.setHeader(header, response.getHeaders().get(header));
-            }
-            httpServletResponse.setContentType("application/json");
-            httpServletResponse.getWriter().println(response.getContent());
+        // I need to rethink logic here
+        if (koffyResponse.getContent() != null) {
+            httpServletResponse.getWriter().println(koffyResponse.getContent());
+        }
+
+        for (String header : koffyResponse.getHeaders().keySet()) {
+            httpServletResponse.addHeader(header, koffyResponse.getHeaders().get(header));
         }
         request.setHandled(true);
     }
@@ -95,6 +92,14 @@ public class NativeJettyServer extends AbstractHandler implements Server {
         koffyRequest.setQueryData(parseQueryData(httpServletRequest));
     }
 
+    private void createResponse() {
+        try {
+            koffyResponse = router.resolve(koffyRequest).getAction().get();
+        } catch (HttpNotFoundException e) {
+            koffyResponse = KoffyResponse.textResponse(404, e.getMessage());
+        }
+    }
+
     private Map<String, String> parsePostData(HttpServletRequest request) throws IOException {
         String data = new BufferedReader(new InputStreamReader(request.getInputStream())).readLine();
 
@@ -103,7 +108,6 @@ public class NativeJettyServer extends AbstractHandler implements Server {
         }
 
         if (data.contains("&")) {
-            // Convert url-encoded formatted string to Map<String, String> object
             return parseUrlEncoded(data);
         }
         return MAPPER.readValue(data, Map.class);
@@ -117,6 +121,7 @@ public class NativeJettyServer extends AbstractHandler implements Server {
     }
 
     private Map<String, String> parseUrlEncoded(String data) {
+        // Convert url-encoded formatted string to Map<String, String> object
         return Arrays.stream(data.split("&"))
                 .map(param -> param.split("="))
                 .collect(HashMap::new, (m, arr) -> m.put(arr[0], arr[1]), HashMap::putAll);

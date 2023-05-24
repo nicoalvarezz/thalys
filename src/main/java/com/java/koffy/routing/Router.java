@@ -2,8 +2,8 @@ package com.java.koffy.routing;
 
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.HttpNotFoundException;
-import com.java.koffy.http.Request;
-import com.java.koffy.http.Response;
+import com.java.koffy.http.KoffyRequest;
+import com.java.koffy.http.KoffyResponse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,31 +20,31 @@ public class Router {
         }
     }
 
-    private void registerRoute(HttpMethod method, String uri, Supplier<Response> action) {
+    private void registerRoute(HttpMethod method, String uri, Supplier<KoffyResponse> action) {
         routes.get(method).add(new Route(uri, action));
     }
 
-    public void get(String uri, Supplier<Response> action) {
+    public void get(String uri, Supplier<KoffyResponse> action) {
         registerRoute(HttpMethod.GET, uri, action);
     }
 
-    public void post(String uri, Supplier<Response> action) {
+    public void post(String uri, Supplier<KoffyResponse> action) {
         registerRoute(HttpMethod.POST, uri, action);
     }
 
-    public void put(String uri, Supplier<Response> action) {
+    public void put(String uri, Supplier<KoffyResponse> action) {
         registerRoute(HttpMethod.PUT, uri, action);
     }
 
-    public void patch(String uri, Supplier<Response> action) {
+    public void patch(String uri, Supplier<KoffyResponse> action) {
         registerRoute(HttpMethod.PATCH, uri, action);
     }
 
-    public void delete(String uri, Supplier<Response> action) {
+    public void delete(String uri, Supplier<KoffyResponse> action) {
         registerRoute(HttpMethod.DELETE, uri, action);
     }
 
-    public Route resolve(Request request) {
+    public Route resolve(KoffyRequest request) {
         for (Route route : routes.get(request.getMethod())) {
             if (route.matches(request.getUri())) {
                 return route;
