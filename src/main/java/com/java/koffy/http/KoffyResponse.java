@@ -32,7 +32,7 @@ public class KoffyResponse {
     public void removeHeader(String header) {
         headers.remove(header);
     }
-    
+
     public static KoffyResponse jsonResponse(int status, Map<String, String> data) {
         return new KoffyResponseFactory().response(status, "application/json",  new JSONObject(data).toString());
     }

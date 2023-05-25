@@ -25,7 +25,7 @@ public class NativeJettyServer extends AbstractHandler implements Server {
     private HttpMethod method;
     private Map<String, String> data;
     private Map<String, String> query;
-    private KoffyRequest koffyRequest = new KoffyRequest();
+    private KoffyRequest koffyRequest;
     private KoffyResponse koffyResponse;
     private final org.eclipse.jetty.server.Server jettyServer;
     private static ObjectMapper MAPPER = new ObjectMapper();
@@ -86,10 +86,12 @@ public class NativeJettyServer extends AbstractHandler implements Server {
     }
 
     private void createRequest(Request request, HttpServletRequest httpServletRequest) throws IOException {
-        koffyRequest.setUri(request.getRequestURI());
-        koffyRequest.setMethod(HttpMethod.valueOf(request.getMethod()));
-        koffyRequest.setPostData(parsePostData(httpServletRequest));
-        koffyRequest.setQueryData(parseQueryData(httpServletRequest));
+        koffyRequest = KoffyRequest.builder()
+                .uri(request.getRequestURI())
+                .method(HttpMethod.valueOf(request.getMethod()))
+                .postData(parsePostData(httpServletRequest))
+                .queryData(parseQueryData(httpServletRequest))
+                .build();
     }
 
     private void createResponse() {
