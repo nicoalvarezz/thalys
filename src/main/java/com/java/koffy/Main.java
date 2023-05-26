@@ -4,6 +4,8 @@ import com.java.koffy.Server.NativeJettyServer;
 import com.java.koffy.http.KoffyResponse;
 import com.java.koffy.routing.Router;
 
+import java.util.HashMap;
+
 public class Main {
 
     public static void main(String[] args) throws Exception {
@@ -11,7 +13,7 @@ public class Main {
 
         newRouter.get("/test", () -> KoffyResponse.textResponse(200, "GET OK"));
 
-        newRouter.post("/test", () -> KoffyResponse.textResponse(200, "POST OK"));
+        newRouter.post("/test", () -> KoffyResponse.jsonResponse(200, new HashMap<>() {{ put("message", "GET OK"); }}));
 
         newRouter.get("/redirect", () -> KoffyResponse.redirectResponse("/test"));
 
