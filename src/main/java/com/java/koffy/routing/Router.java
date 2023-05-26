@@ -10,8 +10,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+/**
+ * HTTP router
+ */
 public class Router {
 
+    /**
+     * HTTP routes
+     */
     private Map<HttpMethod, ArrayList<Route>> routes = new HashMap<>();
 
     public Router() {
@@ -24,26 +30,57 @@ public class Router {
         routes.get(method).add(new Route(uri, action));
     }
 
+    /**
+     * Register route for GET request
+     * @param uri request URI
+     * @param action URI action
+     */
     public void get(String uri, Supplier<KoffyResponse> action) {
         registerRoute(HttpMethod.GET, uri, action);
     }
 
+    /**
+     * Register route for POST request
+     * @param uri request URI
+     * @param action URI action
+     */
     public void post(String uri, Supplier<KoffyResponse> action) {
         registerRoute(HttpMethod.POST, uri, action);
     }
 
+    /**
+     * Register route for PUT request
+     * @param uri request URI
+     * @param action URI action
+     */
     public void put(String uri, Supplier<KoffyResponse> action) {
         registerRoute(HttpMethod.PUT, uri, action);
     }
 
+    /**
+     * Register route for PATCH request
+     * @param uri request URI
+     * @param action URI action
+     */
     public void patch(String uri, Supplier<KoffyResponse> action) {
         registerRoute(HttpMethod.PATCH, uri, action);
     }
 
+    /**
+     * Register route for DELETE request
+     * @param uri request URI
+     * @param action URI action
+     */
     public void delete(String uri, Supplier<KoffyResponse> action) {
         registerRoute(HttpMethod.DELETE, uri, action);
     }
 
+    /**
+     * Resolve the route of the request
+     * @param request {@link KoffyRequest}
+     * @return {@link Route}
+     * @throws HttpNotFoundException http not found
+     */
     public Route resolve(KoffyRequest request) {
         for (Route route : routes.get(request.getMethod())) {
             if (route.matches(request.getUri())) {
