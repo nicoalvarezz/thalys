@@ -13,7 +13,7 @@ public class Main {
 
         newRouter.get("/test", () -> KoffyResponse.textResponse(200, "GET OK"));
 
-        newRouter.post("/test", () -> KoffyResponse.jsonResponse(200, new HashMap<>() {{ put("message", "GET OK"); }}));
+        newRouter.post("/test", () -> KoffyResponse.jsonResponse(200, new HashMap<>() {{ put("message", "POST OK"); }}));
 
         newRouter.get("/redirect", () -> KoffyResponse.redirectResponse("/test"));
 

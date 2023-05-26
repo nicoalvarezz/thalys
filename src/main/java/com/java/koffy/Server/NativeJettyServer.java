@@ -6,12 +6,12 @@ import com.java.koffy.http.HttpNotFoundException;
 import com.java.koffy.http.KoffyRequest;
 import com.java.koffy.http.KoffyResponse;
 import com.java.koffy.routing.Router;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -74,7 +74,6 @@ public class NativeJettyServer extends AbstractHandler implements Server {
 
         httpServletResponse.setStatus(koffyResponse.getStatus());
 
-        // I need to rethink logic here
         if (koffyResponse.getContent() != null) {
             httpServletResponse.getWriter().println(koffyResponse.getContent());
         }
