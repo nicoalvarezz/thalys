@@ -1,4 +1,4 @@
-package com.java.koffy.Server;
+package com.java.koffy.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.koffy.http.HttpMethod;
@@ -9,6 +9,7 @@ import com.java.koffy.routing.Router;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 
@@ -19,56 +20,84 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NativeJettyServer extends AbstractHandler implements Server {
+public class NativeJettyServer extends AbstractHandler implements ServerImpl {
 
-    private String uri;
-    private HttpMethod method;
-    private Map<String, String> data;
-    private Map<String, String> query;
+    /**
+     * HTTP request.
+     */
     private KoffyRequest koffyRequest;
+
+    /**
+     * Server response.
+     */
     private KoffyResponse koffyResponse;
-    private final org.eclipse.jetty.server.Server jettyServer;
-    private static ObjectMapper MAPPER = new ObjectMapper();
+
+    /**
+     * Jetty Sever.
+     */
+    private final Server jettyServer;
+
+    /**
+     * Jackson mapper.
+     */
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    /**
+     * HTTP Router.
+     */
     private Router router;
 
-    public NativeJettyServer(int serverPort) {
-        this.jettyServer = new org.eclipse.jetty.server.Server(serverPort);
+    /**
+     * Set the jetty server.
+     * @param serverPort Port number which the server will be listening
+     */
+    public NativeJettyServer(final int serverPort) {
+        this.jettyServer = new Server(serverPort);
         this.jettyServer.setHandler(this);
         HandlerList handlerList = new HandlerList();
         handlerList.addHandler(this);
     }
 
+    /**
+     * Start server.
+     * @throws Exception
+     */
     public void startServer() throws Exception {
         jettyServer.start();
         jettyServer.join();
     }
 
-    @Override
-    public String getUri() {
-        return uri;
-    }
-
-    @Override
-    public HttpMethod getRequestMethod() {
-        return method;
-    }
-
-    @Override
-    public Map<String, String> getPostData() {
-        return data;
-    }
-
-    @Override
-    public Map<String, String> getQueryParams() {
-        return query;
-    }
-
-    public void setRouter(Router router) {
+    /**
+     * Add routes to the server.
+     * @param router HTTP router that contains all the set routes
+     */
+    public void setRouter(final Router router) {
         this.router = router;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void handle(String s, Request request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
+    public KoffyRequest getRequest() {
+        return koffyRequest;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public KoffyResponse getResponse() {
+        return koffyResponse;
+    }
+
+    /**
+     * Handles all the requests to the server, and its responses.
+     * {@inheritDoc}
+     */
+    @Override
+    public void handle(String target, Request request, HttpServletRequest httpServletRequest,
+                       HttpServletResponse httpServletResponse) throws IOException {
         createRequest(request, httpServletRequest);
         createResponse();
 
@@ -84,7 +113,8 @@ public class NativeJettyServer extends AbstractHandler implements Server {
         request.setHandled(true);
     }
 
-    private void createRequest(Request request, HttpServletRequest httpServletRequest) throws IOException {
+    private void createRequest(Request request,
+                               HttpServletRequest httpServletRequest) throws IOException {
         koffyRequest = KoffyRequest.builder()
                 .uri(request.getRequestURI())
                 .method(HttpMethod.valueOf(request.getMethod()))

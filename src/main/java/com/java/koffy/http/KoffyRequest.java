@@ -3,27 +3,27 @@ package com.java.koffy.http;
 import java.util.Map;
 
 /**
- * HTTP Request data structure that is received from the user request
+ * HTTP Request data structure that is received from the user request.
  */
 public class KoffyRequest {
 
     /**
-     * HTTP request URI
+     * HTTP request URI.
      */
     private String uri;
 
     /**
-     * HTTP request method
+     * HTTP request method.
      */
     private HttpMethod method;
 
     /**
-     * HTTP request post data
+     * HTTP request post data.
      */
     private Map<String, String> data;
 
     /**
-     * HTTP request query data
+     * HTTP request query data.
      */
     private Map<String, String> query;
 
@@ -35,7 +35,7 @@ public class KoffyRequest {
     }
 
     /**
-     * Retrieve the URI of the request
+     * Retrieve the URI of the request.
      * @return String URI
      */
     public String getUri() {
@@ -43,7 +43,7 @@ public class KoffyRequest {
     }
 
     /**
-     * Retrieve the HTTP method of the request
+     * Retrieve the HTTP method of the request.
      * @return {@link HttpMethod}
      */
     public HttpMethod getMethod() {
@@ -51,7 +51,7 @@ public class KoffyRequest {
     }
 
     /**
-     * Retrieve the post data of the request
+     * Retrieve the post data of the request.
      * @return post data
      */
     public Map<String, String> getPostData() {
@@ -59,7 +59,7 @@ public class KoffyRequest {
     }
 
     /**
-     * Retrieve the query data of the request
+     * Retrieve the query data of the request.
      * @return query data
      */
     public Map<String, String> getQueryData() {
@@ -67,7 +67,7 @@ public class KoffyRequest {
     }
 
     /**
-     * Create instance of {@link Builder}
+     * Create instance of {@link Builder}.
      * @return The new instance
      */
     public static Builder builder() {
@@ -75,28 +75,28 @@ public class KoffyRequest {
     }
 
     /**
-     * Creates a new instance of {@link KoffyRequest}
+     * Creates a new instance of {@link KoffyRequest}.
      * This class is used to implement the builder pattern of {@link KoffyRequest}
      */
-    public static class Builder {
+    public static final class Builder {
 
         /**
-         * HTTP request URI
+         * HTTP request URI.
          */
         private String uri;
 
         /**
-         * HTTP request method
+         * HTTP request method.
          */
         private HttpMethod method;
 
         /**
-         * HTTP request post data
+         * HTTP request post data.
          */
         private Map<String, String> data;
 
         /**
-         * HTTP request query data
+         * HTTP request query data.
          */
         private Map<String, String> query;
 
@@ -105,7 +105,7 @@ public class KoffyRequest {
         }
 
         /**
-         * Set the URI of the request of the new instance {@link KoffyRequest}
+         * Set the URI of the request of the new instance {@link KoffyRequest}.
          * @param uri URI of the request
          * @return Builder of {@link KoffyRequest} instance
          */
@@ -115,7 +115,7 @@ public class KoffyRequest {
         }
 
         /**
-         * Set the method of the request of the new instance {@link KoffyRequest}
+         * Set the method of the request of the new instance {@link KoffyRequest}.
          * @param method HTTP method {@link HttpMethod}
          * @return Builder of {@link KoffyRequest} instance
          */
@@ -125,7 +125,7 @@ public class KoffyRequest {
         }
 
         /**
-         * Set the post data of new instance {@link KoffyRequest}
+         * Set the post data of new instance {@link KoffyRequest}.
          * @param data post data of the request
          * @return Builder of {@link KoffyRequest} instance
          */
@@ -135,7 +135,7 @@ public class KoffyRequest {
         }
 
         /**
-         * Set the query of the new instance {@link KoffyRequest}
+         * Set the query of the new instance {@link KoffyRequest}.
          * @param query query data of the request
          * @return Builder of {@link KoffyRequest} instance
          */
@@ -145,7 +145,7 @@ public class KoffyRequest {
         }
 
         /**
-         * Creates a new instance of {@link KoffyRequest}
+         * Creates a new instance of {@link KoffyRequest}.
          * @return The new instance
          */
         public KoffyRequest build() {

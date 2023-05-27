@@ -11,12 +11,12 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * HTTP router
+ * HTTP router.
  */
 public class Router {
 
     /**
-     * HTTP routes
+     * HTTP routes.
      */
     private Map<HttpMethod, ArrayList<Route>> routes = new HashMap<>();
 
@@ -31,7 +31,7 @@ public class Router {
     }
 
     /**
-     * Register route for GET request
+     * Register route for GET request.
      * @param uri request URI
      * @param action URI action
      */
@@ -40,7 +40,7 @@ public class Router {
     }
 
     /**
-     * Register route for POST request
+     * Register route for POST request.
      * @param uri request URI
      * @param action URI action
      */
@@ -49,7 +49,7 @@ public class Router {
     }
 
     /**
-     * Register route for PUT request
+     * Register route for PUT request.
      * @param uri request URI
      * @param action URI action
      */
@@ -58,7 +58,7 @@ public class Router {
     }
 
     /**
-     * Register route for PATCH request
+     * Register route for PATCH request.
      * @param uri request URI
      * @param action URI action
      */
@@ -67,7 +67,7 @@ public class Router {
     }
 
     /**
-     * Register route for DELETE request
+     * Register route for DELETE request.
      * @param uri request URI
      * @param action URI action
      */
@@ -76,7 +76,7 @@ public class Router {
     }
 
     /**
-     * Resolve the route of the request
+     * Resolve the route of the request.
      * @param request {@link KoffyRequest}
      * @return {@link Route}
      * @throws HttpNotFoundException http not found

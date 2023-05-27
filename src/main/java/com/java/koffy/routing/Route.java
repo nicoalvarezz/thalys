@@ -15,8 +15,11 @@ import java.util.stream.IntStream;
 public class Route {
 
     private String uri;
+
     private Supplier<KoffyResponse> action;
+
     private String regex;
+
     private List<String> parameters;
 
     public Route(String uri, Supplier<KoffyResponse> action) {
@@ -52,7 +55,7 @@ public class Route {
         return IntStream.range(0, parameters.size()).boxed().collect(Collectors.toMap(parameters::get, arguments::get));
     }
 
-    private List<String> extractMatchGroups(String uri){
+    private List<String> extractMatchGroups(String uri) {
         Matcher matcher = Pattern.compile(String.format("^%s$", regex)).matcher(uri);
 
         if (!matcher.find()) {

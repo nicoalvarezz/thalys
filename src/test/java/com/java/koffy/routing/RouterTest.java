@@ -1,6 +1,6 @@
 package com.java.koffy.routing;
 
-import com.java.koffy.Server.Server;
+import com.java.koffy.server.ServerImpl;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.KoffyRequest;
 import com.java.koffy.http.KoffyResponse;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 public class RouterTest {
 
     private Router router;
-    private final Server mockServer = mock(Server.class);
+    private final ServerImpl mockServer = mock(ServerImpl.class);
     private final KoffyRequest mockRequest = mock(KoffyRequest.class);
 
     @BeforeEach
@@ -30,8 +30,11 @@ public class RouterTest {
     }
 
     private void mockingRouterHandling(String uri, HttpMethod method) {
-        when(mockServer.getRequestMethod()).thenReturn(method);
-        when(mockServer.getUri()).thenReturn(uri);
+        when(mockServer.getRequest()).thenReturn(
+                KoffyRequest.builder()
+                    .uri(uri)
+                    .method(method)
+                    .build());
         when(mockRequest.getMethod()).thenReturn(method);
         when(mockRequest.getUri()).thenReturn(uri);
     }
@@ -52,7 +55,8 @@ public class RouterTest {
         router.get(uri, action);
         mockingRouterHandling(uri, HttpMethod.GET);
 
-        assertEquals(uri, mockServer.getUri());
+        assertEquals(uri, mockServer.getRequest().getUri());
+        assertEquals(HttpMethod.GET, mockServer.getRequest().getMethod());
         assertEquals(action.get().getContent(), actualContent());
     }
 
@@ -69,7 +73,8 @@ public class RouterTest {
             router.get(uri, routes.get(uri));
             mockingRouterHandling(uri, HttpMethod.GET);
 
-            assertEquals(uri, mockServer.getUri());
+            assertEquals(uri, mockServer.getRequest().getUri());
+            assertEquals(HttpMethod.GET, mockServer.getRequest().getMethod());
             assertEquals(routes.get(uri).get().getContent(), actualContent());
 
         }
@@ -102,7 +107,8 @@ public class RouterTest {
         router.post(uri, () -> testsJsonResponse("message", actionReturn));
         mockingRouterHandling(uri, HttpMethod.POST);
 
-        assertEquals(uri, mockServer.getUri());
+        assertEquals(uri, mockServer.getRequest().getUri());
+        assertEquals(HttpMethod.POST, mockServer.getRequest().getMethod());
         assertEquals(testsJsonResponse("message", actionReturn).getContent(), actualContent());
 
 
@@ -114,7 +120,8 @@ public class RouterTest {
         router.put(uri, () -> testsJsonResponse("message", actionReturn));
         mockingRouterHandling(uri, HttpMethod.PUT);
 
-        assertEquals(uri, mockServer.getUri());
+        assertEquals(uri, mockServer.getRequest().getUri());
+        assertEquals(HttpMethod.PUT, mockServer.getRequest().getMethod());
         assertEquals(testsJsonResponse("message", actionReturn).getContent(), actualContent());
     }
 
@@ -124,7 +131,8 @@ public class RouterTest {
         router.patch(uri, () -> testsJsonResponse("message", actionReturn));
         mockingRouterHandling(uri, HttpMethod.PATCH);
 
-        assertEquals(uri, mockServer.getUri());
+        assertEquals(uri, mockServer.getRequest().getUri());
+        assertEquals(HttpMethod.PATCH, mockServer.getRequest().getMethod());
         assertEquals(testsJsonResponse("message", actionReturn).getContent(), actualContent());
     }
 
@@ -134,7 +142,8 @@ public class RouterTest {
         router.delete(uri, () -> testsJsonResponse("message", actionReturn));
         mockingRouterHandling(uri, HttpMethod.DELETE);
 
-        assertEquals(uri, mockServer.getUri());
+        assertEquals(uri, mockServer.getRequest().getUri());
+        assertEquals(HttpMethod.DELETE, mockServer.getRequest().getMethod());
         assertEquals(testsJsonResponse("message", actionReturn).getContent(), actualContent());
     }
 }

@@ -6,22 +6,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * HTTP Response data structure that is sent to the client
+ * HTTP Response data structure that is sent to the client.
  */
-public class KoffyResponse {
+public final class KoffyResponse {
 
     /**
-     * Response HTTP status code
+     * Response HTTP status code.
      */
     private int status;
 
     /**
-     * Response HTTP headers
+     * Response HTTP headers.
      */
     private Map<String, String> headers;
 
     /**
-     * Response content
+     * Response content.
      */
     private String content;
 
@@ -32,7 +32,7 @@ public class KoffyResponse {
     }
 
     /**
-     * Retrieve the HTTP status code of the response
+     * Retrieve the HTTP status code of the response.
      * @return HTTP status code
      */
     public int getStatus() {
@@ -40,7 +40,7 @@ public class KoffyResponse {
     }
 
     /**
-     * Retrieve the HTTP headers of the response
+     * Retrieve the HTTP headers of the response.
      * @return HTTP headers of the response
      */
     public Map<String, String> getHeaders() {
@@ -48,7 +48,7 @@ public class KoffyResponse {
     }
 
     /**
-     * Retrieve the content of the response
+     * Retrieve the content of the response.
      * @return content in the response
      */
     public String getContent() {
@@ -56,7 +56,7 @@ public class KoffyResponse {
     }
 
     /**
-     * Delete a specific header form the response
+     * Delete a specific header form the response.
      * @param header header name to be removed
      */
     public void removeHeader(String header) {
@@ -64,7 +64,7 @@ public class KoffyResponse {
     }
 
     /**
-     * Retrieve a {@link KoffyResponse object with content in application/json format
+     * Retrieve a {@link KoffyResponse object with content in application/json format.
      * @param status status code of the response
      * @param data content of the response
      * @return {@link KoffyResponse object with given status, and given data in json format
@@ -74,7 +74,7 @@ public class KoffyResponse {
     }
 
     /**
-     * Retrieve a {@link KoffyResponse object with content in text/plain format
+     * Retrieve a {@link KoffyResponse object with content in text/plain format.
      * @param status status code of the response
      * @param text content of the response
      * @return {@link KoffyResponse} object with given status, and given data in text format
@@ -84,7 +84,7 @@ public class KoffyResponse {
     }
 
     /**
-     * Retrieve a {@link KoffyResponse object to redirect to other path
+     * Retrieve a {@link KoffyResponse object to redirect to other path.
      * @param uri path to be redirected
      * @return {@link KoffyResponse} object in the form of redirect
      */
@@ -93,7 +93,7 @@ public class KoffyResponse {
     }
 
     /**
-     * Creates instance of {@link Builder}
+     * Creates instance of {@link Builder}.
      * @return The new instance
      */
     public static Builder builder() {
@@ -101,23 +101,23 @@ public class KoffyResponse {
     }
 
     /**
-     * Creates a new instance of {@link KoffyResponse}
+     * Creates a new instance of {@link KoffyResponse}.
      * This class is used to implement the builder pattern of {@link KoffyResponse}
      */
-    public static class Builder {
+    public static final class Builder {
 
         /**
-         * Response HTTP status code
+         * Response HTTP status code.
          */
         private int status = 200;
 
         /**
-         * Response HTTP headers
+         * Response HTTP headers.
          */
         private Map<String, String> headers = new HashMap<>();
 
         /**
-         * Response content
+         * Response content.
          */
         private String content = "";
 
@@ -126,7 +126,7 @@ public class KoffyResponse {
         }
 
         /**
-         * Set the status code of the response of the new instance {@link KoffyResponse}
+         * Set the status code of the response of the new instance {@link KoffyResponse}.
          * @param status status code of the response
          * @return Builder
          */
@@ -136,7 +136,7 @@ public class KoffyResponse {
         }
 
         /**
-         * Set a single header and its value of the response for the new instance of {@link KoffyResponse}
+         * Set a single header and its value of the response for the new instance of {@link KoffyResponse}.
          * @param name header name
          * @param value header value
          * @return Builder of {@link KoffyResponse} instance
@@ -148,7 +148,7 @@ public class KoffyResponse {
 
 
         /**
-         * Set all the headers that the response will contain in one go for the new instance of {@link KoffyResponse}
+         * Set all the headers that the response will contain in one go for the new instance of {@link KoffyResponse}.
          * @param headers Map containing all the headers and their respective values for the response
          * @return Builder of {@link KoffyResponse} instance
          */
@@ -158,7 +158,7 @@ public class KoffyResponse {
         }
 
         /**
-         * Set the content of the response for the new instance of {@link KoffyResponse}
+         * Set the content of the response for the new instance of {@link KoffyResponse}.
          * @param content content of the response
          * @return Builder of {@link KoffyResponse} instance
          */
@@ -168,7 +168,7 @@ public class KoffyResponse {
         }
 
         /**
-         * Set the content type header specifically for the new instance of {@link KoffyResponse}
+         * Set the content type header specifically for the new instance of {@link KoffyResponse}.
          * @param contentType value of the content type header
          * @return Builder of the {@link KoffyResponse} instance
          */
@@ -178,7 +178,7 @@ public class KoffyResponse {
         }
 
         /**
-         * Creates a new instance of {@link KoffyResponse}
+         * Creates a new instance of {@link KoffyResponse}.
          * @return The new instance
          */
         public KoffyResponse build() {
@@ -187,13 +187,13 @@ public class KoffyResponse {
     }
 
     /**
-     * This class implements {@link ResponseFactory} interface to implement the different types of responses
+     * This class implements {@link ResponseFactory} interface to implement the different types of responses.
      * This class is used to implement the factory pattern
      */
     static class KoffyResponseFactory implements ResponseFactory {
 
         /**
-         * Response method that takes the status code, content and only the content-type header
+         * Response method that takes the status code, content and only the content-type header.
          * @param status status code of the response
          * @param contentType value of the content type header
          * @param content content of the response
@@ -209,7 +209,7 @@ public class KoffyResponse {
         }
 
         /**
-         * Response method that takes the status code, content, and a single header adn its value
+         * Response method that takes the status code, content, and a single header adn its value.
          * @param status status code of the response
          * @param name header name
          * @param value header value
@@ -226,7 +226,8 @@ public class KoffyResponse {
         }
 
         /**
-         * Response method that takes the status code, the content, adn all the headers required for the response in one go
+         * Response method that takes the status code, the content,
+         * and all the headers required for the response in one go.
          * @param status status code of the response
          * @param headers Map containing all the headers and their respective values for the response
          * @param content content of the response
