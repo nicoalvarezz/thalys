@@ -1,4 +1,6 @@
-package com.java.koffy.router;
+package com.java.koffy.routing;
+
+import com.java.koffy.http.KoffyResponse;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,11 +15,14 @@ import java.util.stream.IntStream;
 public class Route {
 
     private String uri;
-    private Supplier<Object> action;
+
+    private Supplier<KoffyResponse> action;
+
     private String regex;
+
     private List<String> parameters;
 
-    public Route(String uri, Supplier<Object> action) {
+    public Route(String uri, Supplier<KoffyResponse> action) {
         this.uri = uri;
         this.action = action;
         this.regex = Pattern.compile("\\{([^{}]+)\\}").matcher(uri).replaceAll("([a-zA-Z0-9]+)");
@@ -31,7 +36,7 @@ public class Route {
         return uri;
     }
 
-    public Supplier<Object> getAction() {
+    public Supplier<KoffyResponse> getAction() {
         return action;
     }
 
@@ -50,7 +55,7 @@ public class Route {
         return IntStream.range(0, parameters.size()).boxed().collect(Collectors.toMap(parameters::get, arguments::get));
     }
 
-    private List<String> extractMatchGroups(String uri){
+    private List<String> extractMatchGroups(String uri) {
         Matcher matcher = Pattern.compile(String.format("^%s$", regex)).matcher(uri);
 
         if (!matcher.find()) {

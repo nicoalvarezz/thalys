@@ -1,5 +1,6 @@
-package com.java.koffy.router;
+package com.java.koffy.routing;
 
+import com.java.koffy.http.KoffyResponse;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -37,10 +38,14 @@ public class RouteTest {
         );
     }
 
+    private KoffyResponse testsJsonResponse(String key, String value) {
+        return KoffyResponse.jsonResponse(200, new HashMap<>() {{ put(key, value); }});
+    }
+
     @ParameterizedTest
     @MethodSource("routeWithNoParameters")
     public void testRegexWithNoParameters(String uri) {
-        Route route = new Route(uri, () -> "Test");
+        Route route = new Route(uri, () -> testsJsonResponse("message", "test"));
         assertTrue(route.matches(uri));
         assertFalse(route.matches(uri + "/extra/path"));
         assertFalse(route.matches("/extra/path" + uri));
@@ -50,14 +55,14 @@ public class RouteTest {
     @ParameterizedTest
     @MethodSource("routeWithNoParameters")
     public void testRegexOnUriThatEndsWithSlash(String uri) {
-        Route route = new Route(uri, () -> "Test");
+        Route route = new Route(uri, () -> testsJsonResponse("message", "test"));
         assertTrue(route.matches(uri + "/"));
     }
 
     @ParameterizedTest
     @MethodSource("routeWithParameters")
     public void testRegexWithParameters(String definition, String uri) {
-        Route route = new Route(definition, () -> "Test");
+        Route route = new Route(definition, () -> testsJsonResponse("message", "test"));
         assertTrue(route.matches(uri));
         assertFalse(route.matches(uri + "/extra/path"));
         assertFalse(route.matches("/extra/path" + uri));
@@ -67,7 +72,7 @@ public class RouteTest {
     @ParameterizedTest
     @MethodSource("routeWithParameters")
     public void testParseParameters(String definition, String uri, Map<String, String> expectedParameters) {
-        Route route = new Route(definition, () -> "test");
+        Route route = new Route(definition, () -> testsJsonResponse("message", "test"));
         assertTrue(route.hasParameters());
         assertEquals(expectedParameters, route.parseParameter(uri));
     }
