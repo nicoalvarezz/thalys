@@ -32,7 +32,7 @@ public final class KoffyResponse {
     }
 
     /**
-     * Retrieve the HTTP status code of the response.
+     * Return the HTTP status code of the response.
      * @return HTTP status code
      */
     public int getStatus() {
@@ -40,7 +40,7 @@ public final class KoffyResponse {
     }
 
     /**
-     * Retrieve the HTTP headers of the response.
+     * Return the HTTP headers of the response.
      * @return HTTP headers of the response
      */
     public Map<String, String> getHeaders() {
@@ -48,7 +48,7 @@ public final class KoffyResponse {
     }
 
     /**
-     * Retrieve the content of the response.
+     * Return the content of the response.
      * @return content in the response
      */
     public String getContent() {
@@ -64,18 +64,18 @@ public final class KoffyResponse {
     }
 
     /**
-     * Retrieve a {@link KoffyResponse object with content in application/json format.
+     * Return a {@link KoffyResponse object with content in application/json format.
      * @param status status code of the response
-     * @param data content of the response
-     * @return {@link KoffyResponse object with given status, and given data in json format
+     * @param content content of the response
+     * @return {@link KoffyResponse object with given status, and given content in json format
      */
-    public static KoffyResponse jsonResponse(int status, Map<String, String> data) {
-        return new KoffyResponseFactory().response(status, "application/json",  new JSONObject(data).toString());
+    public static KoffyResponse jsonResponse(int status, Map<String, String> content) {
+        return new KoffyResponseFactory().response(status, "application/json",  new JSONObject(content).toString());
     }
 
     /**
-     * Retrieve a {@link KoffyResponse object with content in text/plain format.
-     * @param status status code of the response
+     * Return a {@link KoffyResponse object with content in text/plain format.
+     * @param HTTP status code of the response
      * @param text content of the response
      * @return {@link KoffyResponse} object with given status, and given data in text format
      */
@@ -84,12 +84,37 @@ public final class KoffyResponse {
     }
 
     /**
-     * Retrieve a {@link KoffyResponse object to redirect to other path.
+     * Return a {@link KoffyResponse object to redirect to other path.
      * @param uri path to be redirected
      * @return {@link KoffyResponse} object in the form of redirect
      */
     public static KoffyResponse redirectResponse(String uri) {
         return new KoffyResponseFactory().response(302, "Location", uri, null);
+    }
+
+    /**
+     * Return a {@link KoffyResponse} object with multiple headers.
+     * @param status HTTP status code
+     * @param headers {@link Map} Response headers
+     * @param content Response content
+     * @return {@link KoffyResponse} object with given status,given headers and content
+     */
+    public static KoffyResponse textResponseWithMultipleHeaders(int status,
+                                                                Map<String, String> headers, String content) {
+        return new KoffyResponseFactory().response(status, "text/plain", headers, content);
+    }
+
+    /**
+     * Return a {@link KoffyResponse} object with multiple headers in json format.
+     * @param status HTTP status code
+     * @param headers {@link Map} Response headers
+     * @param content Response content
+     * @return {@link KoffyResponse} object with given status,given headers and content
+     */
+    public static KoffyResponse jsonResponseWithMultipleHeaders(int status,
+                                        Map<String, String> headers, Map<String, String> content) {
+        return new KoffyResponseFactory().response(status,
+                "application/json", headers,  new JSONObject(content).toString());
     }
 
     /**
@@ -234,10 +259,11 @@ public final class KoffyResponse {
          * @return {@link KoffyResponse}
          */
         @Override
-        public KoffyResponse response(int status, Map<String, String> headers, String content) {
+        public KoffyResponse response(int status, String contentType, Map<String, String> headers, String content) {
             return KoffyResponse.builder()
                     .status(status)
                     .headers(headers)
+                    .contentType(contentType)
                     .content(content)
                     .build();
         }

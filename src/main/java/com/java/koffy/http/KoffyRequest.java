@@ -1,5 +1,7 @@
 package com.java.koffy.http;
 
+import com.java.koffy.routing.Route;
+
 import java.util.Map;
 
 /**
@@ -11,6 +13,11 @@ public class KoffyRequest {
      * HTTP request URI.
      */
     private String uri;
+
+    /**
+     * HTTP request route.
+     */
+    private Route route;
 
     /**
      * HTTP request method.
@@ -29,6 +36,7 @@ public class KoffyRequest {
 
     public KoffyRequest(Builder builder) {
         this.uri = builder.uri;
+        this.route = builder.route;
         this.method = builder.method;
         this.data = builder.data;
         this.query = builder.query;
@@ -40,6 +48,14 @@ public class KoffyRequest {
      */
     public String getUri() {
         return uri;
+    }
+
+    /**
+     * Retrieve the route of the request.
+     * @return {@link Route}
+     */
+    public Route getRoute() {
+        return route;
     }
 
     /**
@@ -67,6 +83,14 @@ public class KoffyRequest {
     }
 
     /**
+     * Retrieve route parameters of the request.
+     * @return {@link Map} with the route parameters
+     */
+    public Map<String, String> routeParams() {
+        return route.parseParameter(uri);
+    }
+
+    /**
      * Create instance of {@link Builder}.
      * @return The new instance
      */
@@ -84,6 +108,11 @@ public class KoffyRequest {
          * HTTP request URI.
          */
         private String uri;
+
+        /**
+         * HTTP route of the request.
+         */
+        private Route route;
 
         /**
          * HTTP request method.
@@ -111,6 +140,16 @@ public class KoffyRequest {
          */
         public Builder uri(String uri) {
             this.uri = uri;
+            return this;
+        }
+
+        /**
+         * Set the route of the request of the new instance {@link KoffyRequest}.
+         * @param route route of the request
+         * @return Builder of {@link KoffyRequest} instance
+         */
+        public Builder route(Route route) {
+            this.route = route;
             return this;
         }
 
