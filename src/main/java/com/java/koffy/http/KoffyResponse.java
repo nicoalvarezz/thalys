@@ -41,7 +41,7 @@ public final class KoffyResponse {
 
     /**
      * Return the HTTP headers of the response.
-     * @return HTTP headers of the response
+     * @return {@link Map} HTTP headers of the response
      */
     public Map<String, String> getHeaders() {
         return headers;
@@ -49,7 +49,7 @@ public final class KoffyResponse {
 
     /**
      * Return the content of the response.
-     * @return content in the response
+     * @return {@link String} content in the response
      */
     public String getContent() {
         return content;
@@ -70,7 +70,7 @@ public final class KoffyResponse {
      * @return {@link KoffyResponse object with given status, and given content in json format
      */
     public static KoffyResponse jsonResponse(int status, Map<String, String> content) {
-        return new KoffyResponseFactory().response(status, "application/json",  new JSONObject(content).toString());
+        return new KoffyResponseFactory().response(status, ContentType.JSON.get(),  new JSONObject(content).toString());
     }
 
     /**
@@ -80,7 +80,7 @@ public final class KoffyResponse {
      * @return {@link KoffyResponse} object with given status, and given data in text format
      */
     public static KoffyResponse textResponse(int status, String text) {
-        return new KoffyResponseFactory().response(status, "text/plain",  text);
+        return new KoffyResponseFactory().response(status, ContentType.TEXT.get(), text);
     }
 
     /**
@@ -89,7 +89,7 @@ public final class KoffyResponse {
      * @return {@link KoffyResponse} object in the form of redirect
      */
     public static KoffyResponse redirectResponse(String uri) {
-        return new KoffyResponseFactory().response(302, "Location", uri, null);
+        return new KoffyResponseFactory().response(302, Header.LOCATION.get(), uri, null);
     }
 
     /**
@@ -101,7 +101,7 @@ public final class KoffyResponse {
      */
     public static KoffyResponse textResponseWithMultipleHeaders(int status,
                                                                 Map<String, String> headers, String content) {
-        return new KoffyResponseFactory().response(status, "text/plain", headers, content);
+        return new KoffyResponseFactory().response(status, ContentType.TEXT.get(), headers, content);
     }
 
     /**
@@ -114,7 +114,7 @@ public final class KoffyResponse {
     public static KoffyResponse jsonResponseWithMultipleHeaders(int status,
                                         Map<String, String> headers, Map<String, String> content) {
         return new KoffyResponseFactory().response(status,
-                "application/json", headers,  new JSONObject(content).toString());
+                ContentType.JSON.get(), headers,  new JSONObject(content).toString());
     }
 
     /**
@@ -198,7 +198,7 @@ public final class KoffyResponse {
          * @return Builder of the {@link KoffyResponse} instance
          */
         public Builder contentType(String contentType) {
-            headers.put("Content-Type", contentType);
+            headers.put(Header.CONTENT_TYPE.get(), contentType);
             return this;
         }
 

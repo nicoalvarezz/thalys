@@ -44,7 +44,7 @@ public class KoffyRequest {
 
     /**
      * Retrieve the URI of the request.
-     * @return String URI
+     * @return {@link String} URI
      */
     public String getUri() {
         return uri;
@@ -68,7 +68,7 @@ public class KoffyRequest {
 
     /**
      * Retrieve the post data of the request.
-     * @return post data
+     * @return {@link Map} post data
      */
     public Map<String, String> getPostData() {
         return data;
@@ -76,7 +76,7 @@ public class KoffyRequest {
 
     /**
      * Retrieve the query data of the request.
-     * @return query data
+     * @return {@link Map} query data
      */
     public Map<String, String> getQueryData() {
         return query;
@@ -92,7 +92,7 @@ public class KoffyRequest {
 
     /**
      * Create instance of {@link Builder}.
-     * @return The new instance
+     * @return {@link Builder} instance
      */
     public static Builder builder() {
         return new Builder();

@@ -2,7 +2,7 @@ package com.java.koffy.http;
 
 import java.util.Map;
 
-public interface ResponseFactory {
+interface ResponseFactory {
 
     KoffyResponse response(int status, String contentType, String content);
 

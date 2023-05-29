@@ -25,7 +25,7 @@ public class ResponseTest {
         int expectedStatus = 200;
         String expectedJson = jsonEncode(content);
         Map<String, String> expectedHeaders = new HashMap<>() {{
-            put("Content-Type", "application/json");
+            put(Header.CONTENT_TYPE.get(), ContentType.JSON.get());
         }};
 
         assertEquals(expectedStatus, response.getStatus());
@@ -41,7 +41,7 @@ public class ResponseTest {
 
         int expectedStatus = 200;
         Map<String, String> expectedHeaders = new HashMap<>() {{
-            put("Content-Type", "text/plain");
+            put(Header.CONTENT_TYPE.get(), ContentType.TEXT.get());
         }};
 
         assertEquals(expectedStatus, response.getStatus());
@@ -68,7 +68,7 @@ public class ResponseTest {
     public void testDeleteResponseHeader() {
         String content = "test content";
         Map<String, String> headers = new HashMap<>() {{
-            put("Content-Type", "application/json");
+            put(Header.CONTENT_TYPE.get(), ContentType.JSON.get());
             put("Server", "Jetty");
         }};
         KoffyResponse response = KoffyResponse.textResponseWithMultipleHeaders(200, headers, content);
@@ -86,7 +86,7 @@ public class ResponseTest {
         assertEquals(content, response.getContent());
         assertEquals(headers, response.getHeaders());
         assertEquals(1, response.getHeaders().size());
-        assertEquals(headers.get("Content-Type"), response.getHeaders().get("Content-Type"));
+        assertEquals(headers.get(Header.CONTENT_TYPE.get()), response.getHeaders().get(Header.CONTENT_TYPE.get()));
     }
 
     @Test
@@ -96,7 +96,7 @@ public class ResponseTest {
             put("test2", "bar");
         }};
         Map<String, String> headers = new HashMap<>() {{
-            put("Content-Type", "application/json");
+            put(Header.CONTENT_TYPE.get(), ContentType.JSON.get());
             put("Server", "Jetty");
         }};
         KoffyResponse response = KoffyResponse.jsonResponseWithMultipleHeaders(200, headers, content);
@@ -115,6 +115,6 @@ public class ResponseTest {
         assertEquals(expectedJson, response.getContent());
         assertEquals(headers, response.getHeaders());
         assertEquals(1, response.getHeaders().size());
-        assertEquals(headers.get("Content-Type"), response.getHeaders().get("Content-Type"));
+        assertEquals(headers.get(Header.CONTENT_TYPE.get()), response.getHeaders().get(Header.CONTENT_TYPE.get()));
     }
 }
