@@ -18,7 +18,7 @@ public enum HttpMethod {
     }
 
     /**
-     * Returns the String value of a specific method
+     * Returns the String value of a specific method.
      * @return {@link String} method value
      */
     public String get() {

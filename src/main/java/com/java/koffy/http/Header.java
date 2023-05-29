@@ -15,7 +15,7 @@ enum Header {
     }
 
     /**
-     * Returns the String value of a specific header
+     * Returns the String value of a specific header.
      * @return {@link String} header value
      */
     public String get() {

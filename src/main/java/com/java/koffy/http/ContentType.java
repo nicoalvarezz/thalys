@@ -23,7 +23,7 @@ enum ContentType {
     }
 
     /**
-     * Returns the String value of a specific content type
+     * Returns the String value of a specific content type.
      * @return {@link String} content type value
      */
     public String get() {
