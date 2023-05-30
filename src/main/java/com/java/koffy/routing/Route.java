@@ -1,12 +1,13 @@
 package com.java.koffy.routing;
 
+import com.java.koffy.http.KoffyRequest;
 import com.java.koffy.http.KoffyResponse;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -16,13 +17,13 @@ public class Route {
 
     private String uri;
 
-    private Supplier<KoffyResponse> action;
+    private Function<KoffyRequest, KoffyResponse> action;
 
     private String regex;
 
     private List<String> parameters;
 
-    public Route(String uri, Supplier<KoffyResponse> action) {
+    public Route(String uri, Function<KoffyRequest, KoffyResponse> action) {
         this.uri = uri;
         this.action = action;
         this.regex = Pattern.compile("\\{([^{}]+)\\}").matcher(uri).replaceAll("([a-zA-Z0-9]+)");
@@ -36,7 +37,7 @@ public class Route {
         return uri;
     }
 
-    public Supplier<KoffyResponse> getAction() {
+    public Function<KoffyRequest, KoffyResponse> getAction() {
         return action;
     }
 

@@ -1,25 +1,20 @@
 package com.java.koffy;
 
-import com.java.koffy.server.NativeJettyServer;
 import com.java.koffy.http.KoffyResponse;
-import com.java.koffy.routing.Router;
 
 import java.util.HashMap;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        Router newRouter = new Router();
+        App app = App.bootstrap(8080);
+        app.getRouter().get("/test/{param}", (request) -> KoffyResponse.jsonResponse(200, request.routeParams()));
 
-        newRouter.get("/test", () -> KoffyResponse.textResponse(200, "GET OK"));
-
-        newRouter.post("/test", () ->
+        app.getRouter().post("/test", (request) ->
                 KoffyResponse.jsonResponse(200, new HashMap<>() {{ put("message", "POST OK"); }}));
 
-        newRouter.get("/redirect", () -> KoffyResponse.redirectResponse("/test"));
+        app.getRouter().get("/redirect", (request) -> KoffyResponse.redirectResponse("/test/5"));
 
-        NativeJettyServer server = new NativeJettyServer(8080);
-        server.setRouter(newRouter);
-        server.startServer();
+        app.run();
     }
 }

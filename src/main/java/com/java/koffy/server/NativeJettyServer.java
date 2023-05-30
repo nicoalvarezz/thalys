@@ -98,8 +98,8 @@ public class NativeJettyServer extends AbstractHandler implements ServerImpl {
     @Override
     public void handle(String target, Request request, HttpServletRequest httpServletRequest,
                        HttpServletResponse httpServletResponse) throws IOException {
-        createRequest(request, httpServletRequest);
-        createResponse();
+        koffyRequest = createRequest(request, httpServletRequest);
+        koffyResponse = createResponse(request.getRequestURI(), HttpMethod.valueOf(request.getMethod()));
 
         httpServletResponse.setStatus(koffyResponse.getStatus());
 
@@ -113,9 +113,9 @@ public class NativeJettyServer extends AbstractHandler implements ServerImpl {
         request.setHandled(true);
     }
 
-    private void createRequest(Request request,
-                               HttpServletRequest httpServletRequest) throws IOException {
-        koffyRequest = KoffyRequest.builder()
+    private KoffyRequest createRequest(Request request,
+                                       HttpServletRequest httpServletRequest) throws IOException {
+        return KoffyRequest.builder()
                 .uri(request.getRequestURI())
                 .method(HttpMethod.valueOf(request.getMethod()))
                 .postData(parsePostData(httpServletRequest))
@@ -123,11 +123,11 @@ public class NativeJettyServer extends AbstractHandler implements ServerImpl {
                 .build();
     }
 
-    private void createResponse() {
+    private KoffyResponse createResponse(String uri,HttpMethod method) {
         try {
-            koffyResponse = router.resolve(koffyRequest).getAction().get();
+            return router.resolve(uri, method).getAction().apply(koffyRequest);
         } catch (HttpNotFoundException e) {
-            koffyResponse = KoffyResponse.textResponse(404, e.getMessage());
+            return KoffyResponse.textResponse(404, e.getMessage());
         }
     }
 

@@ -89,7 +89,7 @@ public class RequestTest {
 
     @Test
     public void testRouteParams() {
-        Route route = new Route("/test/{test}/foo/{bar}", () -> KoffyResponse.textResponse(200, "GET OK"));
+        Route route = new Route("/test/{test}/foo/{bar}", (request) -> KoffyResponse.textResponse(200, "GET OK"));
         String uri = "/test/1/foo/2";
 
         KoffyRequest request = KoffyRequest.builder()

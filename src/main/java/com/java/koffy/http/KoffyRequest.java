@@ -1,6 +1,9 @@
 package com.java.koffy.http;
 
+import com.java.koffy.App;
+import com.java.koffy.container.Container;
 import com.java.koffy.routing.Route;
+import com.java.koffy.routing.Router;
 
 import java.util.Map;
 
@@ -36,10 +39,12 @@ public class KoffyRequest {
 
     public KoffyRequest(Builder builder) {
         this.uri = builder.uri;
-        this.route = builder.route;
         this.method = builder.method;
         this.data = builder.data;
         this.query = builder.query;
+
+        App app = (App) Container.singleton(App.class);
+        this.route = app.getRouter().resolve(uri, method);
     }
 
     /**
@@ -145,11 +150,11 @@ public class KoffyRequest {
 
         /**
          * Set the route of the request of the new instance {@link KoffyRequest}.
-         * @param route route of the request
+         * @param router router
          * @return Builder of {@link KoffyRequest} instance
          */
-        public Builder route(Route route) {
-            this.route = route;
+        public Builder route(Router router) {
+            this.route = router.resolve(uri, method);
             return this;
         }
 
