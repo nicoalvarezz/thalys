@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 
@@ -47,15 +48,21 @@ public class NativeJettyServer extends AbstractHandler implements ServerImpl {
      */
     private Router router;
 
-    /**
-     * Set the jetty server.
-     * @param serverPort Port number which the server will be listening
-     */
-    public NativeJettyServer(final int serverPort) {
-        this.jettyServer = new Server(serverPort);
+    public NativeJettyServer() {
+        this.jettyServer = new Server();
         this.jettyServer.setHandler(this);
         HandlerList handlerList = new HandlerList();
         handlerList.addHandler(this);
+    }
+
+    /**
+     * Set the port the jetty server will be listening to.
+     * @param serverPort port number
+     */
+    public void setPort(int serverPort) {
+        ServerConnector connector = new ServerConnector(jettyServer);
+        connector.setPort(serverPort);
+        jettyServer.addConnector(connector);
     }
 
     /**

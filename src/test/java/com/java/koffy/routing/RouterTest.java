@@ -1,5 +1,6 @@
 package com.java.koffy.routing;
 
+import com.java.koffy.App;
 import com.java.koffy.server.ServerImpl;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.KoffyRequest;
@@ -12,7 +13,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.HashMap;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,14 +21,9 @@ import static org.mockito.Mockito.when;
 
 public class RouterTest {
 
-    private Router router;
+    private Router router = App.bootstrap().router();
     private final ServerImpl mockServer = mock(ServerImpl.class);
     private final KoffyRequest mockRequest = mock(KoffyRequest.class);
-
-    @BeforeEach
-    void setUp() {
-        router = new Router();
-    }
 
     private void mockingRouterHandling(String uri, HttpMethod method) {
         when(mockServer.getRequest()).thenReturn(
@@ -45,7 +40,7 @@ public class RouterTest {
     }
 
     private String actualContent() {
-        return router.resolve(mockRequest).getAction().apply(mockRequest).getContent();
+        return router.resolve(mockRequest.getUri(), mockRequest.getMethod()).getAction().apply(mockRequest).getContent();
     }
 
     @Test

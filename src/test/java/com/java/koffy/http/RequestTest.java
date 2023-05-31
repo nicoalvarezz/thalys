@@ -1,6 +1,6 @@
 package com.java.koffy.http;
 
-import com.java.koffy.routing.Route;
+import com.java.koffy.App;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -12,10 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class RequestTest {
 
+    private App app = App.bootstrap();
+
     @Test
     public void testRequestReturnsDataObtainedFromServer() {
-
         String uri = "/test/route";
+        app.router().post(uri, (request -> KoffyResponse.textResponse(200, "POST OK")));
+
         Map<String, String> queryParams = new HashMap<>() {{
             put("a", "1");
             put("b", "2");
@@ -42,6 +45,7 @@ public class RequestTest {
     @Test
     public void testRequestPostDataReturnsValueIfKeyGiven() {
         String uri = "/test/route";
+        app.router().post(uri, (request -> KoffyResponse.textResponse(200, "POST OK")));
         Map<String, String> postData = new HashMap<>() {{
             put("post", "test");
             put("foo", "bar");
@@ -66,6 +70,7 @@ public class RequestTest {
     @Test
     public void testRequestQueryDataReturnsValueIfKeyGiven() {
         String uri = "/test/route";
+        app.router().post(uri, (request -> KoffyResponse.textResponse(200, "POST OK")));
         Map<String, String> queryParams = new HashMap<>() {{
             put("a", "1");
             put("test", "foo");
@@ -89,12 +94,13 @@ public class RequestTest {
 
     @Test
     public void testRouteParams() {
-        Route route = new Route("/test/{test}/foo/{bar}", (request) -> KoffyResponse.textResponse(200, "GET OK"));
+        App app = App.bootstrap();
+        app.router().get("/test/{test}/foo/{bar}", (request) -> KoffyResponse.textResponse(200, "GET OK"));
         String uri = "/test/1/foo/2";
 
         KoffyRequest request = KoffyRequest.builder()
-                .route(route)
                 .uri(uri)
+                .method(HttpMethod.GET)
                 .build();
 
         ArrayList<String> expectedData = new ArrayList<>() {{

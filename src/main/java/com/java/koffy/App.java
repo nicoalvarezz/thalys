@@ -1,7 +1,6 @@
 package com.java.koffy;
 
 import com.java.koffy.container.Container;
-import com.java.koffy.http.KoffyRequest;
 import com.java.koffy.routing.Router;
 import com.java.koffy.server.NativeJettyServer;
 
@@ -9,32 +8,22 @@ public class App {
 
     private Router router;
 
-    private KoffyRequest request;
-
     private NativeJettyServer server;
 
-    public static App bootstrap(int port) {
-        App app = (App) Container.singleton(App.class);
+    public static App bootstrap() {
+        App app = Container.singleton(App.class);
         app.router = new Router();
-        app.server = new NativeJettyServer(port);
-        app.request = app.getServer().getRequest();
+        app.server = new NativeJettyServer();
 
         return app;
     }
 
-    public Router getRouter() {
+    public Router router() {
         return router;
     }
 
-    public KoffyRequest getRequest() {
-        return request;
-    }
-
-    public NativeJettyServer getServer() {
-        return server;
-    }
-
-    public void run() throws Exception {
+    public void run(int port) throws Exception {
+        server.setPort(port);
         server.setRouter(router);
         server.startServer();
     }

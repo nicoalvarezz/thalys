@@ -1,28 +1,42 @@
 package com.java.koffy.container;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Container class that allows storing and retrieving singleton instances of classes.
+ */
 public class Container {
 
-    private static Map<String, Object> instances = new HashMap<>();
+    /**
+     * Map containing instances of singleton instances. It uses {@link ConcurrentHashMap} to ensure thread safety.
+     */
+    private static final Map<Class<?>, Object> INSTANCES = new ConcurrentHashMap<>();
 
-    public static Object singleton(Class clazz) {
-        if (!instances.containsKey(clazz.getName())) {
+    /**
+     * Returns a single instance of the specified class. If an instance of the class does not exist in the container,
+     * it is created using reflection and stored in the container for future use.
+     * Subsequent calls to singleton for the same class will return the existing instance.
+     * @param clazz specified class
+     * @return {@link T} instance of specified class
+     * @throws RuntimeException Failure to create instance
+     */
+    public static <T> T singleton(Class<T> clazz) {
+        return clazz.cast(INSTANCES.computeIfAbsent(clazz, key -> {
             try {
-                Constructor constructor = clazz.getDeclaredConstructor();
-                constructor.setAccessible(true);
-                instances.put(clazz.getName(), constructor.newInstance());
-            } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
+                return key.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to create instance for " + key.getName(), e);
             }
-        }
-        return instances.get(clazz.getName());
+        }));
     }
 
-    public static Object resolve(Class<Object> clazz) {
-        return instances.get(clazz.getName());
+    /**
+     * This method is used to retrieve a singleton instance of the specified class.
+     * @param clazz specified instance
+     * @return {@link T} instance of specified class
+     */
+    public static <T> T resolve(Class<T> clazz) {
+        return clazz.cast(INSTANCES.get(clazz));
     }
 }
