@@ -125,7 +125,7 @@ public final class KoffyRequest {
      */
     public Optional<String> getHeaders(Header header) {
         if (header != null) {
-            return headers.get(header).describeConstable();
+            return Optional.ofNullable(headers.get(header));
         }
         return Optional.empty();
     }
