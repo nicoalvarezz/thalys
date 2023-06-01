@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RequestTest {
 
@@ -62,9 +62,9 @@ public class RequestTest {
             add("bar");
         }};
 
-        assertEquals(expectedData.get(0), request.getPostData().get("post"));
-        assertEquals(expectedData.get(1), request.getPostData().get("foo"));
-        assertNull(request.getPostData().get("does not exit"));
+        assertEquals(expectedData.get(0), request.getPostData("post").get());
+        assertEquals(expectedData.get(1), request.getPostData("foo").get());
+        assertFalse(request.getPostData("does not exist").isPresent());
     }
 
     @Test
@@ -87,9 +87,9 @@ public class RequestTest {
             add("foo");
         }};
 
-        assertEquals(expectedData.get(0), request.getQueryData().get("a"));
-        assertEquals(expectedData.get(1), request.getQueryData().get("test"));
-        assertNull(request.getQueryData().get("does not exit"));
+        assertEquals(expectedData.get(0), request.getQueryData("a").get());
+        assertEquals(expectedData.get(1), request.getQueryData("test").get());
+        assertFalse(request.getQueryData("does not exit").isPresent());
     }
 
     @Test

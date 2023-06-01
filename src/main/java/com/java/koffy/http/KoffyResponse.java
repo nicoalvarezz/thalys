@@ -217,6 +217,7 @@ public final class KoffyResponse {
      */
     static class KoffyResponseFactory implements ResponseFactory {
 
+        // TODO: Refactor response factory implementation using setters instead of current implementation
         /**
          * Response method that takes the status code, content and only the content-type header.
          * @param status status code of the response

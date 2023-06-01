@@ -5,11 +5,12 @@ import com.java.koffy.container.Container;
 import com.java.koffy.routing.Route;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * HTTP Request data structure that is received from the user request.
  */
-public class KoffyRequest {
+public final class KoffyRequest {
 
     /**
      * HTTP request URI.
@@ -36,12 +37,15 @@ public class KoffyRequest {
      */
     private Map<String, String> query;
 
-    public KoffyRequest(Builder builder) {
+    private Map<Header, String> headers;
+
+    private KoffyRequest(Builder builder) {
         this.uri = builder.uri;
         this.method = builder.method;
         this.data = builder.data;
         this.query = builder.query;
-        this.route = Container.resolve(App.class).router().resolve(uri, method);
+        this.headers = builder.headers;
+        this.route = Container.resolve(App.class).router().resolveRoute(uri, method);
     }
 
     /**
@@ -77,11 +81,49 @@ public class KoffyRequest {
     }
 
     /**
+     * Retrieve post data value of specific key of the request.
+     * @param key {@link String} post data key
+     * @return {@link Optional<String>} post value
+     */
+    public Optional<String> getPostData(String key) {
+        return Optional.ofNullable(data.get(key));
+    }
+
+    /**
      * Retrieve the query data of the request.
      * @return {@link Map} query data
      */
     public Map<String, String> getQueryData() {
         return query;
+    }
+
+    /**
+     * Retrieve query data value of specific key of the request.
+     * @param key {@link String} query data key
+     * @return {@link Optional<String>) query value
+     */
+    public Optional<String> getQueryData(String key) {
+        return Optional.ofNullable(query.get(key));
+    }
+
+    /**
+     * Retrieve the headers of the request.
+     * @return {@link Map} headers
+     */
+    public Map<Header, String> getHeaders() {
+        return headers;
+    }
+
+    /**
+     * Retrieve the value of specific header of the request.
+     * @param header {@link Header} header
+     * @return {@link Optional<String>} header value
+     */
+    public Optional<String> getHeaders(Header header) {
+        if (header != null) {
+            return headers.get(header).describeConstable();
+        }
+        return Optional.empty();
     }
 
     /**
@@ -126,6 +168,11 @@ public class KoffyRequest {
          */
         private Map<String, String> query;
 
+        /**
+         * HTTP headers.
+         */
+        private Map<Header, String> headers;
+
         private Builder() {
 
         }
@@ -167,6 +214,11 @@ public class KoffyRequest {
          */
         public Builder queryData(Map<String, String> query) {
             this.query = query;
+            return this;
+        }
+
+        public Builder headers(Map<Header, String> headers) {
+            this.headers = headers;
             return this;
         }
 

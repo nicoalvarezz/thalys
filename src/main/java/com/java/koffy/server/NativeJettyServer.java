@@ -1,6 +1,7 @@
 package com.java.koffy.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.java.koffy.http.Header;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.HttpNotFoundException;
 import com.java.koffy.http.KoffyRequest;
@@ -18,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -106,7 +108,7 @@ public class NativeJettyServer extends AbstractHandler implements ServerImpl {
     public void handle(String target, Request request, HttpServletRequest httpServletRequest,
                        HttpServletResponse httpServletResponse) throws IOException {
         koffyRequest = createRequest(request, httpServletRequest);
-        koffyResponse = createResponse(request.getRequestURI(), HttpMethod.valueOf(request.getMethod()));
+        koffyResponse = createResponse();
 
         httpServletResponse.setStatus(koffyResponse.getStatus());
 
@@ -125,14 +127,25 @@ public class NativeJettyServer extends AbstractHandler implements ServerImpl {
         return KoffyRequest.builder()
                 .uri(request.getRequestURI())
                 .method(HttpMethod.valueOf(request.getMethod()))
+                .headers(resolveHeaders(httpServletRequest))
                 .postData(parsePostData(httpServletRequest))
                 .queryData(parseQueryData(httpServletRequest))
                 .build();
     }
 
-    private KoffyResponse createResponse(String uri,HttpMethod method) {
+    private Map<Header, String> resolveHeaders(HttpServletRequest httpServletRequest) {
+        Enumeration<String> headerNames = httpServletRequest.getHeaderNames();
+        Map<Header, String> headers = new HashMap<>();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement().replace("-", "_");
+            headers.put(Header.valueOf(headerName.toUpperCase()), httpServletRequest.getHeader(headerName));
+        }
+        return headers;
+    }
+
+    private KoffyResponse createResponse() {
         try {
-            return router.resolve(uri, method).getAction().apply(koffyRequest);
+            return router.resolve(koffyRequest).apply(koffyRequest);
         } catch (HttpNotFoundException e) {
             return KoffyResponse.textResponse(404, e.getMessage());
         }

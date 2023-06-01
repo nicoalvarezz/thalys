@@ -1,5 +1,7 @@
 package com.java.koffy.routing;
 
+import com.java.koffy.App;
+import com.java.koffy.container.Container;
 import com.java.koffy.http.KoffyRequest;
 import com.java.koffy.http.KoffyResponse;
 
@@ -23,6 +25,8 @@ public class Route {
 
     private List<String> parameters;
 
+    private List<Object> middlewares = new ArrayList<>();
+
     public Route(String uri, Function<KoffyRequest, KoffyResponse> action) {
         this.uri = uri;
         this.action = action;
@@ -41,6 +45,26 @@ public class Route {
         return action;
     }
 
+    public List<?> getMiddlewares() {
+        return middlewares;
+    }
+
+    public void setMiddlewares(ArrayList<Class<?>> middlewares) {
+        this.middlewares = middlewares
+                .stream()
+                .map(clazz -> {
+                    try {
+                        return clazz.getDeclaredConstructor().newInstance();
+                    } catch (Exception e) {
+                        throw new RuntimeException("Failed to create instance for " + clazz.getName(), e);
+                    }
+                }).collect(Collectors.toList());
+    }
+
+    public boolean hasMiddlewares() {
+        return !middlewares.isEmpty();
+    }
+
     public boolean matches(String uri) {
         return Pattern.compile(String.format("^%s/?$", regex)).matcher(uri).matches();
     }
@@ -54,6 +78,10 @@ public class Route {
 
         // Converting List<String> parameters and List<String> arguments to a HashMap (Combining)
         return IntStream.range(0, parameters.size()).boxed().collect(Collectors.toMap(parameters::get, arguments::get));
+    }
+
+    public static Route get(String uri, Function<KoffyRequest, KoffyResponse> action) {
+        return Container.resolve(App.class).router().get(uri, action);
     }
 
     private List<String> extractMatchGroups(String uri) {

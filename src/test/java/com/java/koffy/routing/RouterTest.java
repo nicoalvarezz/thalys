@@ -5,7 +5,6 @@ import com.java.koffy.server.ServerImpl;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.KoffyRequest;
 import com.java.koffy.http.KoffyResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -40,7 +39,7 @@ public class RouterTest {
     }
 
     private String actualContent() {
-        return router.resolve(mockRequest.getUri(), mockRequest.getMethod()).getAction().apply(mockRequest).getContent();
+        return router.resolveRoute(mockRequest.getUri(), mockRequest.getMethod()).getAction().apply(mockRequest).getContent();
     }
 
     @Test

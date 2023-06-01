@@ -26,8 +26,10 @@ public class Router {
         }
     }
 
-    private void registerRoute(HttpMethod method, String uri, Function<KoffyRequest, KoffyResponse> action) {
-        routes.get(method).add(new Route(uri, action));
+    private Route registerRoute(HttpMethod method, String uri, Function<KoffyRequest, KoffyResponse> action) {
+        Route route = new Route(uri, action);
+        routes.get(method).add(route);
+        return route;
     }
 
     /**
@@ -35,8 +37,8 @@ public class Router {
      * @param uri request URI
      * @param action URI action
      */
-    public void get(String uri, Function<KoffyRequest, KoffyResponse> action) {
-        registerRoute(HttpMethod.GET, uri, action);
+    public Route get(String uri, Function<KoffyRequest, KoffyResponse> action) {
+        return registerRoute(HttpMethod.GET, uri, action);
     }
 
     /**
@@ -44,8 +46,8 @@ public class Router {
      * @param uri request URI
      * @param action URI action
      */
-    public void post(String uri, Function<KoffyRequest, KoffyResponse> action) {
-        registerRoute(HttpMethod.POST, uri, action);
+    public Route post(String uri, Function<KoffyRequest, KoffyResponse> action) {
+        return registerRoute(HttpMethod.POST, uri, action);
     }
 
     /**
@@ -53,8 +55,8 @@ public class Router {
      * @param uri request URI
      * @param action URI action
      */
-    public void put(String uri, Function<KoffyRequest, KoffyResponse> action) {
-        registerRoute(HttpMethod.PUT, uri, action);
+    public Route put(String uri, Function<KoffyRequest, KoffyResponse> action) {
+        return registerRoute(HttpMethod.PUT, uri, action);
     }
 
     /**
@@ -62,8 +64,8 @@ public class Router {
      * @param uri request URI
      * @param action URI action
      */
-    public void patch(String uri, Function<KoffyRequest, KoffyResponse> action) {
-        registerRoute(HttpMethod.PATCH, uri, action);
+    public Route patch(String uri, Function<KoffyRequest, KoffyResponse> action) {
+        return registerRoute(HttpMethod.PATCH, uri, action);
     }
 
     /**
@@ -71,8 +73,8 @@ public class Router {
      * @param uri request URI
      * @param action URI action
      */
-    public void delete(String uri, Function<KoffyRequest, KoffyResponse> action) {
-        registerRoute(HttpMethod.DELETE, uri, action);
+    public Route delete(String uri, Function<KoffyRequest, KoffyResponse> action) {
+        return registerRoute(HttpMethod.DELETE, uri, action);
     }
 
     /**
@@ -82,12 +84,20 @@ public class Router {
      * @return {@link Route}
      * @throws HttpNotFoundException http not found
      */
-    public Route resolve(String uri, HttpMethod method) {
+    public Route resolveRoute(String uri, HttpMethod method) {
         for (Route route : routes.get(method)) {
             if (route.matches(uri)) {
                 return route;
             }
         }
         throw new HttpNotFoundException("Route not found");
+    }
+
+    public Function<KoffyRequest, KoffyResponse> resolve(KoffyRequest request) {
+        Route route = request.getRoute();
+//        if (route.hasMiddlewares()) {
+//            // Run middlewares
+//        }
+        return route.getAction();
     }
 }
