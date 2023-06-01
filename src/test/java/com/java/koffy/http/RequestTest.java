@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +16,7 @@ public class RequestTest {
     @Test
     public void testRequestReturnsDataObtainedFromServer() {
         String uri = "/test/route";
-        app.router().post(uri, (request -> KoffyResponse.textResponse(200, "POST OK")));
+        app.router().post(uri, (request -> KoffyResponse.textResponse("POST OK").status(200).build()));
 
         Map<String, String> queryParams = new HashMap<>() {{
             put("a", "1");
@@ -45,7 +44,7 @@ public class RequestTest {
     @Test
     public void testRequestPostDataReturnsValueIfKeyGiven() {
         String uri = "/test/route";
-        app.router().post(uri, (request -> KoffyResponse.textResponse(200, "POST OK")));
+        app.router().post(uri, (request -> KoffyResponse.textResponse("POST OK").status(200).build()));
         Map<String, String> postData = new HashMap<>() {{
             put("post", "test");
             put("foo", "bar");
@@ -70,7 +69,7 @@ public class RequestTest {
     @Test
     public void testRequestQueryDataReturnsValueIfKeyGiven() {
         String uri = "/test/route";
-        app.router().post(uri, (request -> KoffyResponse.textResponse(200, "POST OK")));
+        app.router().post(uri, (request -> KoffyResponse.textResponse("POST OK").status(200).build()));
         Map<String, String> queryParams = new HashMap<>() {{
             put("a", "1");
             put("test", "foo");
@@ -95,7 +94,7 @@ public class RequestTest {
     @Test
     public void testRouteParams() {
         App app = App.bootstrap();
-        app.router().get("/test/{test}/foo/{bar}", (request) -> KoffyResponse.textResponse(200, "GET OK"));
+        app.router().get("/test/{test}/foo/{bar}", (request) -> KoffyResponse.textResponse("GET OK").status(200).build());
         String uri = "/test/1/foo/2";
 
         KoffyRequest request = KoffyRequest.builder()

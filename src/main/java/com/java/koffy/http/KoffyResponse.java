@@ -18,7 +18,7 @@ public final class KoffyResponse {
     /**
      * Response HTTP headers.
      */
-    private Map<String, String> headers;
+    private Map<Header, String> headers;
 
     /**
      * Response content.
@@ -43,7 +43,7 @@ public final class KoffyResponse {
      * Return the HTTP headers of the response.
      * @return {@link Map} HTTP headers of the response
      */
-    public Map<String, String> getHeaders() {
+    public Map<Header, String> getHeaders() {
         return headers;
     }
 
@@ -59,7 +59,7 @@ public final class KoffyResponse {
      * Delete a specific header form the response.
      * @param header header name to be removed
      */
-    public void removeHeader(String header) {
+    public void removeHeader(Header header) {
         headers.remove(header);
     }
 
@@ -69,8 +69,8 @@ public final class KoffyResponse {
      * @param content content of the response
      * @return {@link KoffyResponse object with given status, and given content in json format
      */
-    public static KoffyResponse jsonResponse(int status, Map<String, String> content) {
-        return new KoffyResponseFactory().response(status, ContentType.JSON.get(),  new JSONObject(content).toString());
+    public static Builder jsonResponse(Map<String, String> content) {
+        return new KoffyResponseFactory().response(ContentType.JSON.get(), new JSONObject(content).toString());
     }
 
     /**
@@ -79,8 +79,8 @@ public final class KoffyResponse {
      * @param text content of the response
      * @return {@link KoffyResponse} object with given status, and given data in text format
      */
-    public static KoffyResponse textResponse(int status, String text) {
-        return new KoffyResponseFactory().response(status, ContentType.TEXT.get(), text);
+    public static Builder textResponse(String text) {
+        return new KoffyResponseFactory().response(ContentType.TEXT.get(), text);
     }
 
     /**
@@ -89,32 +89,11 @@ public final class KoffyResponse {
      * @return {@link KoffyResponse} object in the form of redirect
      */
     public static KoffyResponse redirectResponse(String uri) {
-        return new KoffyResponseFactory().response(302, Header.LOCATION.get(), uri, null);
-    }
-
-    /**
-     * Return a {@link KoffyResponse} object with multiple headers.
-     * @param status HTTP status code
-     * @param headers {@link Map} Response headers
-     * @param content Response content
-     * @return {@link KoffyResponse} object with given status,given headers and content
-     */
-    public static KoffyResponse textResponseWithMultipleHeaders(int status,
-                                                                Map<String, String> headers, String content) {
-        return new KoffyResponseFactory().response(status, ContentType.TEXT.get(), headers, content);
-    }
-
-    /**
-     * Return a {@link KoffyResponse} object with multiple headers in json format.
-     * @param status HTTP status code
-     * @param headers {@link Map} Response headers
-     * @param content Response content
-     * @return {@link KoffyResponse} object with given status,given headers and content
-     */
-    public static KoffyResponse jsonResponseWithMultipleHeaders(int status,
-                                        Map<String, String> headers, Map<String, String> content) {
-        return new KoffyResponseFactory().response(status,
-                ContentType.JSON.get(), headers,  new JSONObject(content).toString());
+        return new KoffyResponseFactory()
+                .response()
+                .status(302)
+                .header(Header.LOCATION, uri)
+                .build();
     }
 
     /**
@@ -139,7 +118,7 @@ public final class KoffyResponse {
         /**
          * Response HTTP headers.
          */
-        private Map<String, String> headers = new HashMap<>();
+        private Map<Header, String> headers = new HashMap<>();
 
         /**
          * Response content.
@@ -166,8 +145,8 @@ public final class KoffyResponse {
          * @param value header value
          * @return Builder of {@link KoffyResponse} instance
          */
-        public Builder header(String name, String value) {
-            this.headers.put(name.toLowerCase(), value);
+        public Builder header(Header name, String value) {
+            this.headers.put(name, value);
             return this;
         }
 
@@ -177,7 +156,7 @@ public final class KoffyResponse {
          * @param headers Map containing all the headers and their respective values for the response
          * @return Builder of {@link KoffyResponse} instance
          */
-        public Builder headers(Map<String, String> headers) {
+        public Builder headers(Map<Header, String> headers) {
             this.headers = headers;
             return this;
         }
@@ -198,7 +177,7 @@ public final class KoffyResponse {
          * @return Builder of the {@link KoffyResponse} instance
          */
         public Builder contentType(String contentType) {
-            headers.put(Header.CONTENT_TYPE.get(), contentType);
+            headers.put(Header.CONTENT_TYPE, contentType);
             return this;
         }
 
@@ -216,57 +195,27 @@ public final class KoffyResponse {
      * This class is used to implement the factory pattern
      */
     static class KoffyResponseFactory implements ResponseFactory {
-
-        // TODO: Refactor response factory implementation using setters instead of current implementation
         /**
-         * Response method that takes the status code, content and only the content-type header.
-         * @param status status code of the response
+         * Response method that takes the content-type and content.
+         * Returns response builder with given content-type and content.
          * @param contentType value of the content type header
          * @param content content of the response
-         * @return {@link KoffyResponse}
+         * @return {@link Builder}
          */
         @Override
-        public KoffyResponse response(int status, String contentType, String content) {
+        public Builder response(String contentType, String content) {
             return KoffyResponse.builder()
-                    .status(status)
                     .contentType(contentType)
-                    .content(content)
-                    .build();
+                    .content(content);
         }
 
         /**
-         * Response method that takes the status code, content, and a single header adn its value.
-         * @param status status code of the response
-         * @param name header name
-         * @param value header value
-         * @param content content of the response
-         * @return {@link KoffyResponse}
+         * Response method that returns empty response builder.
+         * @return {@link Builder}
          */
         @Override
-        public KoffyResponse response(int status, String name, String value, String content) {
-            return KoffyResponse.builder()
-                    .status(status)
-                    .content(content)
-                    .header(name, value)
-                    .build();
-        }
-
-        /**
-         * Response method that takes the status code, the content,
-         * and all the headers required for the response in one go.
-         * @param status status code of the response
-         * @param headers Map containing all the headers and their respective values for the response
-         * @param content content of the response
-         * @return {@link KoffyResponse}
-         */
-        @Override
-        public KoffyResponse response(int status, String contentType, Map<String, String> headers, String content) {
-            return KoffyResponse.builder()
-                    .status(status)
-                    .headers(headers)
-                    .contentType(contentType)
-                    .content(content)
-                    .build();
+        public Builder response() {
+            return KoffyResponse.builder();
         }
     }
 }

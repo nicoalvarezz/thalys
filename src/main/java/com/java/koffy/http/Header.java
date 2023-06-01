@@ -14,6 +14,7 @@ public enum Header {
     CACHE_CONTROL("cache-control"),
     CONTENT_LENGTH("content-length"),
     IF_MODIFIED_SINCE("if-modified-since"),
+    SERVER("server"),
     ETAG("etag");
 
     private final String header;

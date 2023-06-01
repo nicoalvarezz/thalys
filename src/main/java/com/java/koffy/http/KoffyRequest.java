@@ -4,6 +4,7 @@ import com.java.koffy.App;
 import com.java.koffy.container.Container;
 import com.java.koffy.routing.Route;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ public final class KoffyRequest {
     /**
      * HTTP request route.
      */
-    private Route route;
+    private Optional<Route> route;
 
     /**
      * HTTP request method.
@@ -37,6 +38,9 @@ public final class KoffyRequest {
      */
     private Map<String, String> query;
 
+    /**
+     * HTTP request headers.
+     */
     private Map<Header, String> headers;
 
     private KoffyRequest(Builder builder) {
@@ -60,7 +64,7 @@ public final class KoffyRequest {
      * Retrieve the route of the request.
      * @return {@link Route}
      */
-    public Route getRoute() {
+    public Optional<Route> getRoute() {
         return route;
     }
 
@@ -131,7 +135,10 @@ public final class KoffyRequest {
      * @return {@link Map} with the route parameters
      */
     public Map<String, String> routeParams() {
-        return route.parseParameter(uri);
+        if (route.isPresent()) {
+            return route.get().parseParameter(uri);
+        }
+        return new HashMap<>();
     }
 
     /**
@@ -217,6 +224,11 @@ public final class KoffyRequest {
             return this;
         }
 
+        /**
+         * Set headers of the new instance {@link KoffyRequest}.
+         * @param headers {@link Map} containing request headers
+         * @return Builder of {@link KoffyRequest} instance
+         */
         public Builder headers(Map<Header, String> headers) {
             this.headers = headers;
             return this;

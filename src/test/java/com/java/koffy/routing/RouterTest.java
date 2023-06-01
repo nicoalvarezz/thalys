@@ -35,11 +35,11 @@ public class RouterTest {
     }
 
     private KoffyResponse testsJsonResponse(String key, String value) {
-        return KoffyResponse.jsonResponse(200, new HashMap<>() {{ put(key, value); }});
+        return KoffyResponse.jsonResponse(new HashMap<>() {{ put(key, value); }}).status(200).build();
     }
 
     private String actualContent() {
-        return router.resolveRoute(mockRequest.getUri(), mockRequest.getMethod()).getAction().apply(mockRequest).getContent();
+        return router.resolveRoute(mockRequest.getUri(), mockRequest.getMethod()).get().getAction().apply(mockRequest).getContent();
     }
 
     @Test

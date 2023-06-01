@@ -8,6 +8,7 @@ import com.java.koffy.http.KoffyResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -84,20 +85,23 @@ public class Router {
      * @return {@link Route}
      * @throws HttpNotFoundException http not found
      */
-    public Route resolveRoute(String uri, HttpMethod method) {
+    public Optional<Route> resolveRoute(String uri, HttpMethod method) {
         for (Route route : routes.get(method)) {
             if (route.matches(uri)) {
-                return route;
+                return Optional.of(route);
             }
         }
-        throw new HttpNotFoundException("Route not found");
+        return Optional.empty();
     }
 
     public Function<KoffyRequest, KoffyResponse> resolve(KoffyRequest request) {
-        Route route = request.getRoute();
-//        if (route.hasMiddlewares()) {
-//            // Run middlewares
-//        }
-        return route.getAction();
+        if (request.getRoute().isPresent()) {
+            Route route = request.getRoute().get();
+    //        if (route.hasMiddlewares()) {
+    //            // Run middlewares
+    //        }
+                return route.getAction();
+        }
+        throw new HttpNotFoundException("Route not found");
     }
 }

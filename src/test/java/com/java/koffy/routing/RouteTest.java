@@ -39,7 +39,7 @@ public class RouteTest {
     }
 
     private KoffyResponse testsJsonResponse(String key, String value) {
-        return KoffyResponse.jsonResponse(200, new HashMap<>() {{ put(key, value); }});
+        return KoffyResponse.jsonResponse(new HashMap<>() {{ put(key, value); }}).status(200).build();
     }
 
     @ParameterizedTest

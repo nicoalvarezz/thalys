@@ -116,8 +116,8 @@ public class NativeJettyServer extends AbstractHandler implements ServerImpl {
             httpServletResponse.getWriter().println(koffyResponse.getContent());
         }
 
-        for (String header : koffyResponse.getHeaders().keySet()) {
-            httpServletResponse.addHeader(header, koffyResponse.getHeaders().get(header));
+        for (Header header : koffyResponse.getHeaders().keySet()) {
+            httpServletResponse.addHeader(header.get(), koffyResponse.getHeaders().get(header));
         }
         request.setHandled(true);
     }
@@ -147,7 +147,7 @@ public class NativeJettyServer extends AbstractHandler implements ServerImpl {
         try {
             return router.resolve(koffyRequest).apply(koffyRequest);
         } catch (HttpNotFoundException e) {
-            return KoffyResponse.textResponse(404, e.getMessage());
+            return KoffyResponse.textResponse(e.getMessage()).status(404).build();
         }
     }
 

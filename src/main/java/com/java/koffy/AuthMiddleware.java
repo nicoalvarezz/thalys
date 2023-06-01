@@ -18,9 +18,9 @@ public class AuthMiddleware implements Middleware {
     public KoffyResponse handle(KoffyRequest request, Supplier<KoffyResponse> next) {
         if (request.getHeaders(Header.AUTHORIZATION).isEmpty() ||
                 !request.getHeaders(Header.AUTHORIZATION).get().equals("test")) {
-            return KoffyResponse.jsonResponse(401, new HashMap<>() {{
+            return KoffyResponse.jsonResponse(new HashMap<>() {{
                 put("message", "Not authenticated");
-            }});
+            }}).build();
         }
         return next.get();
     }

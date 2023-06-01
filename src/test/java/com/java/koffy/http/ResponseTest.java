@@ -20,12 +20,12 @@ public class ResponseTest {
             put("test", "foo");
             put("bar", "test");
         }};
-        KoffyResponse response = KoffyResponse.jsonResponse(200, content);
+        KoffyResponse response = KoffyResponse.jsonResponse(content).status(200).build();
 
         int expectedStatus = 200;
         String expectedJson = jsonEncode(content);
-        Map<String, String> expectedHeaders = new HashMap<>() {{
-            put(Header.CONTENT_TYPE.get(), ContentType.JSON.get());
+        Map<Header, String> expectedHeaders = new HashMap<>() {{
+            put(Header.CONTENT_TYPE, ContentType.JSON.get());
         }};
 
         assertEquals(expectedStatus, response.getStatus());
@@ -37,11 +37,11 @@ public class ResponseTest {
     @Test
     public void testTextResponse() {
         String content = "test message";
-        KoffyResponse response = KoffyResponse.textResponse(200, content);
+        KoffyResponse response = KoffyResponse.textResponse(content).status(200).build();
 
         int expectedStatus = 200;
-        Map<String, String> expectedHeaders = new HashMap<>() {{
-            put(Header.CONTENT_TYPE.get(), ContentType.TEXT.get());
+        Map<Header, String> expectedHeaders = new HashMap<>() {{
+            put(Header.CONTENT_TYPE, ContentType.TEXT.get());
         }};
 
         assertEquals(expectedStatus, response.getStatus());
@@ -55,23 +55,23 @@ public class ResponseTest {
         KoffyResponse response = KoffyResponse.redirectResponse(uri);
 
         int expectedStatus = 302;
-        Map<String, String> expectedHeaders = new HashMap<>() {{
-            put("location", uri);
+        Map<Header, String> expectedHeaders = new HashMap<>() {{
+            put(Header.LOCATION, uri);
         }};
 
         assertEquals(expectedStatus, response.getStatus());
-        assertNull(response.getContent());
+        assertEquals("", response.getContent());
         assertEquals(expectedHeaders, response.getHeaders());
     }
 
     @Test
     public void testDeleteResponseHeader() {
         String content = "test content";
-        Map<String, String> headers = new HashMap<>() {{
-            put(Header.CONTENT_TYPE.get(), ContentType.JSON.get());
-            put("Server", "Jetty");
+        Map<Header, String> headers = new HashMap<>() {{
+            put(Header.CONTENT_TYPE, ContentType.JSON.get());
+            put(Header.SERVER, "Jetty");
         }};
-        KoffyResponse response = KoffyResponse.textResponseWithMultipleHeaders(200, headers, content);
+        KoffyResponse response = KoffyResponse.textResponse(content).status(200).headers(headers).build();
 
         int expectedStatus = 200;
 
@@ -80,7 +80,7 @@ public class ResponseTest {
         assertEquals(headers, response.getHeaders());
         assertEquals(2, response.getHeaders().size());
 
-        response.removeHeader("Server");
+        response.removeHeader(Header.SERVER);
 
         assertEquals(expectedStatus, response.getStatus());
         assertEquals(content, response.getContent());
@@ -95,11 +95,11 @@ public class ResponseTest {
             put("test", "foo");
             put("test2", "bar");
         }};
-        Map<String, String> headers = new HashMap<>() {{
-            put(Header.CONTENT_TYPE.get(), ContentType.JSON.get());
-            put("Server", "Jetty");
+        Map<Header, String> headers = new HashMap<>() {{
+            put(Header.CONTENT_TYPE, ContentType.JSON.get());
+            put(Header.SERVER, "Jetty");
         }};
-        KoffyResponse response = KoffyResponse.jsonResponseWithMultipleHeaders(200, headers, content);
+        KoffyResponse response = KoffyResponse.jsonResponse(content).status(200).headers(headers).build();
 
         int expectedStatus = 200;
         String expectedJson = jsonEncode(content);
@@ -109,7 +109,7 @@ public class ResponseTest {
         assertEquals(headers, response.getHeaders());
         assertEquals(2, response.getHeaders().size());
 
-        response.removeHeader("Server");
+        response.removeHeader(Header.SERVER);
 
         assertEquals(expectedStatus, response.getStatus());
         assertEquals(expectedJson, response.getContent());
