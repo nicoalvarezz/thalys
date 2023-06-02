@@ -63,6 +63,10 @@ public final class KoffyResponse {
         headers.remove(header);
     }
 
+    public void setHeader(Header header, String value) {
+        headers.put(header, value);
+    }
+
     /**
      * Return a {@link KoffyResponse object with content in application/json format.
      * @param status status code of the response

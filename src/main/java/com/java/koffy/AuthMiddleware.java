@@ -6,7 +6,7 @@ import com.java.koffy.http.KoffyResponse;
 import com.java.koffy.http.Middleware;
 
 import java.util.HashMap;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class AuthMiddleware implements Middleware {
 
@@ -15,13 +15,13 @@ public class AuthMiddleware implements Middleware {
     }
 
     @Override
-    public KoffyResponse handle(KoffyRequest request, Supplier<KoffyResponse> next) {
+    public KoffyResponse handle(KoffyRequest request, Function<KoffyRequest, KoffyResponse> next) {
         if (request.getHeaders(Header.AUTHORIZATION).isEmpty() ||
                 !request.getHeaders(Header.AUTHORIZATION).get().equals("test")) {
             return KoffyResponse.jsonResponse(new HashMap<>() {{
                 put("message", "Not authenticated");
             }}).build();
         }
-        return next.get();
+        return next.apply(request);
     }
 }

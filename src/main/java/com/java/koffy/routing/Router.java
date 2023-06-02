@@ -4,9 +4,11 @@ import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.HttpNotFoundException;
 import com.java.koffy.http.KoffyRequest;
 import com.java.koffy.http.KoffyResponse;
+import com.java.koffy.http.Middleware;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -94,14 +96,23 @@ public class Router {
         return Optional.empty();
     }
 
-    public Function<KoffyRequest, KoffyResponse> resolve(KoffyRequest request) {
+    public KoffyResponse resolve(KoffyRequest request) {
         if (request.getRoute().isPresent()) {
             Route route = request.getRoute().get();
-    //        if (route.hasMiddlewares()) {
-    //            // Run middlewares
-    //        }
-                return route.getAction();
+            if (route.hasMiddlewares()) {
+                return runMiddlewares(request, route.getMiddlewares(), route.getAction());
+            }
+            return route.getAction().apply(request);
         }
         throw new HttpNotFoundException("Route not found");
+    }
+
+    public KoffyResponse runMiddlewares(KoffyRequest request,
+                                        List<Middleware> middlewares, Function<KoffyRequest, KoffyResponse> target) {
+        if (middlewares.isEmpty()) {
+            return target.apply(request);
+        }
+        return middlewares.get(0).handle(request, (baseRequest)
+                -> runMiddlewares(request, middlewares.subList(1, middlewares.size()), target));
     }
 }

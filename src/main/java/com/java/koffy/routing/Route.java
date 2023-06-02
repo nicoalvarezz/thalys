@@ -4,6 +4,7 @@ import com.java.koffy.App;
 import com.java.koffy.container.Container;
 import com.java.koffy.http.KoffyRequest;
 import com.java.koffy.http.KoffyResponse;
+import com.java.koffy.http.Middleware;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +26,7 @@ public class Route {
 
     private List<String> parameters;
 
-    private List<Object> middlewares = new ArrayList<>();
+    private List<Middleware> middlewares = new ArrayList<>();
 
     public Route(String uri, Function<KoffyRequest, KoffyResponse> action) {
         this.uri = uri;
@@ -45,7 +46,7 @@ public class Route {
         return action;
     }
 
-    public List<?> getMiddlewares() {
+    public List<Middleware> getMiddlewares() {
         return middlewares;
     }
 
@@ -54,7 +55,7 @@ public class Route {
                 .stream()
                 .map(clazz -> {
                     try {
-                        return clazz.getDeclaredConstructor().newInstance();
+                        return clazz.asSubclass(Middleware.class).getDeclaredConstructor().newInstance();
                     } catch (Exception e) {
                         throw new RuntimeException("Failed to create instance for " + clazz.getName(), e);
                     }

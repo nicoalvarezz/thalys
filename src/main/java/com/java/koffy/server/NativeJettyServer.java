@@ -145,7 +145,7 @@ public class NativeJettyServer extends AbstractHandler implements ServerImpl {
 
     private KoffyResponse createResponse() {
         try {
-            return router.resolve(koffyRequest).apply(koffyRequest);
+            return router.resolve(koffyRequest);
         } catch (HttpNotFoundException e) {
             return KoffyResponse.textResponse(e.getMessage()).status(404).build();
         }
