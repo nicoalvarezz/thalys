@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * HTTP Request data structure that is received from the user request.
+ * HTTP Request data structure.
  */
 public final class KoffyRequest {
 
@@ -62,7 +62,7 @@ public final class KoffyRequest {
 
     /**
      * Retrieve the route of the request.
-     * @return {@link Route}
+     * @return {@link Optional<Route>}
      */
     public Optional<Route> getRoute() {
         return route;
@@ -118,7 +118,11 @@ public final class KoffyRequest {
         return headers;
     }
 
-
+    /**
+     * Retrieve header value of specific header of the request.
+     * @param header {@link Header}
+     * @return {@link Optional<String>}
+     */
     public Optional<String> getHeader(Header header) {
         return Optional.ofNullable(headers.get(header));
     }

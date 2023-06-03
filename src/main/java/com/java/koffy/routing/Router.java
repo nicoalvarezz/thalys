@@ -29,6 +29,12 @@ public class Router {
         }
     }
 
+    /**
+     * Register {@link Route} to the router.
+     * @param method {@link HttpMethod}
+     * @param action {@link Function<KoffyRequest, KoffyResponse>} action assigned to the route
+     * @return {@link Route}
+     */
     private Route registerRoute(HttpMethod method, String uri, Function<KoffyRequest, KoffyResponse> action) {
         Route route = new Route(uri, action);
         routes.get(method).add(route);
@@ -81,7 +87,9 @@ public class Router {
     }
 
     /**
-     * Resolve the route of the request.
+     * Resolve the route of the request. Checks if the route matches the URI,
+     * and if so returns the {@link Route} assigned to a specific URI and Method.
+     * If no route is found {@link Optional} is returned
      * @param uri {@link String}
      * @param method {@link HttpMethod}
      * @return {@link Route}
@@ -96,6 +104,13 @@ public class Router {
         return Optional.empty();
     }
 
+    /**
+     * Returns the response assigned to the action of the {@link Route}.
+     * This method is also in charge of running the middlewares if this {@link Route} has any middleware assigned.
+     * @param request {@link KoffyRequest}
+     * @return {@link KoffyResponse}
+     * @throws HttpNotFoundException Route not found.
+     */
     public KoffyResponse resolve(KoffyRequest request) {
         if (request.getRoute().isPresent()) {
             Route route = request.getRoute().get();
@@ -107,6 +122,13 @@ public class Router {
         throw new HttpNotFoundException("Route not found");
     }
 
+    /**
+     * Execute the middlewares assigned to the {@link Route}. Uses recursion to run the stack of middlewares.
+     * @param request {@link KoffyRequest}
+     * @param middlewares {@link List<Middleware>}
+     * @param target {@link Function<KoffyRequest, KoffyResponse>} action of the middleware
+     * @return {@link KoffyResponse}
+     */
     public KoffyResponse runMiddlewares(KoffyRequest request,
                                         List<Middleware> middlewares, Function<KoffyRequest, KoffyResponse> target) {
         if (middlewares.isEmpty()) {

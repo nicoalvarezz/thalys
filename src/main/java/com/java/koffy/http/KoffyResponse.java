@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * HTTP Response data structure that is sent to the client.
+ * HTTP Response data structure.
  */
 public final class KoffyResponse {
 

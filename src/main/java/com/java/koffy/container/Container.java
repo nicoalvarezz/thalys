@@ -4,12 +4,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Container class that allows storing and retrieving singleton instances of classes.
+ * Container class that allows storing and retrieving singleton instances.
  */
 public class Container {
 
     /**
-     * Map containing instances of singleton instances. It uses {@link ConcurrentHashMap} to ensure thread safety.
+     * Map containing instances of singletons. It uses {@link ConcurrentHashMap} to ensure thread safety.
      */
     private static final Map<Class<?>, Object> INSTANCES = new ConcurrentHashMap<>();
 

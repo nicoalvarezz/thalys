@@ -122,18 +122,17 @@ public class NativeJettyServer extends AbstractHandler implements ServerImpl {
         request.setHandled(true);
     }
 
-    private KoffyRequest createRequest(Request request,
-                                       HttpServletRequest httpServletRequest) throws IOException {
+    private KoffyRequest createRequest(Request request, HttpServletRequest httpServletRequest) throws IOException {
         return KoffyRequest.builder()
                 .uri(request.getRequestURI())
                 .method(HttpMethod.valueOf(request.getMethod()))
-                .headers(resolveHeaders(httpServletRequest))
+                .headers(resolveHeaders(request))
                 .postData(parsePostData(httpServletRequest))
-                .queryData(parseQueryData(httpServletRequest))
+                .queryData(parseQueryData(request))
                 .build();
     }
 
-    private Map<Header, String> resolveHeaders(HttpServletRequest httpServletRequest) {
+    private Map<Header, String> resolveHeaders(Request httpServletRequest) {
         Enumeration<String> headerNames = httpServletRequest.getHeaderNames();
         Map<Header, String> headers = new HashMap<>();
         while (headerNames.hasMoreElements()) {
@@ -164,7 +163,7 @@ public class NativeJettyServer extends AbstractHandler implements ServerImpl {
         return MAPPER.readValue(data, Map.class);
     }
 
-    private Map<String, String> parseQueryData(HttpServletRequest request) {
+    private Map<String, String> parseQueryData(Request request) {
         if (request.getQueryString() != null) {
             return parseUrlEncoded(request.getQueryString());
         }
