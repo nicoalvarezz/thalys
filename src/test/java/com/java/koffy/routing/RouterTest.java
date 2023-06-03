@@ -1,6 +1,8 @@
 package com.java.koffy.routing;
 
 import com.java.koffy.App;
+import com.java.koffy.http.Header;
+import com.java.koffy.http.Middleware;
 import com.java.koffy.server.ServerImpl;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.KoffyRequest;
@@ -10,11 +12,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -140,5 +145,59 @@ public class RouterTest {
         assertEquals(uri, mockServer.getRequest().getUri());
         assertEquals(HttpMethod.DELETE, mockServer.getRequest().getMethod());
         assertEquals(testsJsonResponse("message", actionReturn).getContent(), actualContent());
+    }
+
+    @Test
+    public void testRunMiddlewares() {
+        String uri = "/test-middlewares";
+        KoffyResponse expectedResponse = testsJsonResponse("message", "response");
+
+        Route route = router.get(uri, (request) -> expectedResponse);
+        route.setMiddlewares(new ArrayList(){{
+            add(MockMiddleware.class);
+        }});
+
+        mockingRouterHandling(uri, HttpMethod.GET);
+        when(mockRequest.getRoute()).thenReturn(Optional.of(route));
+
+        assertEquals(expectedResponse, router.resolve(mockRequest));
+        assertEquals(expectedResponse.getHeader(Header.SERVER).get(), "fake-test-server");
+    }
+
+    @Test
+    public void testMiddlewareStackCanBeStopped() {
+        String uri = "/test-middlewares";
+        KoffyResponse unreachableResponse = testsJsonResponse("message", "unreachable");
+
+        Route route = router.get(uri, (request) -> unreachableResponse);
+        route.setMiddlewares(new ArrayList(){{
+            add(MockMiddleware2.class);
+            add(MockMiddleware.class);
+        }});
+
+        when(mockRequest.getRoute()).thenReturn(Optional.of(route));
+        KoffyResponse response = router.resolve(mockRequest);
+
+        assertEquals("Stopped", response.getContent());
+        assertFalse(response.getHeader(Header.SERVER).isPresent());
+    }
+}
+
+
+class MockMiddleware implements Middleware {
+
+    @Override
+    public KoffyResponse handle(KoffyRequest request, Function<KoffyRequest, KoffyResponse> next) {
+        KoffyResponse response = next.apply(request);
+        response.setHeader(Header.SERVER, "fake-test-server");
+        return response;
+    }
+}
+
+class MockMiddleware2 implements Middleware {
+
+    @Override
+    public KoffyResponse handle(KoffyRequest request, Function<KoffyRequest, KoffyResponse> next) {
+        return KoffyResponse.textResponse("Stopped").build();
     }
 }

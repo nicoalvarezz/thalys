@@ -118,16 +118,9 @@ public final class KoffyRequest {
         return headers;
     }
 
-    /**
-     * Retrieve the value of specific header of the request.
-     * @param header {@link Header} header
-     * @return {@link Optional<String>} header value
-     */
-    public Optional<String> getHeaders(Header header) {
-        if (header != null) {
-            return Optional.ofNullable(headers.get(header));
-        }
-        return Optional.empty();
+
+    public Optional<String> getHeader(Header header) {
+        return Optional.ofNullable(headers.get(header));
     }
 
     /**

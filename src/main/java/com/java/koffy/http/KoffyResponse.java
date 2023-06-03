@@ -4,6 +4,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * HTTP Response data structure that is sent to the client.
@@ -45,6 +46,16 @@ public final class KoffyResponse {
      */
     public Map<Header, String> getHeaders() {
         return headers;
+    }
+
+    /**
+     * Return a specific HTTP header from the response. If the header does not exist,
+     * the method will return {@link Optional}
+     * @param header
+     * @return {@link Optional<String>}
+     */
+    public Optional<String> getHeader(Header header) {
+        return Optional.ofNullable(headers.get(header));
     }
 
     /**
