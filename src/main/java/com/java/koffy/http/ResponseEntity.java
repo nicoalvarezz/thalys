@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * HTTP Response data structure.
  */
-public final class KoffyResponse {
+public final class ResponseEntity {
 
     /**
      * Response HTTP status code.
@@ -26,7 +26,7 @@ public final class KoffyResponse {
      */
     private String content;
 
-    private KoffyResponse(Builder builder) {
+    private ResponseEntity(Builder builder) {
         this.status = builder.status;
         this.headers = builder.headers;
         this.content = builder.content;
@@ -79,32 +79,32 @@ public final class KoffyResponse {
     }
 
     /**
-     * Return a {@link KoffyResponse object with content in application/json format.
+     * Return a {@link ResponseEntity object with content in application/json format.
      * @param status status code of the response
      * @param content content of the response
-     * @return {@link KoffyResponse object with given status, and given content in json format
+     * @return {@link ResponseEntity object with given status, and given content in json format
      */
     public static Builder jsonResponse(Map<String, String> content) {
-        return new KoffyResponseFactory().response(ContentType.JSON.get(), new JSONObject(content).toString());
+        return new ResponseEntityFactory().response(ContentType.JSON.get(), new JSONObject(content).toString());
     }
 
     /**
-     * Return a {@link KoffyResponse object with content in text/plain format.
+     * Return a {@link ResponseEntity object with content in text/plain format.
      * @param HTTP status code of the response
      * @param text content of the response
-     * @return {@link KoffyResponse} object with given status, and given data in text format
+     * @return {@link ResponseEntity } object with given status, and given data in text format
      */
     public static Builder textResponse(String text) {
-        return new KoffyResponseFactory().response(ContentType.TEXT.get(), text);
+        return new ResponseEntityFactory().response(ContentType.TEXT.get(), text);
     }
 
     /**
-     * Return a {@link KoffyResponse object to redirect to other path.
+     * Return a {@link ResponseEntity object to redirect to other path.
      * @param uri path to be redirected
-     * @return {@link KoffyResponse} object in the form of redirect
+     * @return {@link ResponseEntity } object in the form of redirect
      */
-    public static KoffyResponse redirectResponse(String uri) {
-        return new KoffyResponseFactory()
+    public static ResponseEntity redirectResponse(String uri) {
+        return new ResponseEntityFactory()
                 .response()
                 .status(302)
                 .header(Header.LOCATION, uri)
@@ -120,8 +120,8 @@ public final class KoffyResponse {
     }
 
     /**
-     * Creates a new instance of {@link KoffyResponse}.
-     * This class is used to implement the builder pattern of {@link KoffyResponse}
+     * Creates a new instance of {@link ResponseEntity}.
+     * This class is used to implement the builder pattern of {@link ResponseEntity}
      */
     public static final class Builder {
 
@@ -145,7 +145,7 @@ public final class KoffyResponse {
         }
 
         /**
-         * Set the status code of the response of the new instance {@link KoffyResponse}.
+         * Set the status code of the response of the new instance {@link ResponseEntity}.
          * @param status status code of the response
          * @return Builder
          */
@@ -155,10 +155,10 @@ public final class KoffyResponse {
         }
 
         /**
-         * Set a single header and its value of the response for the new instance of {@link KoffyResponse}.
+         * Set a single header and its value of the response for the new instance of {@link ResponseEntity}.
          * @param name header name
          * @param value header value
-         * @return Builder of {@link KoffyResponse} instance
+         * @return Builder of {@link ResponseEntity} instance
          */
         public Builder header(Header name, String value) {
             this.headers.put(name, value);
@@ -167,9 +167,9 @@ public final class KoffyResponse {
 
 
         /**
-         * Set all the headers that the response will contain in one go for the new instance of {@link KoffyResponse}.
+         * Set all the headers that the response will contain in one go for the new instance of {@link ResponseEntity}.
          * @param headers Map containing all the headers and their respective values for the response
-         * @return Builder of {@link KoffyResponse} instance
+         * @return Builder of {@link ResponseEntity} instance
          */
         public Builder headers(Map<Header, String> headers) {
             this.headers = headers;
@@ -177,9 +177,9 @@ public final class KoffyResponse {
         }
 
         /**
-         * Set the content of the response for the new instance of {@link KoffyResponse}.
+         * Set the content of the response for the new instance of {@link ResponseEntity}.
          * @param content content of the response
-         * @return Builder of {@link KoffyResponse} instance
+         * @return Builder of {@link ResponseEntity} instance
          */
         public Builder content(String content) {
             this.content = content;
@@ -187,9 +187,9 @@ public final class KoffyResponse {
         }
 
         /**
-         * Set the content type header specifically for the new instance of {@link KoffyResponse}.
+         * Set the content type header specifically for the new instance of {@link ResponseEntity}.
          * @param contentType value of the content type header
-         * @return Builder of the {@link KoffyResponse} instance
+         * @return Builder of the {@link ResponseEntity} instance
          */
         public Builder contentType(String contentType) {
             headers.put(Header.CONTENT_TYPE, contentType);
@@ -197,11 +197,11 @@ public final class KoffyResponse {
         }
 
         /**
-         * Creates a new instance of {@link KoffyResponse}.
+         * Creates a new instance of {@link ResponseEntity}.
          * @return The new instance
          */
-        public KoffyResponse build() {
-            return new KoffyResponse(this);
+        public ResponseEntity build() {
+            return new ResponseEntity(this);
         }
     }
 
@@ -209,7 +209,7 @@ public final class KoffyResponse {
      * This class implements {@link ResponseFactory} interface to implement the different types of responses.
      * This class is used to implement the factory pattern
      */
-    static class KoffyResponseFactory implements ResponseFactory {
+    static class ResponseEntityFactory implements ResponseFactory {
         /**
          * Response method that takes the content-type and content.
          * Returns response builder with given content-type and content.
@@ -219,7 +219,7 @@ public final class KoffyResponse {
          */
         @Override
         public Builder response(String contentType, String content) {
-            return KoffyResponse.builder()
+            return ResponseEntity.builder()
                     .contentType(contentType)
                     .content(content);
         }
@@ -230,7 +230,7 @@ public final class KoffyResponse {
          */
         @Override
         public Builder response() {
-            return KoffyResponse.builder();
+            return ResponseEntity.builder();
         }
     }
 }

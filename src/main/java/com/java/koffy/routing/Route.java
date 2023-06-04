@@ -2,8 +2,8 @@ package com.java.koffy.routing;
 
 import com.java.koffy.App;
 import com.java.koffy.container.Container;
-import com.java.koffy.http.KoffyRequest;
-import com.java.koffy.http.KoffyResponse;
+import com.java.koffy.http.RequestEntity;
+import com.java.koffy.http.ResponseEntity;
 import com.java.koffy.http.Middleware;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class Route {
     /**
      * Action associated to this URI.
      */
-    private Function<KoffyRequest, KoffyResponse> action;
+    private Function<RequestEntity, ResponseEntity> action;
 
     /**
      * Regular expression used to match incoming request URIs.
@@ -43,7 +43,7 @@ public class Route {
      */
     private List<Middleware> middlewares = new ArrayList<>();
 
-    public Route(String uri, Function<KoffyRequest, KoffyResponse> action) {
+    public Route(String uri, Function<RequestEntity, ResponseEntity> action) {
         this.uri = uri;
         this.action = action;
         this.regex = Pattern.compile("\\{([^{}]+)\\}").matcher(uri).replaceAll("([a-zA-Z0-9]+)");
@@ -63,9 +63,9 @@ public class Route {
 
     /**
      * Return action associate tot this URI.
-     * @return {@link Function<KoffyRequest, KoffyResponse>}
+     * @return {@link Function< RequestEntity ,  ResponseEntity >}
      */
-    public Function<KoffyRequest, KoffyResponse> getAction() {
+    public Function<RequestEntity, ResponseEntity> getAction() {
         return action;
     }
 
@@ -132,7 +132,7 @@ public class Route {
         return IntStream.range(0, parameters.size()).boxed().collect(Collectors.toMap(parameters::get, arguments::get));
     }
 
-    public static Route get(String uri, Function<KoffyRequest, KoffyResponse> action) {
+    public static Route get(String uri, Function<RequestEntity, ResponseEntity> action) {
         return Container.resolve(App.class).router().get(uri, action);
     }
 

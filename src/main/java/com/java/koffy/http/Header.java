@@ -1,7 +1,7 @@
 package com.java.koffy.http;
 
 /**
- * HTTP Enum header class.
+ * HTTP header class.
  */
 public enum Header {
 

@@ -1,7 +1,7 @@
 package com.java.koffy.http;
 
 /**
- * Http Method enum class.
+ * Http method class.
  */
 public enum HttpMethod {
 

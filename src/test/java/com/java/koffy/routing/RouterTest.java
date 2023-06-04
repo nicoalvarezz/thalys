@@ -3,10 +3,10 @@ package com.java.koffy.routing;
 import com.java.koffy.App;
 import com.java.koffy.http.Header;
 import com.java.koffy.http.Middleware;
-import com.java.koffy.server.ServerImpl;
+import com.java.koffy.server.HttpServer;
 import com.java.koffy.http.HttpMethod;
-import com.java.koffy.http.KoffyRequest;
-import com.java.koffy.http.KoffyResponse;
+import com.java.koffy.http.RequestEntity;
+import com.java.koffy.http.ResponseEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -26,12 +26,12 @@ import static org.mockito.Mockito.when;
 public class RouterTest {
 
     private Router router = App.bootstrap().router();
-    private final ServerImpl mockServer = mock(ServerImpl.class);
-    private final KoffyRequest mockRequest = mock(KoffyRequest.class);
+    private final HttpServer mockServer = mock(HttpServer.class);
+    private final RequestEntity mockRequest = mock(RequestEntity.class);
 
     private void mockingRouterHandling(String uri, HttpMethod method) {
         when(mockServer.getRequest()).thenReturn(
-                KoffyRequest.builder()
+                RequestEntity.builder()
                     .uri(uri)
                     .method(method)
                     .build());
@@ -39,8 +39,8 @@ public class RouterTest {
         when(mockRequest.getUri()).thenReturn(uri);
     }
 
-    private KoffyResponse testsJsonResponse(String key, String value) {
-        return KoffyResponse.jsonResponse(new HashMap<>() {{ put(key, value); }}).status(200).build();
+    private ResponseEntity testsJsonResponse(String key, String value) {
+        return ResponseEntity.jsonResponse(new HashMap<>() {{ put(key, value); }}).status(200).build();
     }
 
     private String actualContent() {
@@ -50,7 +50,7 @@ public class RouterTest {
     @Test
     public void testResolveBasicRoute() {
         String uri = "/test";
-        Function<KoffyRequest, KoffyResponse> action = (request) -> testsJsonResponse("message", "test");
+        Function<RequestEntity, ResponseEntity> action = (request) -> testsJsonResponse("message", "test");
 
         router.get(uri, action);
         mockingRouterHandling(uri, HttpMethod.GET);
@@ -62,7 +62,7 @@ public class RouterTest {
 
     @Test
     public void tesResolveMultipleBasicRoutes() {
-        HashMap<String, Function<KoffyRequest, KoffyResponse>> routes = new HashMap<>() {{
+        HashMap<String, Function<RequestEntity, ResponseEntity>> routes = new HashMap<>() {{
             put("/test", (request) -> testsJsonResponse("message", "test"));
             put("/foo", (request) -> testsJsonResponse("message", "test"));
             put("/bar", (request) -> testsJsonResponse("message", "test"));
@@ -150,7 +150,7 @@ public class RouterTest {
     @Test
     public void testRunMiddlewares() {
         String uri = "/test-middlewares";
-        KoffyResponse expectedResponse = testsJsonResponse("message", "response");
+        ResponseEntity expectedResponse = testsJsonResponse("message", "response");
 
         Route route = router.get(uri, (request) -> expectedResponse);
         route.setMiddlewares(new ArrayList(){{
@@ -167,7 +167,7 @@ public class RouterTest {
     @Test
     public void testMiddlewareStackCanBeStopped() {
         String uri = "/test-middlewares";
-        KoffyResponse unreachableResponse = testsJsonResponse("message", "unreachable");
+        ResponseEntity unreachableResponse = testsJsonResponse("message", "unreachable");
 
         Route route = router.get(uri, (request) -> unreachableResponse);
         route.setMiddlewares(new ArrayList(){{
@@ -176,7 +176,7 @@ public class RouterTest {
         }});
 
         when(mockRequest.getRoute()).thenReturn(Optional.of(route));
-        KoffyResponse response = router.resolve(mockRequest);
+        ResponseEntity response = router.resolve(mockRequest);
 
         assertEquals("Stopped", response.getContent());
         assertFalse(response.getHeader(Header.SERVER).isPresent());
@@ -187,8 +187,8 @@ public class RouterTest {
 class MockMiddleware implements Middleware {
 
     @Override
-    public KoffyResponse handle(KoffyRequest request, Function<KoffyRequest, KoffyResponse> next) {
-        KoffyResponse response = next.apply(request);
+    public ResponseEntity handle(RequestEntity request, Function<RequestEntity, ResponseEntity> next) {
+        ResponseEntity response = next.apply(request);
         response.setHeader(Header.SERVER, "fake-test-server");
         return response;
     }
@@ -197,7 +197,7 @@ class MockMiddleware implements Middleware {
 class MockMiddleware2 implements Middleware {
 
     @Override
-    public KoffyResponse handle(KoffyRequest request, Function<KoffyRequest, KoffyResponse> next) {
-        return KoffyResponse.textResponse("Stopped").build();
+    public ResponseEntity handle(RequestEntity request, Function<RequestEntity, ResponseEntity> next) {
+        return ResponseEntity.textResponse("Stopped").build();
     }
 }

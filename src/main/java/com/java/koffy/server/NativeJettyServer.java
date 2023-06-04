@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.koffy.http.Header;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.HttpNotFoundException;
-import com.java.koffy.http.KoffyRequest;
-import com.java.koffy.http.KoffyResponse;
+import com.java.koffy.http.RequestEntity;
+import com.java.koffy.http.ResponseEntity;
 import com.java.koffy.routing.Router;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,17 +23,17 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NativeJettyServer extends AbstractHandler implements ServerImpl {
+public class NativeJettyServer extends AbstractHandler implements HttpServer {
 
     /**
      * HTTP request.
      */
-    private KoffyRequest koffyRequest;
+    private RequestEntity requestEntity;
 
     /**
      * Server response.
      */
-    private KoffyResponse koffyResponse;
+    private ResponseEntity responseEntity;
 
     /**
      * Jetty Sever.
@@ -88,16 +88,16 @@ public class NativeJettyServer extends AbstractHandler implements ServerImpl {
      * {@inheritDoc}
      */
     @Override
-    public KoffyRequest getRequest() {
-        return koffyRequest;
+    public RequestEntity getRequest() {
+        return requestEntity;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public KoffyResponse getResponse() {
-        return koffyResponse;
+    public ResponseEntity getResponse() {
+        return responseEntity;
     }
 
     /**
@@ -107,62 +107,91 @@ public class NativeJettyServer extends AbstractHandler implements ServerImpl {
     @Override
     public void handle(String target, Request request, HttpServletRequest httpServletRequest,
                        HttpServletResponse httpServletResponse) throws IOException {
-        koffyRequest = createRequest(request, httpServletRequest);
-        koffyResponse = createResponse();
+        requestEntity = buildRequest(request);
+        responseEntity = buildResponse();
 
-        httpServletResponse.setStatus(koffyResponse.getStatus());
+        httpServletResponse.setStatus(responseEntity.getStatus());
 
-        if (koffyResponse.getContent() != null) {
-            httpServletResponse.getWriter().println(koffyResponse.getContent());
+        if (responseEntity.getContent() != null) {
+            httpServletResponse.getWriter().println(responseEntity.getContent());
         }
 
-        for (Header header : koffyResponse.getHeaders().keySet()) {
-            httpServletResponse.addHeader(header.get(), koffyResponse.getHeaders().get(header));
+        for (Header header : responseEntity.getHeaders().keySet()) {
+            httpServletResponse.addHeader(header.get(), responseEntity.getHeaders().get(header));
         }
         request.setHandled(true);
     }
 
-    private KoffyRequest createRequest(Request request, HttpServletRequest httpServletRequest) throws IOException {
-        return KoffyRequest.builder()
+    /**
+     * Build {@link RequestEntity} from the server request.
+     * @param request Server request
+     * @return {@link RequestEntity}
+     * @throws IOException
+     */
+    private RequestEntity buildRequest(Request request) throws IOException {
+        return RequestEntity.builder()
                 .uri(request.getRequestURI())
                 .method(HttpMethod.valueOf(request.getMethod()))
                 .headers(resolveHeaders(request))
-                .postData(parsePostData(httpServletRequest))
+                .postData(parsePostData(request))
                 .queryData(parseQueryData(request))
                 .build();
     }
 
-    private Map<Header, String> resolveHeaders(Request httpServletRequest) {
-        Enumeration<String> headerNames = httpServletRequest.getHeaderNames();
+    /**
+     * Gather and save headers from the request.
+     * @param request Server request
+     * @return {@link Map} Headers
+     */
+    private Map<Header, String> resolveHeaders(Request request) {
+        Enumeration<String> headerNames = request.getHeaderNames();
         Map<Header, String> headers = new HashMap<>();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement().replace("-", "_");
-            headers.put(Header.valueOf(headerName.toUpperCase()), httpServletRequest.getHeader(headerName));
+            headers.put(Header.valueOf(headerName.toUpperCase()), request.getHeader(headerName));
         }
         return headers;
     }
 
-    private KoffyResponse createResponse() {
+    /**
+     * Build server {@link ResponseEntity}.
+     * @return {@link ResponseEntity}
+     */
+    private ResponseEntity buildResponse() {
         try {
-            return router.resolve(koffyRequest);
+            return router.resolve(requestEntity);
         } catch (HttpNotFoundException e) {
-            return KoffyResponse.textResponse(e.getMessage()).status(404).build();
+            return ResponseEntity.textResponse(e.getMessage()).status(404).build();
         }
     }
 
-    private Map<String, String> parsePostData(HttpServletRequest request) throws IOException {
+    /**
+     * Parse post data received from the Server {@link Request}.
+     * @param request Server request
+     * @return {@link Map} post data
+     * @throws IOException
+     */
+    private Map<String, String> parsePostData(Request request) throws IOException {
         String data = new BufferedReader(new InputStreamReader(request.getInputStream())).readLine();
 
         if (data == null) {
             return new HashMap<>();
         }
 
+        // consider application/x-www-form-urlencoded header check. It is a more sophisticated approach
+        // curl -X POST -d "key1=value1&key2=value2" -H "Content-Type:
+        // application/x-www-form-urlencoded" http://example.com/api/endpoint
         if (data.contains("&")) {
             return parseUrlEncoded(data);
         }
         return MAPPER.readValue(data, Map.class);
     }
 
+    /**
+     * Parse query data received from the Server {@link Request}.
+     * @param request Server request
+     * @return {@link Map} Query data
+     */
     private Map<String, String> parseQueryData(Request request) {
         if (request.getQueryString() != null) {
             return parseUrlEncoded(request.getQueryString());
@@ -170,8 +199,12 @@ public class NativeJettyServer extends AbstractHandler implements ServerImpl {
         return new HashMap<>();
     }
 
+    /**
+     * Return url-encoded formatted string to {@link Map}.
+     * @param data url-encoded format
+     * @return {@link Map} data
+     */
     private Map<String, String> parseUrlEncoded(String data) {
-        // Convert url-encoded formatted string to Map<String, String> object
         return Arrays.stream(data.split("&"))
                 .map(param -> param.split("="))
                 .collect(HashMap::new, (m, arr) -> m.put(arr[0], arr[1]), HashMap::putAll);

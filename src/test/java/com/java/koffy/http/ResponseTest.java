@@ -20,7 +20,7 @@ public class ResponseTest {
             put("test", "foo");
             put("bar", "test");
         }};
-        KoffyResponse response = KoffyResponse.jsonResponse(content).status(200).build();
+        ResponseEntity response = ResponseEntity.jsonResponse(content).status(200).build();
 
         int expectedStatus = 200;
         String expectedJson = jsonEncode(content);
@@ -37,7 +37,7 @@ public class ResponseTest {
     @Test
     public void testTextResponse() {
         String content = "test message";
-        KoffyResponse response = KoffyResponse.textResponse(content).status(200).build();
+        ResponseEntity response = ResponseEntity.textResponse(content).status(200).build();
 
         int expectedStatus = 200;
         Map<Header, String> expectedHeaders = new HashMap<>() {{
@@ -52,7 +52,7 @@ public class ResponseTest {
     @Test
     public void testRedirectResponse() {
         String uri = "/redirect/test";
-        KoffyResponse response = KoffyResponse.redirectResponse(uri);
+        ResponseEntity response = ResponseEntity.redirectResponse(uri);
 
         int expectedStatus = 302;
         Map<Header, String> expectedHeaders = new HashMap<>() {{
@@ -71,7 +71,7 @@ public class ResponseTest {
             put(Header.CONTENT_TYPE, ContentType.JSON.get());
             put(Header.SERVER, "Jetty");
         }};
-        KoffyResponse response = KoffyResponse.textResponse(content).status(200).headers(headers).build();
+        ResponseEntity response = ResponseEntity.textResponse(content).status(200).headers(headers).build();
 
         int expectedStatus = 200;
 
@@ -99,7 +99,7 @@ public class ResponseTest {
             put(Header.CONTENT_TYPE, ContentType.JSON.get());
             put(Header.SERVER, "Jetty");
         }};
-        KoffyResponse response = KoffyResponse.jsonResponse(content).status(200).headers(headers).build();
+        ResponseEntity response = ResponseEntity.jsonResponse(content).status(200).headers(headers).build();
 
         int expectedStatus = 200;
         String expectedJson = jsonEncode(content);

@@ -1,6 +1,6 @@
 package com.java.koffy.routing;
 
-import com.java.koffy.http.KoffyResponse;
+import com.java.koffy.http.ResponseEntity;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -38,8 +38,8 @@ public class RouteTest {
         );
     }
 
-    private KoffyResponse testsJsonResponse(String key, String value) {
-        return KoffyResponse.jsonResponse(new HashMap<>() {{ put(key, value); }}).status(200).build();
+    private ResponseEntity testsJsonResponse(String key, String value) {
+        return ResponseEntity.jsonResponse(new HashMap<>() {{ put(key, value); }}).status(200).build();
     }
 
     @ParameterizedTest

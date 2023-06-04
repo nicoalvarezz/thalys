@@ -4,5 +4,5 @@ import java.util.function.Function;
 
 public interface Middleware {
 
-    KoffyResponse handle(KoffyRequest request, Function<KoffyRequest, KoffyResponse> next);
+    ResponseEntity handle(RequestEntity request, Function<RequestEntity, ResponseEntity> next);
 }

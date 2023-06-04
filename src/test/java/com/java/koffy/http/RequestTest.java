@@ -16,7 +16,7 @@ public class RequestTest {
     @Test
     public void testRequestReturnsDataObtainedFromServer() {
         String uri = "/test/route";
-        app.router().post(uri, (request -> KoffyResponse.textResponse("POST OK").status(200).build()));
+        app.router().post(uri, (request -> ResponseEntity.textResponse("POST OK").status(200).build()));
 
         Map<String, String> queryParams = new HashMap<>() {{
             put("a", "1");
@@ -28,7 +28,7 @@ public class RequestTest {
             put("foo", "bar");
         }};
 
-        KoffyRequest request = KoffyRequest.builder()
+        RequestEntity request = RequestEntity.builder()
                 .uri(uri)
                 .method(HttpMethod.POST)
                 .queryData(queryParams)
@@ -44,13 +44,13 @@ public class RequestTest {
     @Test
     public void testRequestPostDataReturnsValueIfKeyGiven() {
         String uri = "/test/route";
-        app.router().post(uri, (request -> KoffyResponse.textResponse("POST OK").status(200).build()));
+        app.router().post(uri, (request -> ResponseEntity.textResponse("POST OK").status(200).build()));
         Map<String, String> postData = new HashMap<>() {{
             put("post", "test");
             put("foo", "bar");
         }};
 
-        KoffyRequest request = KoffyRequest.builder()
+        RequestEntity request = RequestEntity.builder()
                 .uri(uri)
                 .method(HttpMethod.POST)
                 .postData(postData)
@@ -69,13 +69,13 @@ public class RequestTest {
     @Test
     public void testRequestQueryDataReturnsValueIfKeyGiven() {
         String uri = "/test/route";
-        app.router().post(uri, (request -> KoffyResponse.textResponse("POST OK").status(200).build()));
+        app.router().post(uri, (request -> ResponseEntity.textResponse("POST OK").status(200).build()));
         Map<String, String> queryParams = new HashMap<>() {{
             put("a", "1");
             put("test", "foo");
         }};
 
-        KoffyRequest request = KoffyRequest.builder()
+        RequestEntity request = RequestEntity.builder()
                 .uri(uri)
                 .method(HttpMethod.POST)
                 .queryData(queryParams)
@@ -94,10 +94,10 @@ public class RequestTest {
     @Test
     public void testRouteParams() {
         App app = App.bootstrap();
-        app.router().get("/test/{test}/foo/{bar}", (request) -> KoffyResponse.textResponse("GET OK").status(200).build());
+        app.router().get("/test/{test}/foo/{bar}", (request) -> ResponseEntity.textResponse("GET OK").status(200).build());
         String uri = "/test/1/foo/2";
 
-        KoffyRequest request = KoffyRequest.builder()
+        RequestEntity request = RequestEntity.builder()
                 .uri(uri)
                 .method(HttpMethod.GET)
                 .build();
