@@ -104,6 +104,7 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
      * Handles all the server requests and its responses.
      * It builds the request entity, so it can be used in the action definition.
      * It builds the response entity that is returned.
+     * Sets the request as handled when the process is finished.
      * @param target Request URI
      * @param request Server Request
      * @param httpServletRequest Server httpServletRequest
