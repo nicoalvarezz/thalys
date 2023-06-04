@@ -1,13 +1,17 @@
 package com.java.koffy.http;
 
+import com.java.koffy.App;
+import com.java.koffy.container.Container;
 import com.java.koffy.routing.Route;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * HTTP Request data structure that is received from the user request.
+ * HTTP Request data structure.
  */
-public class KoffyRequest {
+public final class RequestEntity {
 
     /**
      * HTTP request URI.
@@ -17,7 +21,7 @@ public class KoffyRequest {
     /**
      * HTTP request route.
      */
-    private Route route;
+    private Optional<Route> route;
 
     /**
      * HTTP request method.
@@ -34,12 +38,18 @@ public class KoffyRequest {
      */
     private Map<String, String> query;
 
-    public KoffyRequest(Builder builder) {
+    /**
+     * HTTP request headers.
+     */
+    private Map<Header, String> headers;
+
+    private RequestEntity(Builder builder) {
         this.uri = builder.uri;
-        this.route = builder.route;
         this.method = builder.method;
         this.data = builder.data;
         this.query = builder.query;
+        this.headers = builder.headers;
+        this.route = Container.resolve(App.class).router().resolveRoute(uri, method);
     }
 
     /**
@@ -52,9 +62,9 @@ public class KoffyRequest {
 
     /**
      * Retrieve the route of the request.
-     * @return {@link Route}
+     * @return {@link Optional<Route>}
      */
-    public Route getRoute() {
+    public Optional<Route> getRoute() {
         return route;
     }
 
@@ -75,6 +85,15 @@ public class KoffyRequest {
     }
 
     /**
+     * Retrieve post data value of specific key of the request.
+     * @param key {@link String} post data key
+     * @return {@link Optional<String>} post value
+     */
+    public Optional<String> getPostData(String key) {
+        return Optional.ofNullable(data.get(key));
+    }
+
+    /**
      * Retrieve the query data of the request.
      * @return {@link Map} query data
      */
@@ -83,11 +102,40 @@ public class KoffyRequest {
     }
 
     /**
+     * Retrieve query data value of specific key of the request.
+     * @param key {@link String} query data key
+     * @return {@link Optional<String>) query value
+     */
+    public Optional<String> getQueryData(String key) {
+        return Optional.ofNullable(query.get(key));
+    }
+
+    /**
+     * Retrieve the headers of the request.
+     * @return {@link Map} headers
+     */
+    public Map<Header, String> getHeaders() {
+        return headers;
+    }
+
+    /**
+     * Retrieve header value of specific header of the request.
+     * @param header {@link Header}
+     * @return {@link Optional<String>}
+     */
+    public Optional<String> getHeader(Header header) {
+        return Optional.ofNullable(headers.get(header));
+    }
+
+    /**
      * Retrieve route parameters of the request.
      * @return {@link Map} with the route parameters
      */
     public Map<String, String> routeParams() {
-        return route.parseParameter(uri);
+        if (route.isPresent()) {
+            return route.get().parseParameter(uri);
+        }
+        return new HashMap<>();
     }
 
     /**
@@ -99,8 +147,8 @@ public class KoffyRequest {
     }
 
     /**
-     * Creates a new instance of {@link KoffyRequest}.
-     * This class is used to implement the builder pattern of {@link KoffyRequest}
+     * Creates a new instance of {@link RequestEntity}.
+     * This class is used to implement the builder pattern of {@link RequestEntity}
      */
     public static final class Builder {
 
@@ -108,11 +156,6 @@ public class KoffyRequest {
          * HTTP request URI.
          */
         private String uri;
-
-        /**
-         * HTTP route of the request.
-         */
-        private Route route;
 
         /**
          * HTTP request method.
@@ -129,14 +172,19 @@ public class KoffyRequest {
          */
         private Map<String, String> query;
 
+        /**
+         * HTTP headers.
+         */
+        private Map<Header, String> headers;
+
         private Builder() {
 
         }
 
         /**
-         * Set the URI of the request of the new instance {@link KoffyRequest}.
+         * Set the URI of the request of the new instance {@link RequestEntity}.
          * @param uri URI of the request
-         * @return Builder of {@link KoffyRequest} instance
+         * @return Builder of {@link RequestEntity} instance
          */
         public Builder uri(String uri) {
             this.uri = uri;
@@ -144,19 +192,9 @@ public class KoffyRequest {
         }
 
         /**
-         * Set the route of the request of the new instance {@link KoffyRequest}.
-         * @param route route of the request
-         * @return Builder of {@link KoffyRequest} instance
-         */
-        public Builder route(Route route) {
-            this.route = route;
-            return this;
-        }
-
-        /**
-         * Set the method of the request of the new instance {@link KoffyRequest}.
+         * Set the method of the request of the new instance {@link RequestEntity}.
          * @param method HTTP method {@link HttpMethod}
-         * @return Builder of {@link KoffyRequest} instance
+         * @return Builder of {@link RequestEntity} instance
          */
         public Builder method(HttpMethod method) {
             this.method = method;
@@ -164,9 +202,9 @@ public class KoffyRequest {
         }
 
         /**
-         * Set the post data of new instance {@link KoffyRequest}.
+         * Set the post data of new instance {@link RequestEntity}.
          * @param data post data of the request
-         * @return Builder of {@link KoffyRequest} instance
+         * @return Builder of {@link RequestEntity} instance
          */
         public Builder postData(Map<String, String> data) {
             this.data = data;
@@ -174,9 +212,9 @@ public class KoffyRequest {
         }
 
         /**
-         * Set the query of the new instance {@link KoffyRequest}.
+         * Set the query of the new instance {@link RequestEntity}.
          * @param query query data of the request
-         * @return Builder of {@link KoffyRequest} instance
+         * @return Builder of {@link RequestEntity} instance
          */
         public Builder queryData(Map<String, String> query) {
             this.query = query;
@@ -184,11 +222,21 @@ public class KoffyRequest {
         }
 
         /**
-         * Creates a new instance of {@link KoffyRequest}.
+         * Set headers of the new instance {@link RequestEntity}.
+         * @param headers {@link Map} containing request headers
+         * @return Builder of {@link RequestEntity} instance
+         */
+        public Builder headers(Map<Header, String> headers) {
+            this.headers = headers;
+            return this;
+        }
+
+        /**
+         * Creates a new instance of {@link RequestEntity}.
          * @return The new instance
          */
-        public KoffyRequest build() {
-            return new KoffyRequest(this);
+        public RequestEntity build() {
+            return new RequestEntity(this);
         }
     }
 }

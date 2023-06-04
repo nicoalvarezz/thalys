@@ -1,7 +1,7 @@
 package com.java.koffy.http;
 
 /**
- * HTTP Enum Content-Type.
+ * HTTP Content-Type.
  */
 enum ContentType {
 

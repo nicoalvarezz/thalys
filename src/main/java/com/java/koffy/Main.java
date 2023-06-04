@@ -1,25 +1,30 @@
 package com.java.koffy;
 
-import com.java.koffy.server.NativeJettyServer;
-import com.java.koffy.http.KoffyResponse;
-import com.java.koffy.routing.Router;
-
-import java.util.HashMap;
+import com.java.koffy.http.ResponseEntity;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        Router newRouter = new Router();
+        App app = App.bootstrap();
+        app.router().get("/test/{param}", (request) -> ResponseEntity.jsonResponse(request.routeParams())
+                .status(200)
+                .build());
 
-        newRouter.get("/test", () -> KoffyResponse.textResponse(200, "GET OK"));
+        app.router().post("/test-post", (request) ->
+                ResponseEntity.jsonResponse(request.getPostData()).status(200).build());
 
-        newRouter.post("/test", () ->
-                KoffyResponse.jsonResponse(200, new HashMap<>() {{ put("message", "POST OK"); }}));
+        app.router().get("/test", (request) ->
+            ResponseEntity.jsonResponse(request.getQueryData()).status(200).build());
 
-        newRouter.get("/redirect", () -> KoffyResponse.redirectResponse("/test"));
+        app.router().get("/redirect", (request) -> ResponseEntity.redirectResponse("/test/5"));
 
-        NativeJettyServer server = new NativeJettyServer(8080);
-        server.setRouter(newRouter);
-        server.startServer();
+//        app.router().get("/middlewares", (request -> ResponseEntity.jsonResponse(new HashMap<>() {{
+//            put("message", "OK");
+//        }}).build())).setMiddlewares(new ArrayList<>() {{
+//            add(AuthMiddleware.class);
+//        }});
+
+        app.run(8000);
     }
 }
+

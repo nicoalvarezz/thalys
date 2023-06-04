@@ -1,12 +1,21 @@
 package com.java.koffy.http;
 
 /**
- * HTTP Enum header class.
+ * HTTP header class.
  */
-enum Header {
+public enum Header {
 
-    LOCATION("Location"),
-    CONTENT_TYPE("Content-Type");
+    LOCATION("location"),
+    CONTENT_TYPE("content-type"),
+    AUTHORIZATION("authorization"),
+    ACCEPT("accept"),
+    USER_AGENT("user-agent"),
+    HOST("host"),
+    CACHE_CONTROL("cache-control"),
+    CONTENT_LENGTH("content-length"),
+    IF_MODIFIED_SINCE("if-modified-since"),
+    SERVER("server"),
+    ETAG("etag");
 
     private final String header;
 
