@@ -16,8 +16,11 @@ public enum HttpStatus {
     MULTI_STATUS (207, "Multi-Status", Category.SUCCESSFUL),
     ALREADY_REPORTED(208, "Already Reported", Category.SUCCESSFUL),
     IM_USED(226, "IM Used", Category.SUCCESSFUL),
+    MULTIPLE_CHOICES(300, "Multiple Choices", Category.REDIRECTION),
     FOUND(302, "Found", Category.REDIRECTION),
-    NOT_FOUND(404, "Not Found", Category.CLIENT_ERROR);
+    BAD_REQUEST(400, "Bad Request", Category.CLIENT_ERROR),
+    NOT_FOUND(404, "Not Found", Category.CLIENT_ERROR),
+    INTERNAL_SERVER_ERROR(500, "Internal Server Error", Category.SERVER_ERROR);
 
     private final int statusCode;
     private final String message;
@@ -61,7 +64,7 @@ public enum HttpStatus {
         return category() == Category.SERVER_ERROR;
     }
 
-    public HttpStatus valueOf(int statusCode) {
+    public static HttpStatus valueOf(int statusCode) {
         HttpStatus httpStatus  = resolve(statusCode);
         if (httpStatus == null) {
             throw new IllegalArgumentException("No matching content for status code:" + statusCode);
@@ -69,7 +72,7 @@ public enum HttpStatus {
         return httpStatus;
     }
 
-    private HttpStatus resolve(int statusCode) {
+    private static HttpStatus resolve(int statusCode) {
         HttpStatus[] httpStatuses = values();
 
         for (HttpStatus httpStatus : httpStatuses) {
