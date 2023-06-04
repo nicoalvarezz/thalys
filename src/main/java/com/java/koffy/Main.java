@@ -16,7 +16,6 @@ public class Main {
         app.router().get("/test", (request) ->
             ResponseEntity.jsonResponse(request.getQueryData()).status(200).build());
 
-
         app.router().get("/redirect", (request) -> ResponseEntity.redirectResponse("/test/5"));
 
 //        app.router().get("/middlewares", (request -> ResponseEntity.jsonResponse(new HashMap<>() {{

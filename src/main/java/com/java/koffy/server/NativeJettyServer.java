@@ -101,25 +101,38 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
     }
 
     /**
-     * Handles all the requests to the server, and its responses.
-     * {@inheritDoc}
+     * Handles all the server requests and its responses.
+     * It builds the request entity, so it can be used in the action definition.
+     * It builds the response entity that is returned.
+     * @param target Request URI
+     * @param request Server Request
+     * @param httpServletRequest Server httpServletRequest
+     * @param httpServletResponse Server httpServletResponse
+     * @throws IOException
      */
     @Override
     public void handle(String target, Request request, HttpServletRequest httpServletRequest,
                        HttpServletResponse httpServletResponse) throws IOException {
         requestEntity = buildRequest(request);
         responseEntity = buildResponse();
-
-        httpServletResponse.setStatus(responseEntity.getStatus());
-
-        if (responseEntity.getContent() != null) {
-            httpServletResponse.getWriter().println(responseEntity.getContent());
-        }
-
-        for (Header header : responseEntity.getHeaders().keySet()) {
-            httpServletResponse.addHeader(header.get(), responseEntity.getHeaders().get(header));
-        }
+        handleServerResponse(httpServletResponse);
         request.setHandled(true);
+    }
+
+    /**
+     * Handle server response.
+     * Set server status set in the action.
+     * Return the contents.
+     * Set the server response headers.
+     * @param response {@link HttpServletResponse}
+     * @throws IOException
+     */
+    private void handleServerResponse(HttpServletResponse response) throws IOException {
+        response.setStatus(responseEntity.getStatus());
+        response.getWriter().println(responseEntity.getContent());
+        for (Header header : responseEntity.getHeaders().keySet()) {
+            response.addHeader(header.get(), responseEntity.getHeaders().get(header));
+        }
     }
 
     /**
@@ -155,6 +168,7 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
 
     /**
      * Build server {@link ResponseEntity}.
+     * The response is built from the action of the URI called.
      * @return {@link ResponseEntity}
      */
     private ResponseEntity buildResponse() {
