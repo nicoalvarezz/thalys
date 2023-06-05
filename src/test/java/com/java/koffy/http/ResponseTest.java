@@ -20,15 +20,14 @@ public class ResponseTest {
             put("test", "foo");
             put("bar", "test");
         }};
-        ResponseEntity response = ResponseEntity.jsonResponse(content).status(200).build();
+        ResponseEntity response = ResponseEntity.jsonResponse(content).status(HttpStatus.OK).build();
 
-        int expectedStatus = 200;
         String expectedJson = jsonEncode(content);
         Map<Header, String> expectedHeaders = new HashMap<>() {{
             put(Header.CONTENT_TYPE, ContentType.JSON.get());
         }};
 
-        assertEquals(expectedStatus, response.getStatus());
+        assertEquals(HttpStatus.OK  , response.getStatus());
         assertEquals(expectedJson, response.getContent());
         assertEquals(expectedHeaders, response.getHeaders());
         assertEquals(expectedJson, response.getContent());
@@ -37,14 +36,13 @@ public class ResponseTest {
     @Test
     public void testTextResponse() {
         String content = "test message";
-        ResponseEntity response = ResponseEntity.textResponse(content).status(200).build();
+        ResponseEntity response = ResponseEntity.textResponse(content).status(HttpStatus.OK).build();
 
-        int expectedStatus = 200;
         Map<Header, String> expectedHeaders = new HashMap<>() {{
             put(Header.CONTENT_TYPE, ContentType.TEXT.get());
         }};
 
-        assertEquals(expectedStatus, response.getStatus());
+        assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(content, response.getContent());
         assertEquals(expectedHeaders, response.getHeaders());
     }
@@ -54,12 +52,11 @@ public class ResponseTest {
         String uri = "/redirect/test";
         ResponseEntity response = ResponseEntity.redirectResponse(uri);
 
-        int expectedStatus = 302;
         Map<Header, String> expectedHeaders = new HashMap<>() {{
             put(Header.LOCATION, uri);
         }};
 
-        assertEquals(expectedStatus, response.getStatus());
+        assertEquals(HttpStatus.FOUND, response.getStatus());
         assertEquals("", response.getContent());
         assertEquals(expectedHeaders, response.getHeaders());
     }
@@ -71,18 +68,16 @@ public class ResponseTest {
             put(Header.CONTENT_TYPE, ContentType.JSON.get());
             put(Header.SERVER, "Jetty");
         }};
-        ResponseEntity response = ResponseEntity.textResponse(content).status(200).headers(headers).build();
+        ResponseEntity response = ResponseEntity.textResponse(content).status(HttpStatus.OK).headers(headers).build();
 
-        int expectedStatus = 200;
-
-        assertEquals(expectedStatus, response.getStatus());
+        assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(content, response.getContent());
         assertEquals(headers, response.getHeaders());
         assertEquals(2, response.getHeaders().size());
 
         response.removeHeader(Header.SERVER);
 
-        assertEquals(expectedStatus, response.getStatus());
+        assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(content, response.getContent());
         assertEquals(headers, response.getHeaders());
         assertEquals(1, response.getHeaders().size());
@@ -99,19 +94,18 @@ public class ResponseTest {
             put(Header.CONTENT_TYPE, ContentType.JSON.get());
             put(Header.SERVER, "Jetty");
         }};
-        ResponseEntity response = ResponseEntity.jsonResponse(content).status(200).headers(headers).build();
+        ResponseEntity response = ResponseEntity.jsonResponse(content).status(HttpStatus.OK).headers(headers).build();
 
-        int expectedStatus = 200;
         String expectedJson = jsonEncode(content);
 
-        assertEquals(expectedStatus, response.getStatus());
+        assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(expectedJson, response.getContent());
         assertEquals(headers, response.getHeaders());
         assertEquals(2, response.getHeaders().size());
 
         response.removeHeader(Header.SERVER);
 
-        assertEquals(expectedStatus, response.getStatus());
+        assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(expectedJson, response.getContent());
         assertEquals(headers, response.getHeaders());
         assertEquals(1, response.getHeaders().size());

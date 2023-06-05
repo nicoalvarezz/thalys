@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.koffy.http.Header;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.HttpNotFoundException;
+import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
 import com.java.koffy.routing.Router;
@@ -129,7 +130,7 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
      * @throws IOException
      */
     private void handleServerResponse(HttpServletResponse response) throws IOException {
-        response.setStatus(responseEntity.getStatus());
+        response.setStatus(responseEntity.getStatus().statusCode());
         response.getWriter().println(responseEntity.getContent());
         for (Header header : responseEntity.getHeaders().keySet()) {
             response.addHeader(header.get(), responseEntity.getHeaders().get(header));
@@ -176,7 +177,7 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
         try {
             return router.resolve(requestEntity);
         } catch (HttpNotFoundException e) {
-            return ResponseEntity.textResponse(e.getMessage()).status(404).build();
+            return ResponseEntity.textResponse(e.getMessage()).status(HttpStatus.NOT_FOUND).build();
         }
     }
 

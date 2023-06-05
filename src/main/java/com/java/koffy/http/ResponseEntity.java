@@ -14,7 +14,7 @@ public final class ResponseEntity {
     /**
      * Response HTTP status code.
      */
-    private int status;
+    private HttpStatus status;
 
     /**
      * Response HTTP headers.
@@ -36,7 +36,7 @@ public final class ResponseEntity {
      * Return the HTTP status code of the response.
      * @return HTTP status code
      */
-    public int getStatus() {
+    public HttpStatus getStatus() {
         return status;
     }
 
@@ -106,7 +106,7 @@ public final class ResponseEntity {
     public static ResponseEntity redirectResponse(String uri) {
         return new ResponseEntityFactory()
                 .response()
-                .status(302)
+                .status(HttpStatus.FOUND)
                 .header(Header.LOCATION, uri)
                 .build();
     }
@@ -128,7 +128,7 @@ public final class ResponseEntity {
         /**
          * Response HTTP status code.
          */
-        private int status = 200;
+        private HttpStatus status = HttpStatus.OK;
 
         /**
          * Response HTTP headers.
@@ -149,7 +149,7 @@ public final class ResponseEntity {
          * @param status status code of the response
          * @return Builder
          */
-        public Builder status(int status) {
+        public Builder status(HttpStatus status) {
             this.status = status;
             return this;
         }

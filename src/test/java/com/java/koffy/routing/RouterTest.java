@@ -2,6 +2,7 @@ package com.java.koffy.routing;
 
 import com.java.koffy.App;
 import com.java.koffy.http.Header;
+import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.Middleware;
 import com.java.koffy.server.HttpServer;
 import com.java.koffy.http.HttpMethod;
@@ -40,7 +41,7 @@ public class RouterTest {
     }
 
     private ResponseEntity testsJsonResponse(String key, String value) {
-        return ResponseEntity.jsonResponse(new HashMap<>() {{ put(key, value); }}).status(200).build();
+        return ResponseEntity.jsonResponse(new HashMap<>() {{ put(key, value); }}).status(HttpStatus.OK).build();
     }
 
     private String actualContent() {

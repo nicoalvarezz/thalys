@@ -1,5 +1,6 @@
 package com.java.koffy;
 
+import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.ResponseEntity;
 
 public class Main {
@@ -7,14 +8,14 @@ public class Main {
     public static void main(String[] args) throws Exception {
         App app = App.bootstrap();
         app.router().get("/test/{param}", (request) -> ResponseEntity.jsonResponse(request.routeParams())
-                .status(200)
+                .status(HttpStatus.OK)
                 .build());
 
         app.router().post("/test-post", (request) ->
-                ResponseEntity.jsonResponse(request.getPostData()).status(200).build());
+                ResponseEntity.jsonResponse(request.getPostData()).status(HttpStatus.OK).build());
 
         app.router().get("/test", (request) ->
-            ResponseEntity.jsonResponse(request.getQueryData()).status(200).build());
+            ResponseEntity.jsonResponse(request.getQueryData()).status(HttpStatus.OK).build());
 
         app.router().get("/redirect", (request) -> ResponseEntity.redirectResponse("/test/5"));
 
