@@ -1,7 +1,7 @@
 package com.java.koffy.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.java.koffy.http.HttpHeaders;
+import com.java.koffy.http.Headers.HttpHeaders;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.HttpNotFoundException;
 import com.java.koffy.http.HttpStatus;

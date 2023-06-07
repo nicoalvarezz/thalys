@@ -1,5 +1,7 @@
 package com.java.koffy.http;
 
+import com.java.koffy.http.Headers.HttpHeader;
+import com.java.koffy.http.Headers.HttpHeaders;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -15,22 +17,22 @@ public class HttpHeadersTest {
 
     @Test
     public void testAddHeaders() {
-        headers.add(HttpHeaders.CONTENT_TYPE, ContentType.JSON.get());
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.JSON.get());
 
-        assertTrue(headers.containsHeader(HttpHeaders.CONTENT_TYPE));
-        assertEquals(ContentType.JSON.get(), headers.get(HttpHeaders.CONTENT_TYPE));
+        assertTrue(headers.containsHeader(HttpHeader.CONTENT_TYPE.get()));
+        assertEquals(ContentType.JSON.get(), headers.get(HttpHeader.CONTENT_TYPE.get()));
         assertEquals(1, headers.size());
     }
 
     @Test
     public void testAddMultipleHeaders() {
-        headers.add(HttpHeaders.CONTENT_TYPE, ContentType.JSON.get());
-        headers.add(HttpHeaders.LOCATION, "location");
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.JSON.get());
+        headers.add(HttpHeader.LOCATION.get(), "location");
 
-        assertTrue(headers.containsHeader(HttpHeaders.CONTENT_TYPE));
-        assertTrue(headers.containsHeader(HttpHeaders.LOCATION));
-        assertEquals(ContentType.JSON.get(), headers.get(HttpHeaders.CONTENT_TYPE));
-        assertEquals(HttpHeaders.LOCATION, headers.get("location"));
+        assertTrue(headers.containsHeader(HttpHeader.CONTENT_TYPE.get()));
+        assertTrue(headers.containsHeader(HttpHeader.LOCATION.get()));
+        assertEquals(ContentType.JSON.get(), headers.get(HttpHeader.CONTENT_TYPE.get()));
+        assertEquals(HttpHeader.LOCATION.get(), headers.get("location"));
         assertEquals(2, headers.size());
     }
 
@@ -64,29 +66,29 @@ public class HttpHeadersTest {
 
     @Test
     public void testGetHeader() {
-        headers.add(HttpHeaders.CONTENT_TYPE, ContentType.JPEG.get());
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.JPEG.get());
 
-        assertEquals(ContentType.JPEG.get(), headers.get(HttpHeaders.CONTENT_TYPE));
-        assertNull(headers.get(HttpHeaders.LOCATION));
+        assertEquals(ContentType.JPEG.get(), headers.get(HttpHeader.CONTENT_TYPE.get()));
+        assertNull(headers.get(HttpHeader.LOCATION.get()));
     }
 
     @Test
     public void testContainsHeader() {
-        headers.add(HttpHeaders.CONTENT_TYPE, ContentType.XML.get());
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.XML.get());
 
-        assertTrue(headers.containsHeader(HttpHeaders.CONTENT_TYPE));
-        assertFalse(headers.containsHeader(HttpHeaders.SERVER));
+        assertTrue(headers.containsHeader(HttpHeader.CONTENT_TYPE.get()));
+        assertFalse(headers.containsHeader(HttpHeader.SERVER.get()));
     }
 
     @Test
     public void testRemoveHeader() {
-        headers.add(HttpHeaders.CONTENT_TYPE, ContentType.XML.get());
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.XML.get());
 
         assertEquals(1, headers.size());
 
-        headers.removeHeader(HttpHeaders.CONTENT_TYPE);
+        headers.removeHeader(HttpHeader.CONTENT_TYPE.get());
 
-        assertFalse(headers.containsHeader(HttpHeaders.CONTENT_TYPE));
+        assertFalse(headers.containsHeader(HttpHeader.CONTENT_TYPE.get()));
         assertEquals(0, headers.size());
     }
 
@@ -98,26 +100,26 @@ public class HttpHeadersTest {
         String headerValue = "x-custom-header-value";
 
         headers.add(customHeader, headerValue);
-        headers.add(HttpHeaders.CONTENT_TYPE, ContentType.TEXT.get());
-        headers.add(HttpHeaders.SERVER, "Server");
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.TEXT.get());
+        headers.add(HttpHeader.SERVER.get(), "Server");
 
         Set<String> headerNames = headers.getAllHeaderNames();
 
         assertEquals(customHeader, headerNames.stream().toList().get(2));
-        assertEquals(HttpHeaders.CONTENT_TYPE, headerNames.stream().toList().get(1));
-        assertEquals(HttpHeaders.SERVER, headerNames.stream().toList().get(0));
+        assertEquals(HttpHeader.CONTENT_TYPE.get(), headerNames.stream().toList().get(1));
+        assertEquals(HttpHeader.SERVER.get(), headerNames.stream().toList().get(0));
     }
 
     @Test
     public void testHeadersSize() {
-        headers.add(HttpHeaders.CONTENT_TYPE, ContentType.TEXT.get());
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.TEXT.get());
         assertEquals(1, headers.size());
 
-        headers.add(HttpHeaders.SERVER, "Server");
+        headers.add(HttpHeader.SERVER.get(), "Server");
         assertEquals(2, headers.size());
 
-        headers.removeHeader(HttpHeaders.CONTENT_TYPE);
-        headers.removeHeader(HttpHeaders.SERVER);
+        headers.removeHeader(HttpHeader.CONTENT_TYPE.get());
+        headers.removeHeader(HttpHeader.SERVER.get());
         assertEquals(0, headers.size());
     }
 
@@ -125,7 +127,7 @@ public class HttpHeadersTest {
     public void testHeadersIsEmpty() {
         assertTrue(headers.isEmpty());
 
-        headers.add(HttpHeaders.CONTENT_TYPE, ContentType.TEXT.get());
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.TEXT.get());
         assertFalse(headers.isEmpty());
     }
 }

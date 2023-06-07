@@ -1,4 +1,4 @@
-package com.java.koffy.http;
+package com.java.koffy.http.Headers;
 
 
 import java.util.HashMap;
@@ -8,31 +8,8 @@ import java.util.Set;
 /**
  * HttP Headers class.
  * Data structure to store headers and its values.
- * It allows to access already existing headers or add custom headers.
  */
 public class HttpHeaders {
-
-    public static final String LOCATION = "location";
-
-    public static final String CONTENT_TYPE = "content-type";
-
-    public static final String AUTHORIZATION = "authorization";
-
-    public static final String ACCEPT = "accept";
-
-    public static final String USER_AGENT = "user-agent";
-
-    public static final String HOST = "host";
-
-    public static final String CACHE_CONTROL = "cache-control";
-
-    public static final String CONTENT_LENGTH = "content-length";
-
-    public static final String IF_MODIFIED_SINCE = "if-modified-since";
-
-    public static final String SERVER = "server";
-
-    public static final String ETAG = "etag";
 
     private final Map<String, String> headers;
 
