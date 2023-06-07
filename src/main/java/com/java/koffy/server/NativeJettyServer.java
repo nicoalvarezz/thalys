@@ -1,7 +1,7 @@
 package com.java.koffy.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.java.koffy.http.Header;
+import com.java.koffy.http.HttpHeaders;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.HttpNotFoundException;
 import com.java.koffy.http.HttpStatus;
@@ -132,8 +132,8 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
     private void handleServerResponse(HttpServletResponse response) throws IOException {
         response.setStatus(responseEntity.getStatus().statusCode());
         response.getWriter().println(responseEntity.getContent());
-        for (Header header : responseEntity.getHeaders().keySet()) {
-            response.addHeader(header.get(), responseEntity.getHeaders().get(header));
+        for (String header : responseEntity.getHeaders().keySet()) {
+            response.addHeader(header, responseEntity.getHeaders().get(header));
         }
     }
 
@@ -158,12 +158,12 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
      * @param request Server request
      * @return {@link Map} Headers
      */
-    private Map<Header, String> resolveHeaders(Request request) {
+    private HttpHeaders resolveHeaders(Request request) {
         Enumeration<String> headerNames = request.getHeaderNames();
-        Map<Header, String> headers = new HashMap<>();
+        HttpHeaders headers = new HttpHeaders();
         while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement().replace("-", "_");
-            headers.put(Header.valueOf(headerName.toUpperCase()), request.getHeader(headerName));
+            String headerName = headerNames.nextElement();
+            headers.add(headerName.toLowerCase(), request.getHeader(headerName));
         }
         return headers;
     }

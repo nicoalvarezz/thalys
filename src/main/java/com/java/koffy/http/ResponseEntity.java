@@ -2,7 +2,6 @@ package com.java.koffy.http;
 
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,7 +18,7 @@ public final class ResponseEntity {
     /**
      * Response HTTP headers.
      */
-    private Map<Header, String> headers;
+    private HttpHeaders headers;
 
     /**
      * Response content.
@@ -44,8 +43,8 @@ public final class ResponseEntity {
      * Return the HTTP headers of the response.
      * @return {@link Map} HTTP headers of the response
      */
-    public Map<Header, String> getHeaders() {
-        return headers;
+    public Map<String, String> getHeaders() {
+        return headers.getHeaders();
     }
 
     /**
@@ -54,7 +53,7 @@ public final class ResponseEntity {
      * @param header
      * @return {@link Optional<String>}
      */
-    public Optional<String> getHeader(Header header) {
+    public Optional<String> getHeader(String header) {
         return Optional.ofNullable(headers.get(header));
     }
 
@@ -70,12 +69,12 @@ public final class ResponseEntity {
      * Delete a specific header form the response.
      * @param header header name to be removed
      */
-    public void removeHeader(Header header) {
-        headers.remove(header);
+    public void removeHeader(String header) {
+        headers.removeHeader(header);
     }
 
-    public void setHeader(Header header, String value) {
-        headers.put(header, value);
+    public void setHeader(String header, String value) {
+        headers.add(header, value);
     }
 
     /**
@@ -107,7 +106,7 @@ public final class ResponseEntity {
         return new ResponseEntityFactory()
                 .response()
                 .status(HttpStatus.FOUND)
-                .header(Header.LOCATION, uri)
+                .header(HttpHeaders.LOCATION, uri)
                 .build();
     }
 
@@ -133,7 +132,8 @@ public final class ResponseEntity {
         /**
          * Response HTTP headers.
          */
-        private Map<Header, String> headers = new HashMap<>();
+        private HttpHeaders headers = new HttpHeaders();
+
 
         /**
          * Response content.
@@ -160,8 +160,8 @@ public final class ResponseEntity {
          * @param value header value
          * @return Builder of {@link ResponseEntity} instance
          */
-        public Builder header(Header name, String value) {
-            this.headers.put(name, value);
+        public Builder header(String name, String value) {
+            this.headers.add(name, value);
             return this;
         }
 
@@ -171,8 +171,8 @@ public final class ResponseEntity {
          * @param headers Map containing all the headers and their respective values for the response
          * @return Builder of {@link ResponseEntity} instance
          */
-        public Builder headers(Map<Header, String> headers) {
-            this.headers = headers;
+        public Builder headers(HttpHeaders headers) {
+            this.headers.addAll(headers.getHeaders());
             return this;
         }
 
@@ -192,7 +192,7 @@ public final class ResponseEntity {
          * @return Builder of the {@link ResponseEntity} instance
          */
         public Builder contentType(String contentType) {
-            headers.put(Header.CONTENT_TYPE, contentType);
+            headers.add(HttpHeaders.CONTENT_TYPE, contentType);
             return this;
         }
 

@@ -41,7 +41,7 @@ public final class RequestEntity {
     /**
      * HTTP request headers.
      */
-    private Map<Header, String> headers;
+    private HttpHeaders headers;
 
     private RequestEntity(Builder builder) {
         this.uri = builder.uri;
@@ -114,16 +114,16 @@ public final class RequestEntity {
      * Retrieve the headers of the request.
      * @return {@link Map} headers
      */
-    public Map<Header, String> getHeaders() {
-        return headers;
+    public Map<String, String> getHeaders() {
+        return headers.getHeaders();
     }
 
     /**
      * Retrieve header value of specific header of the request.
-     * @param header {@link Header}
+     * @param header {@link HttpHeaders}
      * @return {@link Optional<String>}
      */
-    public Optional<String> getHeader(Header header) {
+    public Optional<String> getHeader(String header) {
         return Optional.ofNullable(headers.get(header));
     }
 
@@ -175,7 +175,7 @@ public final class RequestEntity {
         /**
          * HTTP headers.
          */
-        private Map<Header, String> headers;
+        private HttpHeaders headers;
 
         private Builder() {
 
@@ -226,7 +226,7 @@ public final class RequestEntity {
          * @param headers {@link Map} containing request headers
          * @return Builder of {@link RequestEntity} instance
          */
-        public Builder headers(Map<Header, String> headers) {
+        public Builder headers(HttpHeaders headers) {
             this.headers = headers;
             return this;
         }

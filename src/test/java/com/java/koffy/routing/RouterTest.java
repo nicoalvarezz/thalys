@@ -1,7 +1,7 @@
 package com.java.koffy.routing;
 
 import com.java.koffy.App;
-import com.java.koffy.http.Header;
+import com.java.koffy.http.HttpHeaders;
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.Middleware;
 import com.java.koffy.server.HttpServer;
@@ -162,7 +162,7 @@ public class RouterTest {
         when(mockRequest.getRoute()).thenReturn(Optional.of(route));
 
         assertEquals(expectedResponse, router.resolve(mockRequest));
-        assertEquals(expectedResponse.getHeader(Header.SERVER).get(), "fake-test-server");
+        assertEquals(expectedResponse.getHeader(HttpHeaders.SERVER).get(), "fake-test-server");
     }
 
     @Test
@@ -180,7 +180,7 @@ public class RouterTest {
         ResponseEntity response = router.resolve(mockRequest);
 
         assertEquals("Stopped", response.getContent());
-        assertFalse(response.getHeader(Header.SERVER).isPresent());
+        assertFalse(response.getHeader(HttpHeaders.SERVER).isPresent());
     }
 }
 
@@ -190,7 +190,7 @@ class MockMiddleware implements Middleware {
     @Override
     public ResponseEntity handle(RequestEntity request, Function<RequestEntity, ResponseEntity> next) {
         ResponseEntity response = next.apply(request);
-        response.setHeader(Header.SERVER, "fake-test-server");
+        response.setHeader(HttpHeaders.SERVER, "fake-test-server");
         return response;
     }
 }
