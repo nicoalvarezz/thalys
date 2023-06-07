@@ -156,12 +156,12 @@ public final class ResponseEntity {
 
         /**
          * Set a single header and its value of the response for the new instance of {@link ResponseEntity}.
-         * @param name header name
+         * @param header header
          * @param value header value
          * @return Builder of {@link ResponseEntity} instance
          */
-        public Builder header(String name, String value) {
-            this.headers.add(name, value);
+        public Builder header(String header, String value) {
+            this.headers.add(header, value);
             return this;
         }
 
