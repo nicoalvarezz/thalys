@@ -17,7 +17,21 @@ public enum HttpHeader {
     CONTENT_LENGTH("content-length"),
     IF_MODIFIED_SINCE("if-modified-since"),
     SERVER("server"),
-    ETAG("etag");
+    ETAG("etag"),
+    WWW_AUTHENTICATE("www-authenticate"),
+    PROXY_AUTHENTICATE("proxy-authenticate"),
+    PROXY_AUTHORIZATION("proxy-authorization"),
+    AGE("age"),
+    CLEAR_SITE_DATA("clear-site-data"),
+    EXPIRES("expires"),
+    PRAGMA("pragma"),
+    WARNING("warning"),
+    ACCEPT_CH("accept-ch"),
+    ACCEPT_CH_LIFETIME("accept-ch-lifetime"),
+    CRITICAL_CH("critical-ch");
+
+
+
 
     private final String headerName;
 
