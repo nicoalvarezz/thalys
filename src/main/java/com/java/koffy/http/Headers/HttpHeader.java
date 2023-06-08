@@ -144,7 +144,6 @@ public enum HttpHeader {
     X_ROBOTS_TAG("x-robots-tag");
 
 
-
     private final String headerName;
 
     HttpHeader(String headerName) {
