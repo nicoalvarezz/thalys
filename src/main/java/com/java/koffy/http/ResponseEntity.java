@@ -1,5 +1,7 @@
 package com.java.koffy.http;
 
+import com.java.koffy.http.Headers.HttpHeader;
+import com.java.koffy.http.Headers.HttpHeaders;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -106,7 +108,7 @@ public final class ResponseEntity {
         return new ResponseEntityFactory()
                 .response()
                 .status(HttpStatus.FOUND)
-                .header(HttpHeaders.LOCATION, uri)
+                .header(HttpHeader.LOCATION.get(), uri)
                 .build();
     }
 
@@ -156,12 +158,12 @@ public final class ResponseEntity {
 
         /**
          * Set a single header and its value of the response for the new instance of {@link ResponseEntity}.
-         * @param name header name
+         * @param header header
          * @param value header value
          * @return Builder of {@link ResponseEntity} instance
          */
-        public Builder header(String name, String value) {
-            this.headers.add(name, value);
+        public Builder header(String header, String value) {
+            this.headers.add(header, value);
             return this;
         }
 
@@ -192,7 +194,7 @@ public final class ResponseEntity {
          * @return Builder of the {@link ResponseEntity} instance
          */
         public Builder contentType(String contentType) {
-            headers.add(HttpHeaders.CONTENT_TYPE, contentType);
+            headers.add(HttpHeader.CONTENT_TYPE.get(), contentType);
             return this;
         }
 
