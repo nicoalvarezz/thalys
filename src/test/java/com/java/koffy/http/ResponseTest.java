@@ -28,7 +28,7 @@ public class ResponseTest {
         ResponseEntity response = ResponseEntity.jsonResponse(content).status(HttpStatus.OK).build();
 
         String expectedJson = jsonEncode(content);
-        expectedHeaders.add(HttpHeader.CONTENT_TYPE.get(), ContentType.JSON.get());
+        expectedHeaders.add(HttpHeader.CONTENT_TYPE.get(), ContentType.APPLICATION_JSON.get());
 
         assertEquals(HttpStatus.OK  , response.getStatus());
         assertEquals(expectedJson, response.getContent());
@@ -41,7 +41,7 @@ public class ResponseTest {
         String content = "test message";
         ResponseEntity response = ResponseEntity.textResponse(content).status(HttpStatus.OK).build();
 
-        expectedHeaders.add(HttpHeader.CONTENT_TYPE.get(), ContentType.TEXT.get());
+        expectedHeaders.add(HttpHeader.CONTENT_TYPE.get(), ContentType.TEXT_PLAIN.get());
 
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(content, response.getContent());
@@ -63,7 +63,7 @@ public class ResponseTest {
     @Test
     public void testDeleteResponseHeader() {
         String content = "test content";
-        expectedHeaders.add(HttpHeader.CONTENT_TYPE.get(), ContentType.JSON.get());
+        expectedHeaders.add(HttpHeader.CONTENT_TYPE.get(), ContentType.APPLICATION_JSON.get());
         expectedHeaders.add(HttpHeader.SERVER.get(), "Jetty");
 
         ResponseEntity response = ResponseEntity.textResponse(content).status(HttpStatus.OK).headers(expectedHeaders).build();
@@ -89,7 +89,7 @@ public class ResponseTest {
             put("test", "foo");
             put("test2", "bar");
         }};
-        expectedHeaders.add(HttpHeader.CONTENT_TYPE.get(), ContentType.JSON.get());
+        expectedHeaders.add(HttpHeader.CONTENT_TYPE.get(), ContentType.APPLICATION_JSON.get());
         expectedHeaders.add(HttpHeader.SERVER.get(), "Jetty");
 
         ResponseEntity response = ResponseEntity.jsonResponse(content).status(HttpStatus.OK).headers(expectedHeaders).build();

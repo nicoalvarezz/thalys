@@ -52,11 +52,14 @@ public enum ContentType {
     VND_OASIS_OPENDOCUMENT_PRESENTATION("application/vnd.oasis.opendocument.presentation"),
     VND_OASIS_OPENDOCUMENT_GRAPHICS("application/vnd.oasis.opendocument.graphics"),
     VND_MS_EXCEL("application/vnd.ms-excel"),
-    VND_OPENXMLFORMATS_OFFICEDOCUMENT_SPREADSHEETML_SHEET("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+    VND_OPENXMLFORMATS_OFFICEDOCUMENT_SPREADSHEETML_SHEET(
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
     VND_MS_POWERPOINT("application/vnd.ms-powerpoint"),
-    VND_OPENXMLFORMATS_OFFICEDOCUMENT_PRESENTATIONML_PRESENTATION("application/vnd.openxmlformats-officedocument.presentationml.presentation"),
+    VND_OPENXMLFORMATS_OFFICEDOCUMENT_PRESENTATIONML_PRESENTATION(
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation"),
     VND_MSWORD("application/msword"),
-    VND_OPENXMLFORMATS_OFFICEDOCUMENT_WORDPROCESSINGML_DOCUMENT("application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+    VND_OPENXMLFORMATS_OFFICEDOCUMENT_WORDPROCESSINGML_DOCUMENT(
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
     VND_MOZILLA_XUL_XML("application/vnd.mozilla.xul+xml");
 
     private final String contentType;
