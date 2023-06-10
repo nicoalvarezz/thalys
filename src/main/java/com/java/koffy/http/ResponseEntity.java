@@ -1,5 +1,6 @@
 package com.java.koffy.http;
 
+import com.java.koffy.http.Headers.ContentType;
 import com.java.koffy.http.Headers.HttpHeader;
 import com.java.koffy.http.Headers.HttpHeaders;
 import org.json.JSONObject;
@@ -86,7 +87,8 @@ public final class ResponseEntity {
      * @return {@link ResponseEntity object with given status, and given content in json format
      */
     public static Builder jsonResponse(Map<String, String> content) {
-        return new ResponseEntityFactory().response(ContentType.JSON.get(), new JSONObject(content).toString());
+        return new ResponseEntityFactory().response(ContentType.APPLICATION_JSON.get(),
+                new JSONObject(content).toString());
     }
 
     /**
@@ -96,7 +98,7 @@ public final class ResponseEntity {
      * @return {@link ResponseEntity } object with given status, and given data in text format
      */
     public static Builder textResponse(String text) {
-        return new ResponseEntityFactory().response(ContentType.TEXT.get(), text);
+        return new ResponseEntityFactory().response(ContentType.TEXT_PLAIN.get(), text);
     }
 
     /**

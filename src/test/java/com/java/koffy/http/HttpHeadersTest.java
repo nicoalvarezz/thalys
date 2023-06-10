@@ -1,5 +1,6 @@
 package com.java.koffy.http;
 
+import com.java.koffy.http.Headers.ContentType;
 import com.java.koffy.http.Headers.HttpHeader;
 import com.java.koffy.http.Headers.HttpHeaders;
 import org.junit.jupiter.api.Test;
@@ -17,21 +18,21 @@ public class HttpHeadersTest {
 
     @Test
     public void testAddHeaders() {
-        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.JSON.get());
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.APPLICATION_JSON.get());
 
         assertTrue(headers.containsHeader(HttpHeader.CONTENT_TYPE.get()));
-        assertEquals(ContentType.JSON.get(), headers.get(HttpHeader.CONTENT_TYPE.get()));
+        assertEquals(ContentType.APPLICATION_JSON.get(), headers.get(HttpHeader.CONTENT_TYPE.get()));
         assertEquals(1, headers.size());
     }
 
     @Test
     public void testAddMultipleHeaders() {
-        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.JSON.get());
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.APPLICATION_JSON.get());
         headers.add(HttpHeader.LOCATION.get(), "location");
 
         assertTrue(headers.containsHeader(HttpHeader.CONTENT_TYPE.get()));
         assertTrue(headers.containsHeader(HttpHeader.LOCATION.get()));
-        assertEquals(ContentType.JSON.get(), headers.get(HttpHeader.CONTENT_TYPE.get()));
+        assertEquals(ContentType.APPLICATION_JSON.get(), headers.get(HttpHeader.CONTENT_TYPE.get()));
         assertEquals(HttpHeader.LOCATION.get(), headers.get("location"));
         assertEquals(2, headers.size());
     }
@@ -66,15 +67,15 @@ public class HttpHeadersTest {
 
     @Test
     public void testGetHeader() {
-        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.JPEG.get());
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.IMAGE_JPEG.get());
 
-        assertEquals(ContentType.JPEG.get(), headers.get(HttpHeader.CONTENT_TYPE.get()));
+        assertEquals(ContentType.IMAGE_JPEG.get(), headers.get(HttpHeader.CONTENT_TYPE.get()));
         assertNull(headers.get(HttpHeader.LOCATION.get()));
     }
 
     @Test
     public void testContainsHeader() {
-        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.XML.get());
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.APPLICATION_XML.get());
 
         assertTrue(headers.containsHeader(HttpHeader.CONTENT_TYPE.get()));
         assertFalse(headers.containsHeader(HttpHeader.SERVER.get()));
@@ -82,7 +83,7 @@ public class HttpHeadersTest {
 
     @Test
     public void testRemoveHeader() {
-        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.XML.get());
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.APPLICATION_XML.get());
 
         assertEquals(1, headers.size());
 
@@ -100,7 +101,7 @@ public class HttpHeadersTest {
         String headerValue = "x-custom-header-value";
 
         headers.add(customHeader, headerValue);
-        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.TEXT.get());
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.TEXT_PLAIN.get());
         headers.add(HttpHeader.SERVER.get(), "Server");
 
         Set<String> headerNames = headers.getAllHeaderNames();
@@ -112,7 +113,7 @@ public class HttpHeadersTest {
 
     @Test
     public void testHeadersSize() {
-        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.TEXT.get());
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.TEXT_PLAIN.get());
         assertEquals(1, headers.size());
 
         headers.add(HttpHeader.SERVER.get(), "Server");
@@ -127,7 +128,7 @@ public class HttpHeadersTest {
     public void testHeadersIsEmpty() {
         assertTrue(headers.isEmpty());
 
-        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.TEXT.get());
+        headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.TEXT_PLAIN.get());
         assertFalse(headers.isEmpty());
     }
 }
