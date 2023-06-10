@@ -3,7 +3,7 @@ package com.java.koffy.http;
 /**
  * HTTP Content-Type.
  */
-enum ContentType {
+public enum ContentType {
 
     JSON("application/json"),
     TEXT("text/plain"),
@@ -28,5 +28,25 @@ enum ContentType {
      */
     public String get() {
         return contentType;
+    }
+
+    public static ContentType contentTypeOf(String contentType) {
+        ContentType currentContentType = resolve(contentType);
+
+        if (currentContentType == null) {
+            throw new IllegalArgumentException("No matching content for header:" + contentType);
+        }
+        return currentContentType;
+    }
+
+    private static ContentType resolve(String contentType) {
+        ContentType[] contentTypes = values();
+
+        for (ContentType currentContentType : contentTypes) {
+            if (currentContentType.get().equals(contentType)) {
+                return currentContentType;
+            }
+        }
+        return null;
     }
 }
