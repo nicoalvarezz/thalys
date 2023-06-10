@@ -151,15 +151,15 @@ public enum HttpHeader {
     }
 
     /**
-     * Get header name.
-     * @return {@link String}
+     * Returns the {@link String} value of a specific header name..
+     * @return {@link String} HTTP header name
      */
     public String get() {
         return headerName;
     }
 
     /**
-     * Get HttpHeader from a given string.
+     * Returns the {@link HttpHeader} of a specif {@link String} header name.
      * @param header {@link String}
      * @return {@link HttpHeader}
      * @throws IllegalArgumentException

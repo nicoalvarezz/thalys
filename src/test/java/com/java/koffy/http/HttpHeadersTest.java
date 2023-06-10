@@ -1,5 +1,6 @@
 package com.java.koffy.http;
 
+import com.java.koffy.http.Headers.ContentType;
 import com.java.koffy.http.Headers.HttpHeader;
 import com.java.koffy.http.Headers.HttpHeaders;
 import org.junit.jupiter.api.Test;
