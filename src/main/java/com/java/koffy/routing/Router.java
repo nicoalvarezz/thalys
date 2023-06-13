@@ -1,10 +1,12 @@
 package com.java.koffy.routing;
 
+import com.java.koffy.exception.ConstraintViolationException;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.HttpNotFoundException;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
 import com.java.koffy.http.Middleware;
+import com.java.koffy.utils.Validator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +43,14 @@ public class Router {
         return route;
     }
 
+    private Route registerRoute(HttpMethod method, String uri,
+                                Function<RequestEntity, ResponseEntity> action, Class<?> validatable) {
+        Route route = new Route(uri, action);
+        route.setValidatable(validatable);
+        routes.get(method).add(route);
+        return route;
+    }
+
     /**
      * Register route for GET request.
      * @param uri request URI
@@ -57,6 +67,10 @@ public class Router {
      */
     public Route post(String uri, Function<RequestEntity, ResponseEntity> action) {
         return registerRoute(HttpMethod.POST, uri, action);
+    }
+
+    public Route post(String uri, Function<RequestEntity, ResponseEntity> action, Class<?> validatable) {
+        return registerRoute(HttpMethod.POST, uri, action, validatable);
     }
 
     /**
@@ -111,9 +125,12 @@ public class Router {
      * @return {@link ResponseEntity}
      * @throws HttpNotFoundException Route not found.
      */
-    public ResponseEntity resolve(RequestEntity request) {
+    public ResponseEntity resolve(RequestEntity request) throws ConstraintViolationException {
         if (request.getRoute().isPresent()) {
             Route route = request.getRoute().get();
+            if (route.getValidatable() != null) {
+                request.setSerialized(Validator.validate(request.getPostData(), route.getValidatable()));
+            }
             if (route.hasMiddlewares()) {
                 return runMiddlewares(request, route.getMiddlewares(), route.getAction());
             }

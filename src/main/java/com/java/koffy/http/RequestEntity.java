@@ -44,6 +44,8 @@ public final class RequestEntity {
      */
     private HttpHeaders headers;
 
+    private Object serialized;
+
     private RequestEntity(Builder builder) {
         this.uri = builder.uri;
         this.method = builder.method;
@@ -137,6 +139,14 @@ public final class RequestEntity {
             return route.get().parseParameter(uri);
         }
         return new HashMap<>();
+    }
+
+    public void setSerialized(Object dto) {
+        this.serialized = dto;
+    }
+
+    public <T> T getSerialized(Class<T> type) {
+       return type.cast(serialized);
     }
 
     /**

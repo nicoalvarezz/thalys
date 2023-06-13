@@ -43,6 +43,8 @@ public class Route {
      */
     private List<Middleware> middlewares = new ArrayList<>();
 
+    private Class<?> validatable;
+
     public Route(String uri, Function<RequestEntity, ResponseEntity> action) {
         this.uri = uri;
         this.action = action;
@@ -51,6 +53,14 @@ public class Route {
                         .matcher(uri).results()
                         .map(matchResult -> matchResult.group(1))
                         .toList();
+    }
+
+    public void setValidatable(Class<?> validatable) {
+        this.validatable = validatable;
+    }
+
+    public Class<?> getValidatable() {
+        return validatable;
     }
 
     /**
