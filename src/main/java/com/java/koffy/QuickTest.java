@@ -1,7 +1,8 @@
 package com.java.koffy;
 
 
-import javax.validation.constraints.Email;
+import com.java.koffy.validations.annotations.Email;
+
 import javax.validation.constraints.NotNull;
 
 public class QuickTest {

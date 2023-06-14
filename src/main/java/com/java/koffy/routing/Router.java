@@ -1,13 +1,13 @@
 package com.java.koffy.routing;
 
-import com.java.koffy.exception.ConstraintViolationException;
 import com.java.koffy.http.HttpMethod;
-import com.java.koffy.http.HttpNotFoundException;
+import com.java.koffy.exception.HttpNotFoundException;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
 import com.java.koffy.http.Middleware;
 import com.java.koffy.utils.Validator;
 
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -125,7 +125,7 @@ public class Router {
      * @return {@link ResponseEntity}
      * @throws HttpNotFoundException Route not found.
      */
-    public ResponseEntity resolve(RequestEntity request) throws ConstraintViolationException {
+    public ResponseEntity resolve(RequestEntity request) throws ConstraintViolationException, HttpNotFoundException {
         if (request.getRoute().isPresent()) {
             Route route = request.getRoute().get();
             if (route.getValidatable() != null) {

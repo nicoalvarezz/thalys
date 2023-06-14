@@ -2,9 +2,9 @@ package com.java.koffy.routing;
 
 import com.java.koffy.App;
 import com.java.koffy.http.Headers.HttpHeader;
-import com.java.koffy.http.Headers.HttpHeaders;
 import com.java.koffy.http.HttpStatus;
-import com.java.koffy.http.Middleware;
+import com.java.koffy.routing.helpers.MockMiddleware;
+import com.java.koffy.routing.helpers.MockMiddleware2;
 import com.java.koffy.server.HttpServer;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.RequestEntity;
@@ -183,23 +183,31 @@ public class RouterTest {
         assertEquals("Stopped", response.getContent());
         assertFalse(response.getHeader(HttpHeader.SERVER.get()).isPresent());
     }
-}
 
-
-class MockMiddleware implements Middleware {
-
-    @Override
-    public ResponseEntity handle(RequestEntity request, Function<RequestEntity, ResponseEntity> next) {
-        ResponseEntity response = next.apply(request);
-        response.setHeader(HttpHeader.SERVER.get(), "fake-test-server");
-        return response;
+    private static Stream<Arguments> validatables() {
+        return Stream.of(
+                Arguments.of(String.class),
+                Arguments.of(Integer.class),
+                Arguments.of(Float.class),
+                Arguments.of(HttpStatus.class)
+                // Addd a custom when I have them
+        );
     }
-}
 
-class MockMiddleware2 implements Middleware {
+    @ParameterizedTest
+    @MethodSource("validatables")
+    public void testRouterWithValidatable(Class<?> validatable) {
+        String uri = "/";
+        ResponseEntity expectedResponse = testsJsonResponse("message", "response");
 
-    @Override
-    public ResponseEntity handle(RequestEntity request, Function<RequestEntity, ResponseEntity> next) {
-        return ResponseEntity.textResponse("Stopped").build();
+        router.post(uri, (request) -> expectedResponse, validatable);
+        mockingRouterHandling(uri, HttpMethod.POST);
+        Optional<Route> route = router.resolveRoute(uri, HttpMethod.POST);
+
+        assertEquals(uri, mockServer.getRequest().getUri());
+        assertEquals(HttpMethod.POST, mockServer.getRequest().getMethod());
+        assertEquals(expectedResponse.getContent(), actualContent());
+        assertEquals(route.get().getValidatable(), validatable);
     }
+
 }

@@ -12,7 +12,7 @@ public class Main {
                 .build());
 
         app.router().post("/test-post", (request) ->
-                ResponseEntity.jsonResponse(request.getPostData()).status(HttpStatus.OK).build());
+                ResponseEntity.jsonResponse(request.getPostData()).status(HttpStatus.OK).build(), QuickTest.class);
 
         app.router().get("/test", (request) ->
             ResponseEntity.jsonResponse(request.getQueryData()).status(HttpStatus.OK).build());
