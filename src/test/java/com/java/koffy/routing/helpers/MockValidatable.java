@@ -1,19 +1,15 @@
 package com.java.koffy.routing.helpers;
 
-import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Negative;
 import javax.validation.constraints.NegativeOrZero;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.PastOrPresent;
@@ -25,18 +21,6 @@ import java.math.BigDecimal;
 import java.sql.Date;
 
 public class MockValidatable {
-
-    @Email
-    private String email;
-
-    @NotNull
-    private String notNull;
-
-    @NotBlank
-    private String notBlank;
-
-    @AssertFalse
-    private boolean falseAssertion;
 
     @AssertTrue
     private boolean trueAssertion;
@@ -90,10 +74,6 @@ public class MockValidatable {
     private String size;
 
     public MockValidatable(String email, String notNull, String notBlank, boolean falseAssertion, boolean trueAssertion, BigDecimal decimalMax, BigDecimal decimalMin, BigDecimal digits, Date future, Date futureOrPresent, int max, int min, int negative, int negativeOrZero, Object allowNull, Date date, Date pastOrPresent, String pattern, int positive, int positiveOrZero, String size) {
-        this.email = email;
-        this.notNull = notNull;
-        this.notBlank = notBlank;
-        this.falseAssertion = falseAssertion;
         this.trueAssertion = trueAssertion;
         this.decimalMax = decimalMax;
         this.decimalMin = decimalMin;
