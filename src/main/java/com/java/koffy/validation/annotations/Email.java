@@ -1,6 +1,6 @@
-package com.java.koffy.validations.annotations;
+package com.java.koffy.validation.annotations;
 
-import com.java.koffy.validations.validators.EmailValidator;
+import com.java.koffy.validation.validators.EmailValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

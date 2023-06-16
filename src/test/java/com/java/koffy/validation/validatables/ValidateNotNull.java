@@ -1,4 +1,4 @@
-package com.java.koffy.routing.helpers;
+package com.java.koffy.validation.validatables;
 
 import javax.validation.constraints.NotNull;
 

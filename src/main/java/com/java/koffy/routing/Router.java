@@ -34,7 +34,7 @@ public class Router {
     /**
      * Register {@link Route} to the router.
      * @param method {@link HttpMethod}
-     * @param action {@link Function< RequestEntity ,  ResponseEntity >} action assigned to the route
+     * @param action {@link Function<RequestEntity, ResponseEntity>} action assigned to the route
      * @return {@link Route}
      */
     private Route registerRoute(HttpMethod method, String uri, Function<RequestEntity, ResponseEntity> action) {

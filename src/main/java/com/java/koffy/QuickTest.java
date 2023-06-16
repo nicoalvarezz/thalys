@@ -1,7 +1,7 @@
 package com.java.koffy;
 
 
-import com.java.koffy.validations.annotations.Email;
+import com.java.koffy.validation.annotations.Email;
 
 import javax.validation.constraints.NotNull;
 

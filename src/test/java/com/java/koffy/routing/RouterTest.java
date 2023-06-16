@@ -9,11 +9,22 @@ import com.java.koffy.server.HttpServer;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
+import com.java.koffy.validation.validatables.ValidateAssertFalse;
+import com.java.koffy.validation.validatables.ValidateAssertTrue;
+import com.java.koffy.validation.validatables.ValidateEmail;
+import com.java.koffy.validation.validatables.ValidateMax;
+import com.java.koffy.validation.validatables.ValidateMaxDecimal;
+import com.java.koffy.validation.validatables.ValidateMin;
+import com.java.koffy.validation.validatables.ValidateNegative;
+import com.java.koffy.validation.validatables.ValidateNegativeOrZero;
+import com.java.koffy.validation.validatables.ValidateNotBlank;
+import com.java.koffy.validation.validatables.ValidateNotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
@@ -186,11 +197,16 @@ public class RouterTest {
 
     private static Stream<Arguments> validatables() {
         return Stream.of(
-                Arguments.of(String.class),
-                Arguments.of(Integer.class),
-                Arguments.of(Float.class),
-                Arguments.of(HttpStatus.class)
-                // Addd a custom when I have them
+                Arguments.of(ValidateAssertFalse.class),
+                Arguments.of(ValidateNegative.class),
+                Arguments.of(ValidateNegativeOrZero.class),
+                Arguments.of(ValidateAssertTrue.class),
+                Arguments.of(ValidateEmail.class),
+                Arguments.of(ValidateMax.class),
+                Arguments.of(ValidateMin.class),
+                Arguments.of(ValidateMaxDecimal.class),
+                Arguments.of(ValidateNotBlank.class),
+                Arguments.of(ValidateNotNull.class)
         );
     }
 

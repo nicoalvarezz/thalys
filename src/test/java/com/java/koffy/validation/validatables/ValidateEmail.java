@@ -1,6 +1,6 @@
-package com.java.koffy.routing.helpers;
+package com.java.koffy.validation.validatables;
 
-import com.java.koffy.validations.annotations.Email;
+import com.java.koffy.validation.annotations.Email;
 
 public class ValidateEmail {
 

@@ -1,22 +1,23 @@
-package com.java.koffy.routing;
+package com.java.koffy.validation;
 
-import com.java.koffy.routing.helpers.ValidateAssertFalse;
-import com.java.koffy.routing.helpers.ValidateAssertTrue;
-import com.java.koffy.routing.helpers.ValidateDigits;
-import com.java.koffy.routing.helpers.ValidateEmail;
-import com.java.koffy.routing.helpers.ValidateFuture;
-import com.java.koffy.routing.helpers.ValidateMaxDecimal;
-import com.java.koffy.routing.helpers.ValidateMinDecimal;
-import com.java.koffy.routing.helpers.ValidateNotBlank;
-import com.java.koffy.routing.helpers.ValidateNotNull;
+import com.java.koffy.validation.validatables.ValidateAssertFalse;
+import com.java.koffy.validation.validatables.ValidateAssertTrue;
+import com.java.koffy.validation.validatables.ValidateDigits;
+import com.java.koffy.validation.validatables.ValidateEmail;
+import com.java.koffy.validation.validatables.ValidateMax;
+import com.java.koffy.validation.validatables.ValidateMaxDecimal;
+import com.java.koffy.validation.validatables.ValidateMin;
+import com.java.koffy.validation.validatables.ValidateMinDecimal;
+import com.java.koffy.validation.validatables.ValidateNegative;
+import com.java.koffy.validation.validatables.ValidateNegativeOrZero;
+import com.java.koffy.validation.validatables.ValidateNotBlank;
+import com.java.koffy.validation.validatables.ValidateNotNull;
 import com.java.koffy.utils.Validator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import javax.validation.ConstraintViolationException;
-import java.math.BigDecimal;
-import java.sql.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Class to test that some of the javax validations
+ */
 public class ValidationTest {
 
     private static Map<String, String> constructData(String field, String value) {
@@ -133,7 +137,7 @@ public class ValidationTest {
 
     @Test
     public void testMinDecimalValidation() {
-        Map<String, String> data = constructData("minDecimal", "1.0");
+        Map<String, String> data = constructData("minDecimal", "1.5");
         ValidateMinDecimal maxDecimal = Validator.validate(data, ValidateMinDecimal.class);
         assertEquals(data.get("minDecimal"), maxDecimal.get().toString());
     }
@@ -153,18 +157,75 @@ public class ValidationTest {
         assertEquals(data.get("digits"), digits.get().toString());
     }
 
-//    @Test
-//    public void testDigitsValidationException() {
-//        String invalidEmailMessage = "Validation failed for field '" + "digits" + "': " + "value out of limits";
-//        ConstraintViolationException exception = assertThrows(ConstraintViolationException.class,
-//                () -> Validator.validate(constructData("digits", "123456.789"), ValidateDigits.class));
-//        assertEquals(invalidEmailMessage, exception.getMessage());
-//    }
-//
-//    @Test
-//    public void testFutureValidation() {
-//        Map<String, String> data = constructData("future", new Date(System.currentTimeMillis() + 1000).toString());
-//        ValidateFuture future = Validator.validate(data, ValidateFuture.class);
-//        assertEquals(data.get("digits"), future.get().toString());
-//    }
+    @Test
+    public void testDigitsValidationException() {
+        String invalidEmailMessage = "Validation failed for field '" + "digits" + "': " + "value out of limits";
+        ConstraintViolationException exception = assertThrows(ConstraintViolationException.class,
+                () -> Validator.validate(constructData("digits", "123456.789"), ValidateDigits.class));
+        assertEquals(invalidEmailMessage, exception.getMessage());
+    }
+
+    @Test
+    public void testMaxValidation() {
+        Map<String, String> data = constructData("max", "90");
+        ValidateMax max = Validator.validate(data, ValidateMax.class);
+        assertEquals(Integer.parseInt(data.get("max")), max.get());
+    }
+
+    @Test
+    public void testMaxValidationException() {
+        String invalidEmailMessage = "Validation failed for field '" + "max" + "': " + "value must be lower";
+        ConstraintViolationException exception = assertThrows(ConstraintViolationException.class,
+                () -> Validator.validate(constructData("max", "101"), ValidateMax.class));
+        assertEquals(invalidEmailMessage, exception.getMessage());
+    }
+
+    @Test
+    public void testMinValidation() {
+        Map<String, String> data = constructData("min", "50");
+        ValidateMin min = Validator.validate(data, ValidateMin.class);
+        assertEquals(Integer.parseInt(data.get("min")), min.get());
+    }
+
+    @Test
+    public void testMinValidationException() {
+        String invalidEmailMessage = "Validation failed for field '" + "min" + "': " + "value must be higher";
+        ConstraintViolationException exception = assertThrows(ConstraintViolationException.class,
+                () -> Validator.validate(constructData("min", "37"), ValidateMin.class));
+        assertEquals(invalidEmailMessage, exception.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, -2, -3, -1223123, -50})
+    public void testNegativeValidation(int value) {
+        Map<String, String> data = constructData("negative", String.valueOf(value));
+        ValidateNegative min = Validator.validate(data, ValidateNegative.class);
+        assertEquals(Integer.parseInt(data.get("negative")), min.get());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 3, 45345345, 2, 5})
+    public void testNegativeValidationException(int value) {
+        String invalidEmailMessage = "Validation failed for field '" + "negative" + "': " + "value must be negative";
+        ConstraintViolationException exception = assertThrows(ConstraintViolationException.class,
+                () -> Validator.validate(constructData("negative", String.valueOf(value)), ValidateNegative.class));
+        assertEquals(invalidEmailMessage, exception.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, -2, -3, -4, 0})
+    public void testNegativeOrZeroValidation(int value) {
+        Map<String, String> data = constructData("negativeOrZero", String.valueOf(value));
+        ValidateNegativeOrZero negativeOrZero = Validator.validate(data, ValidateNegativeOrZero.class);
+        assertEquals(Integer.parseInt(data.get("negativeOrZero")), negativeOrZero.get());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 4, 5})
+    public void testNegativeOrZeroValidationException(int value) {
+        String invalidEmailMessage = "Validation failed for field '" + "negativeOrZero" + "': " + "value must be negative or zero";
+        ConstraintViolationException exception = assertThrows(ConstraintViolationException.class,
+                () -> Validator.validate(constructData("negativeOrZero", String.valueOf(value)), ValidateNegativeOrZero.class));
+        assertEquals(invalidEmailMessage, exception.getMessage());
+    }
 }
