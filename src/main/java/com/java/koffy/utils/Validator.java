@@ -17,6 +17,16 @@ public class Validator {
 
     private final static javax.validation.Validator VALIDATOR = VALIDATOR_FACTORY.getValidator();
 
+    /**
+     * Method used to validate request bodies or params by serialising their validatable classes.
+     * These classes contain the annotations and constraints that will be thrown during the serialisation if broken.
+     * The constraint violations is used to gather all the exceptions and throw an error.
+     * If no violation happened the serialised object is returned.
+     * @param value data to be serialised
+     * @param clazz validatable class
+     * @return serialized instance
+     * @throws {@link ConstraintViolationException}
+     */
     public static <T> T validate(Map<String, String> value, Class<?> clazz) {
         T instance = MAPPER.convertValue(value, MAPPER.getTypeFactory().constructType(clazz));
 

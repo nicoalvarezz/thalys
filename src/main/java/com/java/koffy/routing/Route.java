@@ -43,6 +43,9 @@ public class Route {
      */
     private List<Middleware> middlewares = new ArrayList<>();
 
+    /**
+     * Validatable class
+     */
     private Class<?> validatable;
 
     public Route(String uri, Function<RequestEntity, ResponseEntity> action) {
@@ -55,10 +58,19 @@ public class Route {
                         .toList();
     }
 
+    /**
+     * Set validatable class
+     * @param validatable
+     */
     public void setValidatable(Class<?> validatable) {
         this.validatable = validatable;
     }
 
+    /**
+     * Get validatable class
+     * It returns Class that will be used to validate the post body
+     * @return {@link Class}
+     */
     public Class<?> getValidatable() {
         return validatable;
     }

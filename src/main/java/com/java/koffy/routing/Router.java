@@ -69,6 +69,12 @@ public class Router {
         return registerRoute(HttpMethod.POST, uri, action);
     }
 
+    /**
+     * Register route for POST request with validatable
+     * @param uri request URI
+     * @param action URI action
+     * @param validatable Validatable class
+     */
     public Route post(String uri, Function<RequestEntity, ResponseEntity> action, Class<?> validatable) {
         return registerRoute(HttpMethod.POST, uri, action, validatable);
     }
@@ -121,6 +127,7 @@ public class Router {
     /**
      * Returns the response assigned to the action of the {@link Route}.
      * This method is also in charge of running the middlewares if this {@link Route} has any middleware assigned.
+     * It also validates the request body against the validatable class if one was given.
      * @param request {@link RequestEntity}
      * @return {@link ResponseEntity}
      * @throws HttpNotFoundException Route not found.

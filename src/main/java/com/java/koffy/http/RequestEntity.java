@@ -44,6 +44,9 @@ public final class RequestEntity {
      */
     private HttpHeaders headers;
 
+    /**
+     * Serialised objected from validation
+     */
     private Object serialized;
 
     private RequestEntity(Builder builder) {
@@ -141,10 +144,19 @@ public final class RequestEntity {
         return new HashMap<>();
     }
 
-    public void setSerialized(Object dto) {
-        this.serialized = dto;
+    /**
+     * Saving serialized object after validation
+     * @param serialized
+     */
+    public void setSerialized(Object serialized) {
+        this.serialized = serialized;
     }
 
+    /***
+     * Return the serialized object given a specific class type
+     * @param type
+     * @return Serialized object
+     */
     public <T> T getSerialized(Class<T> type) {
        return type.cast(serialized);
     }
