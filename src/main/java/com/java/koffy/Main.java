@@ -19,6 +19,11 @@ public class Main {
 
         app.router().get("/redirect", (request) -> ResponseEntity.redirectResponse("/test/5"));
 
+//        app.router().post("/test-email", (request) -> {
+//            QuickTest quickTest = request.getSerialized(QuickTest.class);
+//            return ResponseEntity.textResponse(quickTest.getEmail()).build();
+//        }, QuickTest.class);
+
 //        app.router().get("/middlewares", (request -> ResponseEntity.jsonResponse(new HashMap<>() {{
 //            put("message", "OK");
 //        }}).build())).setMiddlewares(new ArrayList<>() {{

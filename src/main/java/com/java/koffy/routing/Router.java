@@ -1,11 +1,13 @@
 package com.java.koffy.routing;
 
 import com.java.koffy.http.HttpMethod;
-import com.java.koffy.http.HttpNotFoundException;
+import com.java.koffy.exception.HttpNotFoundException;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
 import com.java.koffy.http.Middleware;
+import com.java.koffy.utils.Validator;
 
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,11 +34,19 @@ public class Router {
     /**
      * Register {@link Route} to the router.
      * @param method {@link HttpMethod}
-     * @param action {@link Function< RequestEntity ,  ResponseEntity >} action assigned to the route
+     * @param action {@link Function<RequestEntity, ResponseEntity>} action assigned to the route
      * @return {@link Route}
      */
     private Route registerRoute(HttpMethod method, String uri, Function<RequestEntity, ResponseEntity> action) {
         Route route = new Route(uri, action);
+        routes.get(method).add(route);
+        return route;
+    }
+
+    private Route registerRoute(HttpMethod method, String uri,
+                                Function<RequestEntity, ResponseEntity> action, Class<?> validatable) {
+        Route route = new Route(uri, action);
+        route.setValidatable(validatable);
         routes.get(method).add(route);
         return route;
     }
@@ -57,6 +67,16 @@ public class Router {
      */
     public Route post(String uri, Function<RequestEntity, ResponseEntity> action) {
         return registerRoute(HttpMethod.POST, uri, action);
+    }
+
+    /**
+     * Register route for POST request with validatable
+     * @param uri request URI
+     * @param action URI action
+     * @param validatable Validatable class
+     */
+    public Route post(String uri, Function<RequestEntity, ResponseEntity> action, Class<?> validatable) {
+        return registerRoute(HttpMethod.POST, uri, action, validatable);
     }
 
     /**
@@ -107,13 +127,17 @@ public class Router {
     /**
      * Returns the response assigned to the action of the {@link Route}.
      * This method is also in charge of running the middlewares if this {@link Route} has any middleware assigned.
+     * It also validates the request body against the validatable class if one was given.
      * @param request {@link RequestEntity}
      * @return {@link ResponseEntity}
      * @throws HttpNotFoundException Route not found.
      */
-    public ResponseEntity resolve(RequestEntity request) {
+    public ResponseEntity resolve(RequestEntity request) throws ConstraintViolationException, HttpNotFoundException {
         if (request.getRoute().isPresent()) {
             Route route = request.getRoute().get();
+            if (route.getValidatable() != null) {
+                request.setSerialized(Validator.validate(request.getPostData(), route.getValidatable()));
+            }
             if (route.hasMiddlewares()) {
                 return runMiddlewares(request, route.getMiddlewares(), route.getAction());
             }

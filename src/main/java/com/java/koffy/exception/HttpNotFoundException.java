@@ -1,4 +1,4 @@
-package com.java.koffy.http;
+package com.java.koffy.exception;
 
 public class HttpNotFoundException extends RuntimeException {
 

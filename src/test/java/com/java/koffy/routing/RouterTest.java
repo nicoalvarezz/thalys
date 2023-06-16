@@ -2,18 +2,29 @@ package com.java.koffy.routing;
 
 import com.java.koffy.App;
 import com.java.koffy.http.Headers.HttpHeader;
-import com.java.koffy.http.Headers.HttpHeaders;
 import com.java.koffy.http.HttpStatus;
-import com.java.koffy.http.Middleware;
+import com.java.koffy.routing.helpers.MockMiddleware;
+import com.java.koffy.routing.helpers.MockMiddleware2;
 import com.java.koffy.server.HttpServer;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
+import com.java.koffy.validation.validatables.ValidateAssertFalse;
+import com.java.koffy.validation.validatables.ValidateAssertTrue;
+import com.java.koffy.validation.validatables.ValidateEmail;
+import com.java.koffy.validation.validatables.ValidateMax;
+import com.java.koffy.validation.validatables.ValidateMaxDecimal;
+import com.java.koffy.validation.validatables.ValidateMin;
+import com.java.koffy.validation.validatables.ValidateNegative;
+import com.java.koffy.validation.validatables.ValidateNegativeOrZero;
+import com.java.koffy.validation.validatables.ValidateNotBlank;
+import com.java.koffy.validation.validatables.ValidateNotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
@@ -183,23 +194,36 @@ public class RouterTest {
         assertEquals("Stopped", response.getContent());
         assertFalse(response.getHeader(HttpHeader.SERVER.get()).isPresent());
     }
-}
 
-
-class MockMiddleware implements Middleware {
-
-    @Override
-    public ResponseEntity handle(RequestEntity request, Function<RequestEntity, ResponseEntity> next) {
-        ResponseEntity response = next.apply(request);
-        response.setHeader(HttpHeader.SERVER.get(), "fake-test-server");
-        return response;
+    private static Stream<Arguments> validatables() {
+        return Stream.of(
+                Arguments.of(ValidateAssertFalse.class),
+                Arguments.of(ValidateNegative.class),
+                Arguments.of(ValidateNegativeOrZero.class),
+                Arguments.of(ValidateAssertTrue.class),
+                Arguments.of(ValidateEmail.class),
+                Arguments.of(ValidateMax.class),
+                Arguments.of(ValidateMin.class),
+                Arguments.of(ValidateMaxDecimal.class),
+                Arguments.of(ValidateNotBlank.class),
+                Arguments.of(ValidateNotNull.class)
+        );
     }
-}
 
-class MockMiddleware2 implements Middleware {
+    @ParameterizedTest
+    @MethodSource("validatables")
+    public void testRouterWithValidatable(Class<?> validatable) {
+        String uri = "/";
+        ResponseEntity expectedResponse = testsJsonResponse("message", "response");
 
-    @Override
-    public ResponseEntity handle(RequestEntity request, Function<RequestEntity, ResponseEntity> next) {
-        return ResponseEntity.textResponse("Stopped").build();
+        router.post(uri, (request) -> expectedResponse, validatable);
+        mockingRouterHandling(uri, HttpMethod.POST);
+        Optional<Route> route = router.resolveRoute(uri, HttpMethod.POST);
+
+        assertEquals(uri, mockServer.getRequest().getUri());
+        assertEquals(HttpMethod.POST, mockServer.getRequest().getMethod());
+        assertEquals(expectedResponse.getContent(), actualContent());
+        assertEquals(route.get().getValidatable(), validatable);
     }
+
 }

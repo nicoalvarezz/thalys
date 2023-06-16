@@ -77,4 +77,27 @@ public class RouteTest {
         assertTrue(route.hasParameters());
         assertEquals(expectedParameters, route.parseParameter(uri));
     }
+
+    @ParameterizedTest
+    @MethodSource("routeWithNoParameters")
+    public void routeWithVlaidatable(String uri) {
+        Route route = new Route(uri, (request) -> testsJsonResponse("message", "test"));
+        route.setValidatable(String.class);
+
+        assertTrue(route.matches(uri));
+        assertFalse(route.hasParameters());
+        assertEquals(route.getValidatable(), String.class);
+    }
+
+    @ParameterizedTest
+    @MethodSource("routeWithParameters")
+    public void routeWithParametersAndValidatable(String definition, String uri, Map<String , String> expectedParameters) {
+        Route route = new Route(definition, (request) -> testsJsonResponse("message", "test"));
+        route.setValidatable(String.class);
+
+        assertTrue(route.hasParameters());
+        assertEquals(expectedParameters, route.parseParameter(uri));
+        assertEquals(route.getValidatable(), String.class);
+
+    }
 }
