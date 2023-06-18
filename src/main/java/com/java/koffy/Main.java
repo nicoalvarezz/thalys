@@ -3,6 +3,8 @@ package com.java.koffy;
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.ResponseEntity;
 
+import java.util.HashMap;
+
 public class Main {
 
     public static void main(String[] args) throws Exception {
@@ -29,6 +31,14 @@ public class Main {
 //        }}).build())).setMiddlewares(new ArrayList<>() {{
 //            add(AuthMiddleware.class);
 //        }});
+
+        app.router().get("/session", (request) -> ResponseEntity.jsonResponse(new HashMap<>() {{
+            app.session().setAttribute("hi", "hello");
+            put("session_id", app.session().getId());
+            put("hi_session", app.session().getAttribute("hi").toString());
+            put("session_creation_time", String.valueOf(app.session().getCreationTime()));
+            put("asttributes_size", String.valueOf(app.session().getAttributeNames().size()));
+        }}).build());
 
         app.run(8000);
     }

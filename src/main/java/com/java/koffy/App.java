@@ -3,6 +3,7 @@ package com.java.koffy;
 import com.java.koffy.container.Container;
 import com.java.koffy.routing.Router;
 import com.java.koffy.server.NativeJettyServer;
+import com.java.koffy.session.Session;
 
 /**
  * This class represents the main application class. It serves as the main entry point and contains
@@ -36,6 +37,10 @@ public class App {
      */
     public Router router() {
         return router;
+    }
+
+    public Session session() {
+        return server.getSession();
     }
 
     /**

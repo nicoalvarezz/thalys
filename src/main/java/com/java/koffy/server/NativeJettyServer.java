@@ -8,13 +8,16 @@ import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
 import com.java.koffy.routing.Router;
+import com.java.koffy.session.Session;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SessionIdManager;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.session.DefaultSessionIdManager;
+import org.eclipse.jetty.server.session.SessionHandler;
 
 import javax.validation.ConstraintViolationException;
 import java.io.BufferedReader;
@@ -42,6 +45,8 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
      */
     private final Server jettyServer;
 
+    private Session session;
+
     /**
      * Jackson mapper.
      */
@@ -54,9 +59,11 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
 
     public NativeJettyServer() {
         this.jettyServer = new Server();
-        this.jettyServer.setHandler(this);
-        HandlerList handlerList = new HandlerList();
-        handlerList.addHandler(this);
+        SessionIdManager sessionIdManager = new DefaultSessionIdManager(jettyServer);
+        jettyServer.setSessionIdManager(sessionIdManager);
+        SessionHandler sessionHandler = new SessionHandler();
+        sessionHandler.setSessionIdManager(sessionIdManager);
+        this.jettyServer.setHandler(sessionHandler);
     }
 
     /**
@@ -74,6 +81,8 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
      * @throws Exception
      */
     public void startServer() throws Exception {
+        SessionHandler sessionHandler = jettyServer.getChildHandlerByClass(SessionHandler.class);
+        sessionHandler.setHandler(this);
         jettyServer.start();
         jettyServer.join();
     }
@@ -116,11 +125,21 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
     @Override
     public void handle(String target, Request request, HttpServletRequest httpServletRequest,
                        HttpServletResponse httpServletResponse) throws IOException {
+        setSession(httpServletRequest);
         requestEntity = buildRequest(request);
         responseEntity = buildResponse();
         handleServerResponse(httpServletResponse);
         request.setHandled(true);
     }
+
+    public void setSession(HttpServletRequest request) {
+        this.session = new Session(request.getSession());
+    }
+
+    public Session getSession() {
+        return session;
+    }
+
 
     /**
      * Handle server response.

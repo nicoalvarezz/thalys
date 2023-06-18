@@ -44,7 +44,7 @@ public class Route {
     private List<Middleware> middlewares = new ArrayList<>();
 
     /**
-     * Validatable class
+     * Validatable class.
      */
     private Class<?> validatable;
 
@@ -59,7 +59,7 @@ public class Route {
     }
 
     /**
-     * Set validatable class
+     * Set validatable class.
      * @param validatable
      */
     public void setValidatable(Class<?> validatable) {
@@ -67,7 +67,7 @@ public class Route {
     }
 
     /**
-     * Get validatable class
+     * Get validatable class.
      * It returns Class that will be used to validate the post body
      * @return {@link Class}
      */

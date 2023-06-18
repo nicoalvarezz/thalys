@@ -70,7 +70,7 @@ public class Router {
     }
 
     /**
-     * Register route for POST request with validatable
+     * Register route for POST request with validatable.
      * @param uri request URI
      * @param action URI action
      * @param validatable Validatable class
