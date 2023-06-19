@@ -1,5 +1,7 @@
 package com.java.koffy.session;
 
+import jakarta.servlet.ServletContext;
+
 import java.util.List;
 
 public interface SessionDriver {
@@ -16,5 +18,11 @@ public interface SessionDriver {
 
     void removeAttribute(String key);
 
-    void flash();
+    void flash(String key, Object value);
+
+    ServletContext getServletContext();
+
+    void invalidate();
+
+    boolean has(String key);
 }

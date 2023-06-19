@@ -58,12 +58,12 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
     private Router router;
 
     public NativeJettyServer() {
-        this.jettyServer = new Server();
+        jettyServer = new Server();
         SessionIdManager sessionIdManager = new DefaultSessionIdManager(jettyServer);
         jettyServer.setSessionIdManager(sessionIdManager);
         SessionHandler sessionHandler = new SessionHandler();
         sessionHandler.setSessionIdManager(sessionIdManager);
-        this.jettyServer.setHandler(sessionHandler);
+        jettyServer.setHandler(sessionHandler);
     }
 
     /**
@@ -130,6 +130,7 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
         responseEntity = buildResponse();
         handleServerResponse(httpServletResponse);
         request.setHandled(true);
+        session.closeSession();
     }
 
     public void setSession(HttpServletRequest request) {
