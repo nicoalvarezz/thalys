@@ -10,13 +10,13 @@ public interface SessionDriver {
 
     String getId();
 
-    Object getAttribute(String key);
+    Object get(String key);
 
     List<String> getAttributeNames();
 
-    void setAttribute(String key, Object value);
+    void set(String key, Object value);
 
-    void removeAttribute(String key);
+    void remove(String key);
 
     void flash(String key, Object value);
 

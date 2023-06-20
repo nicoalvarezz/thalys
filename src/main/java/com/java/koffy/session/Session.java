@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Session implements SessionDriver {
 
@@ -44,7 +45,7 @@ public class Session implements SessionDriver {
     }
 
     @Override
-    public Object getAttribute(String key) {
+    public Object get(String key) {
         return session.getAttribute(key);
     }
 
@@ -54,12 +55,12 @@ public class Session implements SessionDriver {
     }
 
     @Override
-    public void setAttribute(String key, Object value) {
+    public void set(String key, Object value) {
         session.setAttribute(key, value);
     }
 
     @Override
-    public void removeAttribute(String key) {
+    public void remove(String key) {
         session.removeAttribute(key);
     }
 
@@ -91,11 +92,12 @@ public class Session implements SessionDriver {
     }
 
     public Map<String, String> attributes() {
-        Map<String, String> theAttributes = new HashMap<>();
-        for (String key : Collections.list(session.getAttributeNames())) {
-            theAttributes.put(key, String.valueOf(session.getAttribute(key)));
-        }
-        return theAttributes;
+        return Collections.list(session.getAttributeNames())
+                .stream()
+                .collect(Collectors.toMap(
+                        key -> key,
+                        key -> String.valueOf(session.getAttribute(key))
+                ));
     }
 
     public void closeSession() {

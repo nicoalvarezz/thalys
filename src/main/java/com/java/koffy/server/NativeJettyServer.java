@@ -141,7 +141,6 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
         return session;
     }
 
-
     /**
      * Handle server response.
      * Set server status set in the action.
