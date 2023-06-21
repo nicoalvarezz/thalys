@@ -15,7 +15,9 @@ public class Session implements SessionDriver {
     private HttpSession session;
 
     private static final String FLASH_KEY = "_flash";
+
     private static final String NEW_FLASH_KEY = "new";
+    
     private static final String OLD_FLASH_KEY = "old";
 
     public Session(HttpSession session) {
@@ -73,7 +75,7 @@ public class Session implements SessionDriver {
         session.setAttribute(FLASH_KEY, flash);
     }
 
-    private void ageFlashData() {
+    public void ageFlashData() {
         Map<String, ArrayList<String>> flash = flashed();
         flash.put(OLD_FLASH_KEY, flash.get(NEW_FLASH_KEY));
         flash.put(NEW_FLASH_KEY, new ArrayList<>());

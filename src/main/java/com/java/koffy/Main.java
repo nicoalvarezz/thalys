@@ -3,7 +3,6 @@ package com.java.koffy;
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.ResponseEntity;
 
-import java.util.HashMap;
 
 public class Main {
 
@@ -37,7 +36,8 @@ public class Main {
             return ResponseEntity.jsonResponse(app.session().attributes()).build();
         });
 
-        app.router().get("/another-session", (request) -> ResponseEntity.jsonResponse(app.session().attributes()).build());
+        app.router().get("/another-session", (request) ->
+                ResponseEntity.jsonResponse(app.session().attributes()).build());
 
         app.run(8000);
     }
