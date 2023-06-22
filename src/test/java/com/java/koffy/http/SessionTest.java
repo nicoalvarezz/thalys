@@ -2,32 +2,25 @@ package com.java.koffy.http;
 
 
 import com.java.koffy.session.Session;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.PropertyResourceBundle;
-import java.util.UUID;
-import java.util.Vector;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class SessionTest {
-
-    @Mock
-    private HttpSession mockHttpSession;
 
     private Session session;
 
@@ -43,8 +36,7 @@ public class SessionTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        session = new Session(mockHttpSession);
+        session = new Session();
     }
 
     @Test
@@ -53,109 +45,63 @@ public class SessionTest {
             put(OLD_FLASH_KEY, new ArrayList<>());
             put(NEW_FLASH_KEY, new ArrayList<>());
         }};
-        when(mockHttpSession.getAttribute(FLASH_KEY)).thenReturn(flash);
 
         assertEquals(flash, session.get(FLASH_KEY));
     }
 
     @Test
     public void testGetId() {
-        String id = String.valueOf(UUID.randomUUID());
-        when(mockHttpSession.getId()).thenReturn(id);
-
-        assertEquals(id, session.getId());
+        assertNotNull(session.getId());
     }
 
-    @Test
-    public void testGetCreationTime() {
-        long creationTime = 123456789L;
-        when(mockHttpSession.getCreationTime()).thenReturn(creationTime);
-
-        assertEquals(creationTime, session.getCreationTime());
-    }
 
     @Test
-    public void testGetServletContext() {
-        ServletContext servletContext = mock(ServletContext.class);
-        when(mockHttpSession.getServletContext()).thenReturn(servletContext);
-
-        assertEquals(servletContext, session.getServletContext());
-    }
-
-    @Test
-    public void testGetAttributes() {
-        when(mockHttpSession.getAttribute(TEST_KEY)).thenReturn(TEST_VALUE);
-
+    public void testSetAndGetAttributes() {
+        session.set(TEST_KEY, TEST_VALUE);
+        assertTrue(session.has(TEST_KEY));
         assertEquals(TEST_VALUE, session.get(TEST_KEY));
     }
 
-    @Test
-    public void testSetAttributes() {
-        Session sessionMock = mock(Session.class);
-
-        doNothing().when(sessionMock).set(TEST_KEY, TEST_VALUE);
-
-        sessionMock.set(TEST_KEY, TEST_VALUE);
-
-        verify(sessionMock).set(TEST_KEY, TEST_VALUE);
-    }
 
     @Test
     public void testGetAttributeNames() {
-        Vector<String> attributeNames = new Vector<>() {{
-            add("name");
-            add("another_name");
-            add("test_name");
-            add("test_test_name");
+        List<String> names = new ArrayList<>() {{
+            add(TEST_KEY);
+            add(FLASH_KEY);
         }};
-        when(mockHttpSession.getAttributeNames()).thenReturn(attributeNames.elements());
-
-        assertEquals(attributeNames.stream().toList(), session.getAttributeNames());
+        session.set(TEST_KEY, TEST_VALUE);
+        assertEquals(new HashSet<>(names), session.getAttributeNames());
     }
 
     @Test
     public void testRemoveAttributes() {
-        Session sessionMock = mock(Session.class);
+        session.set(TEST_KEY, TEST_VALUE);
+        assertTrue(session.has(TEST_KEY));
 
-        doNothing().when(sessionMock).remove(TEST_KEY);
-
-        sessionMock.remove(TEST_KEY);
-
-        verify(sessionMock).remove(TEST_KEY);
+        session.remove(TEST_KEY);
+        assertFalse(session.has(TEST_KEY));
     }
 
     @Test
     public void testFlashAndAgeFlashData() {
-        Map<String, ArrayList<String>> flash = new HashMap<>() {{
-            put(OLD_FLASH_KEY, new ArrayList<>());
-            put(NEW_FLASH_KEY, new ArrayList<>());
-        }};
-        when(mockHttpSession.getAttribute(FLASH_KEY)).thenReturn(flash);
-        session.flash(TEST_KEY, TEST_VALUE);
-        flash.get(NEW_FLASH_KEY).add(TEST_KEY);
+        Map<String, ArrayList<String>> flash = (Map<String, ArrayList<String>>) session.get(FLASH_KEY);
+        assertTrue(flash.get(NEW_FLASH_KEY).isEmpty());
+        assertTrue(flash.get(OLD_FLASH_KEY).isEmpty());
 
+        session.flash(TEST_KEY, TEST_VALUE);
+        flash.put(NEW_FLASH_KEY, new ArrayList<>() {{ add(TEST_VALUE); }});
+        assertEquals(TEST_VALUE, session.get(TEST_KEY));
         assertEquals(flash, session.get(FLASH_KEY));
 
         session.ageFlashData();
-        flash.put(NEW_FLASH_KEY, new ArrayList<>()) ;
-        flash.get(OLD_FLASH_KEY).add(TEST_KEY);
-
+        flash.put(NEW_FLASH_KEY, new ArrayList<>());
+        flash.put(OLD_FLASH_KEY, new ArrayList<>() {{ add(TEST_VALUE); }});
         assertEquals(flash, session.get(FLASH_KEY));
     }
 
     @Test
-    public void testInvalidate() {
-        session.invalidate();
-
-        verify(mockHttpSession).invalidate();
-    }
-
-    @Test
-    public void testHasAttribute() {
-        String value = TEST_VALUE;
-        when(mockHttpSession.getAttribute(TEST_KEY)).thenReturn(value);
-
-        assertTrue(session.has(TEST_KEY));
-        assertFalse(session.has("any_key"));
+    public void testFlashKeyCannotBeRemoved() {
+        session.remove(FLASH_KEY);
+        assertTrue(session.has(FLASH_KEY));
     }
 }

@@ -16,7 +16,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SessionIdManager;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.server.session.DefaultSessionIdManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 
 import javax.validation.ConstraintViolationException;
@@ -45,6 +44,10 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
      */
     private final Server jettyServer;
 
+    SessionHandler sessionHandler = new SessionHandler();
+
+    SessionIdManager sessionIdManager;
+
     private Session session;
 
     /**
@@ -59,11 +62,8 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
 
     public NativeJettyServer() {
         jettyServer = new Server();
-        SessionIdManager sessionIdManager = new DefaultSessionIdManager(jettyServer);
-        jettyServer.setSessionIdManager(sessionIdManager);
-        SessionHandler sessionHandler = new SessionHandler();
-        sessionHandler.setSessionIdManager(sessionIdManager);
-        jettyServer.setHandler(sessionHandler);
+        session = new Session();
+        jettyServer.setHandler(this);
     }
 
     /**
@@ -81,8 +81,6 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
      * @throws Exception
      */
     public void startServer() throws Exception {
-        SessionHandler sessionHandler = jettyServer.getChildHandlerByClass(SessionHandler.class);
-        sessionHandler.setHandler(this);
         jettyServer.start();
         jettyServer.join();
     }
@@ -125,16 +123,11 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
     @Override
     public void handle(String target, Request request, HttpServletRequest httpServletRequest,
                        HttpServletResponse httpServletResponse) throws IOException {
-        setSession(httpServletRequest);
         requestEntity = buildRequest(request);
         responseEntity = buildResponse();
         handleServerResponse(httpServletResponse);
         request.setHandled(true);
         session.closeSession();
-    }
-
-    public void setSession(HttpServletRequest request) {
-        this.session = new Session(request.getSession());
     }
 
     public Session getSession() {
