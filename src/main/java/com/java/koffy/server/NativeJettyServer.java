@@ -148,7 +148,7 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
         responseEntity = buildResponse();
         handleServerResponse(httpServletResponse);
         request.setHandled(true);
-        session.closeSession();
+        session.handlerFlash();
     }
 
     private void setSession(HttpSession httpSession) {

@@ -165,12 +165,21 @@ public class Session implements SessionDriver {
     }
 
     /**
-     * Close http session.
+     * Handler flash.
+     * This method is used at the end of a request to handle the flash data.
      */
-    public void closeSession() {
+    public void handlerFlash() {
         Map<String, ArrayList<String>> flash = getFlashData();
         flash.put(OLD_FLASH_KEY, new ArrayList<>());
         ageFlashData();
         set(FLASH_KEY, flash);
+    }
+
+    /**
+     * Invalidate http session
+     * Invalidates a session associated with a particular user or client.
+     */
+    public void ivalidate() {
+        httpSession.invalidate();
     }
 }
