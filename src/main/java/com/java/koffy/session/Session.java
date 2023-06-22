@@ -1,10 +1,13 @@
 package com.java.koffy.session;
 
+import jakarta.servlet.http.HttpSession;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -12,25 +15,7 @@ import java.util.stream.Collectors;
  */
 public class Session implements SessionDriver {
 
-    /**
-     * Session id.
-     */
-    private final String sessionId;
-
-    /**
-     * Session attributes.
-     */
-    private final HashMap<String, Object> attributes = new HashMap<>();
-
-    /**
-     * Flash attributes.
-     */
-    private final HashMap<String, ArrayList<String>> flash = new HashMap<>();
-
-    /**
-     * Creation time.
-     */
-    private long creationTime;
+    private HttpSession httpSession;
 
     private static final String FLASH_KEY = "_flash";
 
@@ -39,19 +24,21 @@ public class Session implements SessionDriver {
     private static final String OLD_FLASH_KEY = "old";
 
 
-    public Session() {
-        this.sessionId = UUID.randomUUID().toString();
-        this.creationTime = System.currentTimeMillis();
-        sessionInit();
+    public Session(HttpSession session) {
+        this.httpSession = session;
+        if (!has(FLASH_KEY)) {
+            sessionInit();
+        }
     }
 
     /**
      * Initialise session with flash attributes.
      */
     private void sessionInit() {
-        flash.put(NEW_FLASH_KEY, new ArrayList<>());
-        flash.put(OLD_FLASH_KEY, new ArrayList<>());
-        attributes.put(FLASH_KEY, flash);
+        set(FLASH_KEY, new HashMap<>() {{
+            put(NEW_FLASH_KEY, new ArrayList<>());
+            put(OLD_FLASH_KEY, new ArrayList<>());
+        }});
     }
 
     /**
@@ -60,7 +47,7 @@ public class Session implements SessionDriver {
      */
     @Override
     public long getCreationTime() {
-        return creationTime;
+        return httpSession.getCreationTime();
     }
 
     /**
@@ -69,7 +56,7 @@ public class Session implements SessionDriver {
      */
     @Override
     public String getId() {
-        return sessionId;
+        return httpSession.getId();
     }
 
     /**
@@ -79,7 +66,7 @@ public class Session implements SessionDriver {
      */
     @Override
     public Object get(String key) {
-        return attributes.get(key);
+        return httpSession.getAttribute(key);
     }
 
     /**
@@ -88,7 +75,7 @@ public class Session implements SessionDriver {
      */
     @Override
     public Set<String> getAttributeNames() {
-        return attributes.keySet();
+        return new HashSet<>(Collections.list(httpSession.getAttributeNames()));
     }
 
     /**
@@ -98,7 +85,7 @@ public class Session implements SessionDriver {
      */
     @Override
     public void set(String key, Object value) {
-        attributes.put(key, value);
+        httpSession.setAttribute(key, value);
     }
 
     /**
@@ -109,30 +96,33 @@ public class Session implements SessionDriver {
     @Override
     public void remove(String key) {
         if (!key.equals(FLASH_KEY)) {
-            attributes.remove(key);
+            httpSession.removeAttribute(key);
         }
     }
 
     /**
-     * Flash.
-     * @param key
-     * @param value
+     * Method to store data in the flash {@link Map}.
+     * Flash allows to store data will not be allowed in the subsequent request.
+     * @param key {@link String}
+     * @param value {@link Object}
      */
     @Override
     public void flash(String key, Object value) {
-        attributes.put(key, value);
+        set(key, value);
 
+        Map<String, ArrayList<String>> flash = getFlashData();
         flash.get(NEW_FLASH_KEY).add(key);
-        attributes.put(FLASH_KEY, flash);
+        set(FLASH_KEY, flash);
     }
 
     /**
-     * Age flash.
+     * Method to handle flash data in the subsequent request.
      */
     public void ageFlashData() {
+        Map<String, ArrayList<String>> flash = getFlashData();
         flash.put(OLD_FLASH_KEY, flash.get(NEW_FLASH_KEY));
         flash.put(NEW_FLASH_KEY, new ArrayList<>());
-        attributes.put(FLASH_KEY, flash);
+        set(FLASH_KEY, flash);
     }
 
     /**
@@ -142,7 +132,7 @@ public class Session implements SessionDriver {
      */
     @Override
     public boolean has(String key) {
-        return attributes.containsKey(key);
+        return httpSession.getAttribute(key) != null;
     }
 
     /**
@@ -151,9 +141,9 @@ public class Session implements SessionDriver {
      * @return {@link Map}
      */
     public Map<String, String> getAllAttributesStringFormat() {
-        return attributes.keySet().stream().collect(Collectors.toMap(
+        return getAttributeNames().stream().collect(Collectors.toMap(
                 key -> key,
-                key -> String.valueOf(attributes.get(key))
+                key -> String.valueOf(get(key))
         ));
     }
 
@@ -162,16 +152,25 @@ public class Session implements SessionDriver {
      * @return {@link Map}
      */
     public Map<String, Object> getAllAttributes() {
-        return attributes;
+        return getAttributeNames().stream().collect(Collectors.toMap(
+                key -> key,
+                this::get
+        ));
+    }
+
+    private Map<String, ArrayList<String>> getFlashData() {
+        @SuppressWarnings("unchecked")
+        Map<String, ArrayList<String>> flash = (Map<String, ArrayList<String>>) get(FLASH_KEY);
+        return flash;
     }
 
     /**
      * Close http session.
      */
     public void closeSession() {
+        Map<String, ArrayList<String>> flash = getFlashData();
         flash.put(OLD_FLASH_KEY, new ArrayList<>());
         ageFlashData();
-        attributes.clear();
-        attributes.put(FLASH_KEY, flash);
+        set(FLASH_KEY, flash);
     }
 }

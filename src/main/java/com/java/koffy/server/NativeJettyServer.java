@@ -11,10 +11,16 @@ import com.java.koffy.routing.Router;
 import com.java.koffy.session.Session;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SessionIdManager;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.session.DefaultSessionIdManager;
+import org.eclipse.jetty.server.session.SessionHandler;
 
 import javax.validation.ConstraintViolationException;
 import java.io.BufferedReader;
@@ -59,8 +65,25 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
 
     public NativeJettyServer() {
         jettyServer = new Server();
-        session = new Session();
-        jettyServer.setHandler(this);
+        SessionHandler sessionHandler = sessionHandlerSetUp();
+        HandlerList handlerList = new HandlerList();
+        handlerList.setHandlers(new Handler[]{sessionHandler, this});
+        jettyServer.setHandler(handlerList);
+    }
+
+    /**
+     * Returns the session handler.
+     * This method is also in charge od setting up the sessionId manager, adn the max inactive interval.
+     * This interval  is set to 30min by default.
+     * @return {@link SessionHandler}
+     */
+    private SessionHandler sessionHandlerSetUp() {
+        SessionIdManager sessionIdManager = new DefaultSessionIdManager(jettyServer);
+        jettyServer.setSessionIdManager(sessionIdManager);
+        SessionHandler sessionHandler = new SessionHandler();
+        sessionHandler.setSessionIdManager(sessionIdManager);
+        sessionHandler.setMaxInactiveInterval(30 * 60);
+        return sessionHandler;
     }
 
     /**
@@ -120,11 +143,16 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
     @Override
     public void handle(String target, Request request, HttpServletRequest httpServletRequest,
                        HttpServletResponse httpServletResponse) throws IOException {
+        setSession(httpServletRequest.getSession());
         requestEntity = buildRequest(request);
         responseEntity = buildResponse();
         handleServerResponse(httpServletResponse);
         request.setHandled(true);
         session.closeSession();
+    }
+
+    private void setSession(HttpSession httpSession) {
+        this.session = new Session(httpSession);
     }
 
     /**
