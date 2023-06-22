@@ -151,6 +151,10 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
         session.handlerFlash();
     }
 
+    /**
+     * Set the session for the current request and client.
+     * @param httpSession {@link HttpSession}
+     */
     private void setSession(HttpSession httpSession) {
         this.session = new Session(httpSession);
     }
