@@ -33,11 +33,11 @@ public class Main {
 
         app.router().get("/session", (request) -> {
             app.session().flash("alert", "success");
-            return ResponseEntity.jsonResponse(app.session().attributes()).build();
+            return ResponseEntity.jsonResponse(app.session().getAllAttributesStringFormat()).build();
         });
 
         app.router().get("/another-session", (request) ->
-                ResponseEntity.jsonResponse(app.session().attributes()).build());
+                ResponseEntity.jsonResponse(app.session().getAllAttributesStringFormat()).build());
 
         app.run(8000);
     }

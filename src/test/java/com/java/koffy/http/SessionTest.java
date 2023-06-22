@@ -104,4 +104,18 @@ public class SessionTest {
         session.remove(FLASH_KEY);
         assertTrue(session.has(FLASH_KEY));
     }
+
+    @Test
+    public void testGetAllAttributes() {
+        Map<String, Object> expectedAttributes = new HashMap<>() {{
+            put(TEST_KEY, TEST_VALUE);
+            put(FLASH_KEY, new HashMap<>() {{
+                put(NEW_FLASH_KEY, new ArrayList<>());
+                put(OLD_FLASH_KEY, new ArrayList<>());
+            }});
+        }};
+        session.set(TEST_KEY, TEST_VALUE);
+
+        assertEquals(expectedAttributes, session.getAllAttributes());
+    }
 }

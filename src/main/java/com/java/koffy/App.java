@@ -39,6 +39,10 @@ public class App {
         return router;
     }
 
+    /**
+     * Returns the {@link Session} object initialised when the server starts.
+     * @return {@link Session}
+     */
     public Session session() {
         return server.getSession();
     }
