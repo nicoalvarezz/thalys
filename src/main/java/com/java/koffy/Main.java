@@ -3,6 +3,7 @@ package com.java.koffy;
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.ResponseEntity;
 
+
 public class Main {
 
     public static void main(String[] args) throws Exception {
@@ -29,6 +30,14 @@ public class Main {
 //        }}).build())).setMiddlewares(new ArrayList<>() {{
 //            add(AuthMiddleware.class);
 //        }});
+
+        app.router().get("/session", (request) -> {
+            app.session().flash("alert", "success");
+            return ResponseEntity.jsonResponse(app.session().getAllAttributesStringFormat()).build();
+        });
+
+        app.router().get("/another-session", (request) ->
+                ResponseEntity.jsonResponse(app.session().getAllAttributesStringFormat()).build());
 
         app.run(8000);
     }

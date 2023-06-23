@@ -45,7 +45,7 @@ public final class RequestEntity {
     private HttpHeaders headers;
 
     /**
-     * Serialised objected from validation
+     * Serialised objected from validation.
      */
     private Object serialized;
 
@@ -145,7 +145,7 @@ public final class RequestEntity {
     }
 
     /**
-     * Saving serialized object after validation
+     * Saving serialized object after validation.
      * @param serialized
      */
     public void setSerialized(Object serialized) {
@@ -153,7 +153,7 @@ public final class RequestEntity {
     }
 
     /***
-     * Return the serialized object given a specific class type
+     * Return the serialized object given a specific class type.
      * @param type
      * @return Serialized object
      */
