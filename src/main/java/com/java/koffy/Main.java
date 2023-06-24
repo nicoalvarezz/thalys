@@ -1,14 +1,10 @@
 package com.java.koffy;
 
 import com.java.koffy.database.Database;
-import com.java.koffy.database.drivers.JBDCDriver;
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.ResponseEntity;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class Main {
