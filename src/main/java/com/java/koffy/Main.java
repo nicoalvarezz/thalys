@@ -1,7 +1,14 @@
 package com.java.koffy;
 
+import com.java.koffy.database.Database;
+import com.java.koffy.database.drivers.JBDCDriver;
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.ResponseEntity;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class Main {
@@ -38,6 +45,24 @@ public class Main {
 
         app.router().get("/another-session", (request) ->
                 ResponseEntity.jsonResponse(app.session().getAllAttributesStringFormat()).build());
+
+        app.router().get("/select", (request) -> {
+            try {
+                return ResponseEntity.jsonResponse(
+                        Database.statement("SELECT * FROM user")).build();
+            } catch (RuntimeException e) {
+                return ResponseEntity.textResponse("id not found").build();
+            }
+        });
+
+        app.router().post("/insert", (request) -> {
+            return ResponseEntity.jsonResponse(
+                    Database.statement("INSERT INTO user (name, id) VALUES (?, ?)", new ArrayList<>() {{
+                        add(request.getPostData("name").get());
+                        add(request.getPostData("id").get());
+                    }})
+            ).build();
+        });
 
         app.run(8000);
     }

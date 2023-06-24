@@ -1,6 +1,7 @@
 package com.java.koffy;
 
 import com.java.koffy.container.Container;
+import com.java.koffy.database.drivers.JBDCDriver;
 import com.java.koffy.routing.Router;
 import com.java.koffy.server.NativeJettyServer;
 import com.java.koffy.session.Session;
@@ -15,6 +16,8 @@ public class App {
 
     private NativeJettyServer server;
 
+    private JBDCDriver databaseDriver;
+
     /**
      * Initializes and configures the necessary components of the application.
      * Creates a new instance of the {@link App} class, sets up a {@link Router}, and a {@link NativeJettyServer}.
@@ -26,7 +29,8 @@ public class App {
         App app = Container.singleton(App.class);
         app.router = new Router();
         app.server = new NativeJettyServer();
-
+        app.databaseDriver = Container.singleton(JBDCDriver.class);
+        app.databaseDriver.connect("jdbc:mysql://localhost:3306/databsed", "root", "root");
         return app;
     }
 
