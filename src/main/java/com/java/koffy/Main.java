@@ -4,6 +4,8 @@ import com.java.koffy.database.Database;
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.ResponseEntity;
 
+import java.util.HashMap;
+
 
 public class Main {
 
@@ -42,8 +44,10 @@ public class Main {
 
         app.router().get("/select", (request) -> {
             try {
-                return ResponseEntity.jsonResponse(
-                        Database.selectStatement("SELECT * FROM user")).build();
+                return ResponseEntity.jsonResponses(
+                        new HashMap<>() {{
+                            put("users", Database.selectStatement("SELECT * FROM user"));
+                        }}).build();
             } catch (RuntimeException e) {
                 return ResponseEntity.textResponse("id not found").build();
             }

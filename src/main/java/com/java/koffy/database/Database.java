@@ -3,15 +3,16 @@ package com.java.koffy.database;
 import com.java.koffy.container.Container;
 import com.java.koffy.database.drivers.JBDCDriver;
 
+import java.util.List;
 import java.util.Map;
 
 public class Database {
 
-    public static Map<String, String> selectStatement(String query, String... params) {
+    public static List<Map<String, String>> selectStatement(String query, String... params) {
         return Container.resolve(JBDCDriver.class).statement(query, params);
     }
 
-    public static Map<String, String> selectStatement(String query) {
+    public static List<Map<String, String>> selectStatement(String query) {
         return Container.resolve(JBDCDriver.class).statement(query);
     }
 

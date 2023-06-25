@@ -5,7 +5,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
@@ -32,7 +34,7 @@ public class JBDCDriver implements DatabaseDriver {
     }
 
     @Override
-    public Map<String, String> statement(String query) {
+    public List<Map<String, String>> statement(String query) {
         try {
             PreparedStatement statement = conn.prepareStatement(query);
             ResultSet resultSet = statement.executeQuery();
@@ -43,7 +45,7 @@ public class JBDCDriver implements DatabaseDriver {
     }
 
     @Override
-    public Map<String, String> statement(String query, String... params) {
+    public List<Map<String, String>> statement(String query, String... params) {
         try {
             PreparedStatement statement = conn.prepareStatement(query);
             constructStatementParameters(statement, params);
@@ -76,8 +78,9 @@ public class JBDCDriver implements DatabaseDriver {
                 });
     }
 
-    private Map<String, String> constructSelectStatementResult(ResultSet resultSet) {
+    private List<Map<String, String>> constructSelectStatementResult(ResultSet resultSet) {
         try {
+            List<Map<String, String>> resultList = new ArrayList<>();
             Map<String, String> queryMap = new HashMap<>();
            while (resultSet.next()) {
                 for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
@@ -85,8 +88,9 @@ public class JBDCDriver implements DatabaseDriver {
                     String columnValue = resultSet.getString(columnName);
                     queryMap.put(columnName, columnValue);
                 }
+                resultList.add(queryMap);
             }
-            return queryMap;
+            return resultList;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
