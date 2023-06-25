@@ -4,8 +4,6 @@ import com.java.koffy.database.Database;
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.ResponseEntity;
 
-import java.util.ArrayList;
-
 
 public class Main {
 
@@ -45,19 +43,31 @@ public class Main {
         app.router().get("/select", (request) -> {
             try {
                 return ResponseEntity.jsonResponse(
-                        Database.statement("SELECT * FROM user")).build();
+                        Database.selectStatement("SELECT * FROM user")).build();
             } catch (RuntimeException e) {
                 return ResponseEntity.textResponse("id not found").build();
             }
         });
 
-        app.router().post("/insert", (request) -> {
-            return ResponseEntity.jsonResponse(
-                    Database.statement("INSERT INTO user (name, id) VALUES (?, ?)", new ArrayList<>() {{
-                        add(request.getPostData("name").get());
-                        add(request.getPostData("id").get());
-                    }})
+        app.router().post("/update", (request) -> {
+            return ResponseEntity.textResponse(
+                    String.valueOf(Database.updateStatement("UPDATE user SET name = ? WHERE id = ?",
+                            request.getPostData("name").get(), request.getPostData("id").get()))
             ).build();
+        });
+
+        app.router().post("/delete", (request) -> {
+            return ResponseEntity.textResponse(
+                    String.valueOf(
+                            Database.deleteStatement("DELETE FROM user WHERE id = ? ", request.getPostData("id").get())
+                    )
+            ).build();
+        });
+
+        app.router().post("/insert", (request) -> {
+           return ResponseEntity.textResponse(String.valueOf(
+                   Database.insertStatement("INSERT INTO user(name, id) VALUES(?, ?)", request.getPostData("name").get(), request.getPostData("id").get())
+           )).build();
         });
 
         app.run(8000);

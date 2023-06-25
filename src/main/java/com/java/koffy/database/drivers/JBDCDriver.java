@@ -6,8 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 public class JBDCDriver implements DatabaseDriver {
 
@@ -36,32 +36,50 @@ public class JBDCDriver implements DatabaseDriver {
         try {
             PreparedStatement statement = conn.prepareStatement(query);
             ResultSet resultSet = statement.executeQuery();
-            return constructQueryResult(resultSet);
+            return constructSelectStatementResult(resultSet);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Map<String, String> statement(String query, List<Object> parameters) {
+    public Map<String, String> statement(String query, String... params) {
         try {
             PreparedStatement statement = conn.prepareStatement(query);
-            for (int i = 0; i < parameters.size(); i++) {
-                statement.setObject(i + 1, parameters.get(i));
-            }
-            int resultSet = statement.executeUpdate();
-            return new HashMap<>() {{
-                put("Updated row(s)", String.valueOf(resultSet));
-            }};
+            constructStatementParameters(statement, params);
+            ResultSet resultSet = statement.executeQuery();
+            return constructSelectStatementResult(resultSet);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Map<String, String> constructQueryResult(ResultSet resultSet) {
+    @Override
+    public int dataManipulation(String query, String... params) {
+        try {
+            PreparedStatement statement = conn.prepareStatement(query);
+            constructStatementParameters(statement, params);
+            return statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void constructStatementParameters(PreparedStatement statement, String... params) throws SQLException {
+        IntStream.range(0, params.length)
+                .forEach(i -> {
+                    try {
+                        statement.setObject(i + 1, params[i]);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+    }
+
+    private Map<String, String> constructSelectStatementResult(ResultSet resultSet) {
         try {
             Map<String, String> queryMap = new HashMap<>();
-            while (resultSet.next()) {
+           while (resultSet.next()) {
                 for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
                     String columnName = resultSet.getMetaData().getColumnName(i);
                     String columnValue = resultSet.getString(columnName);
