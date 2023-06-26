@@ -4,7 +4,12 @@ import com.java.koffy.database.Database;
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.ResponseEntity;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class Main {
@@ -72,6 +77,50 @@ public class Main {
            return ResponseEntity.textResponse(String.valueOf(
                    Database.insertStatement("INSERT INTO user(name, id) VALUES(?, ?)", request.getPostData("name").get(), request.getPostData("id").get())
            )).build();
+        });
+
+        app.router().post("/save", (request) -> {
+            try {
+                Database.save(new User(request.getPostData("name").get(), Long.valueOf(request.getPostData("id").get())));
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            return ResponseEntity.textResponse("object saved").build();
+        });
+
+        app.router().get("/getById", (request) -> {
+            User user = null;
+            try {
+                user = (User) Database.getById(User.class, Integer.parseInt(request.getQueryData("id").get()));
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            return ResponseEntity.textResponse(user.getName()).build();
+        });
+
+        app.router().get("/getAll", (request) -> {
+            List<User> users = new ArrayList<>();
+            List<Map<String, Object>> list;
+             try {
+                 for (Object obj : Database.getAll(User.class)) {
+                     if (obj instanceof User) {
+                         User user = (User) obj;
+                         users.add(user);
+                     }
+                 }
+                 Map<String,Object> map = new HashMap<>();
+                 list = new ArrayList<>();
+                 for (User user : users) {
+                    map.put("name", user.getName());
+                    map.put("id", user.getId());
+                    list.add(map);
+                 }
+             } catch (SQLException e) {
+                 throw new RuntimeException(e);
+             }
+             return ResponseEntity.jsonResponses(new HashMap<>() {{
+                 put("users", list);
+             }}).build();
         });
 
         app.run(8000);

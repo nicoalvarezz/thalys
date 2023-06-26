@@ -1,5 +1,7 @@
 package com.java.koffy.database.drivers;
 
+import com.java.koffy.container.Container;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,16 +15,7 @@ import java.util.stream.IntStream;
 
 public class JBDCDriver implements DatabaseDriver {
 
-    Connection conn;
-
-    @Override
-    public void connect(String url, String user, String password) {
-        try {
-            conn = DriverManager.getConnection(url, user, password);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private Connection conn = Container.resolve(DatabaseConnection.class).getConn();
 
     @Override
     public void close() {

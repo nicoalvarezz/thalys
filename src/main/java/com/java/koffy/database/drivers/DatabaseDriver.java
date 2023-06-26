@@ -6,8 +6,6 @@ import java.util.Map;
 
 public interface DatabaseDriver {
 
-    void connect(String url, String user, String password) throws SQLException;
-
     void close() throws SQLException;
 
     List<Map<String, String>> statement(String query, String... params) throws SQLException;
