@@ -3,10 +3,10 @@ package com.java.koffy;
 import com.java.koffy.database.Database;
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.ResponseEntity;
+import com.mysql.cj.log.Log;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,8 +80,10 @@ public class Main {
         });
 
         app.router().post("/save", (request) -> {
+            UserDao userDao = new UserDao();
+            User user = new User(request.getPostData("name").get(), Long.valueOf(request.getPostData("id").get()));
             try {
-                Database.save(new User(request.getPostData("name").get(), Long.valueOf(request.getPostData("id").get())));
+                userDao.save(user);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -89,9 +91,10 @@ public class Main {
         });
 
         app.router().get("/getById", (request) -> {
-            User user = null;
+            UserDao userDao = new UserDao();
+            User user;
             try {
-                user = (User) Database.getById(User.class, Integer.parseInt(request.getQueryData("id").get()));
+                user = userDao.getById(Integer.valueOf(request.getQueryData("id").get()));
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -100,14 +103,10 @@ public class Main {
 
         app.router().get("/getAll", (request) -> {
             List<User> users = new ArrayList<>();
+            UserDao userDao = new UserDao();
             List<Map<String, Object>> list;
              try {
-                 for (Object obj : Database.getAll(User.class)) {
-                     if (obj instanceof User) {
-                         User user = (User) obj;
-                         users.add(user);
-                     }
-                 }
+                 users = userDao.getAll();
                  Map<String,Object> map = new HashMap<>();
                  list = new ArrayList<>();
                  for (User user : users) {
@@ -121,6 +120,17 @@ public class Main {
              return ResponseEntity.jsonResponses(new HashMap<>() {{
                  put("users", list);
              }}).build();
+        });
+
+        app.router().get("/delete", (request) -> {
+            UserDao  userDao = new UserDao();
+            User user = new User(request.getQueryData("name").get(), Long.valueOf(request.getQueryData("id").get()));
+            try {
+                userDao.delete(user);
+            } catch (SQLException e){
+                throw new RuntimeException(e);
+            }
+            return ResponseEntity.textResponse("something was deleted").build();
         });
 
         app.run(8000);

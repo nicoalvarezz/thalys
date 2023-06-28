@@ -1,6 +1,7 @@
 package com.java.koffy;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
@@ -9,6 +10,7 @@ public class User {
 
     private String name;
 
+    @Id
     private long id;
 
     public User(String name, long id) {
