@@ -3,7 +3,6 @@ package com.java.koffy;
 import com.java.koffy.config.DatabaseConfig;
 import com.java.koffy.container.Container;
 import com.java.koffy.database.DatabaseConnection;
-import com.java.koffy.database.SQLStatement;
 import com.java.koffy.routing.Router;
 import com.java.koffy.server.NativeJettyServer;
 import com.java.koffy.session.Session;
@@ -17,8 +16,6 @@ public class App {
     private Router router;
 
     private NativeJettyServer server;
-
-    private SQLStatement databaseDriver;
 
     private DatabaseConnection databaseConnection;
 
@@ -36,7 +33,8 @@ public class App {
         app.router = new Router();
         app.server = new NativeJettyServer();
         app.databaseConnection = Container.singleton(DatabaseConnection.class);
-        app.databaseConnection.connect(databaseConfig.datasourceUrl(), databaseConfig.username(), databaseConfig.password());
+        app.databaseConnection
+                .connect(databaseConfig.datasourceUrl(), databaseConfig.username(), databaseConfig.password());
         return app;
     }
 
