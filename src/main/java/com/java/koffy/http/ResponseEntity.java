@@ -7,7 +7,6 @@ import com.java.koffy.http.Headers.HttpHeader;
 import com.java.koffy.http.Headers.HttpHeaders;
 import org.json.JSONObject;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -97,7 +96,8 @@ public final class ResponseEntity {
     public static Builder jsonResponses(Map<String, Object> content) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            return new ResponseEntityFactory().response(ContentType.APPLICATION_JSON.get(), objectMapper.writeValueAsString(content));
+            return new ResponseEntityFactory()
+                    .response(ContentType.APPLICATION_JSON.get(), objectMapper.writeValueAsString(content));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
