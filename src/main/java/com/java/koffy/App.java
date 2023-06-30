@@ -2,8 +2,8 @@ package com.java.koffy;
 
 import com.java.koffy.config.DatabaseConfig;
 import com.java.koffy.container.Container;
-import com.java.koffy.database.drivers.DatabaseConnection;
-import com.java.koffy.database.drivers.JBDCDriver;
+import com.java.koffy.database.DatabaseConnection;
+import com.java.koffy.database.SQLStatement;
 import com.java.koffy.routing.Router;
 import com.java.koffy.server.NativeJettyServer;
 import com.java.koffy.session.Session;
@@ -18,7 +18,7 @@ public class App {
 
     private NativeJettyServer server;
 
-    private JBDCDriver databaseDriver;
+    private SQLStatement databaseDriver;
 
     private DatabaseConnection databaseConnection;
 
