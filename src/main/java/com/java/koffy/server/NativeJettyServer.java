@@ -1,6 +1,8 @@
 package com.java.koffy.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.java.koffy.container.Container;
+import com.java.koffy.database.DatabaseConnection;
 import com.java.koffy.http.Headers.HttpHeaders;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.exception.HttpNotFoundException;
@@ -149,6 +151,7 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
         handleServerResponse(httpServletResponse);
         request.setHandled(true);
         session.handlerFlash();
+        Container.resolve(DatabaseConnection.class).close();
     }
 
     /**

@@ -1,7 +1,13 @@
 package com.java.koffy;
 
+import com.java.koffy.database.DBStatement;
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.ResponseEntity;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class Main {
@@ -38,6 +44,74 @@ public class Main {
 
         app.router().get("/another-session", (request) ->
                 ResponseEntity.jsonResponse(app.session().getAllAttributesStringFormat()).build());
+
+        app.router().get("/select", (request) -> {
+            try {
+                return ResponseEntity.jsonResponses(
+                        new HashMap<>() {{
+                            put("users", DBStatement.selectStatement("SELECT * FROM user"));
+                        }}).build();
+            } catch (RuntimeException e) {
+                return ResponseEntity.textResponse("id not found").build();
+            }
+        });
+
+        app.router().post("/update", (request) -> {
+            return ResponseEntity.textResponse(
+                    String.valueOf(DBStatement.updateStatement("UPDATE user SET name = ? WHERE id = ?",
+                            request.getPostData("name").get(), request.getPostData("id").get()))
+            ).build();
+        });
+
+        app.router().post("/delete", (request) -> {
+            return ResponseEntity.textResponse(
+                    String.valueOf(
+                            DBStatement.deleteStatement("DELETE FROM user WHERE id = ? ", request.getPostData("id").get())
+                    )
+            ).build();
+        });
+
+        app.router().post("/insert", (request) -> {
+           return ResponseEntity.textResponse(String.valueOf(
+                   DBStatement.insertStatement("INSERT INTO user(name, id) VALUES(?, ?)", request.getPostData("name").get(), request.getPostData("id").get())
+           )).build();
+        });
+
+        app.router().post("/save", (request) -> {
+            UserDao userDao = new UserDao();
+            User user = new User(request.getPostData("name").get(), Long.valueOf(request.getPostData("id").get()));
+            userDao.save(user);
+            return ResponseEntity.textResponse("object saved").build();
+        });
+
+        app.router().get("/getById", (request) -> {
+            UserDao userDao = new UserDao();
+            User user;
+            user = userDao.getById(Integer.valueOf(request.getQueryData("id").get()));
+            return ResponseEntity.textResponse(user.getName()).build();
+        });
+
+        app.router().get("/getAll", (request) -> {
+            UserDao userDao = new UserDao();
+            List<User> users = userDao.getAll();
+            List<Map<String, Object>> list = new ArrayList<>();
+            for (User user : users) {
+                Map<String,Object> map = new HashMap<>();
+                map.put("name", user.getName());
+                map.put("id", user.getId());
+                list.add(map);
+            }
+            return ResponseEntity.jsonResponses(new HashMap<>() {{
+                 put("users", list);
+             }}).build();
+        });
+
+        app.router().get("/delete", (request) -> {
+            UserDao  userDao = new UserDao();
+            User user = new User(request.getQueryData("name").get(), Long.valueOf(request.getQueryData("id").get()));
+            userDao.delete(user);
+            return ResponseEntity.textResponse("something was deleted").build();
+        });
 
         app.run(8000);
     }

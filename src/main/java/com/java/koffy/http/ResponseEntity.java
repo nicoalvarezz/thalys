@@ -1,5 +1,7 @@
 package com.java.koffy.http;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.koffy.http.Headers.ContentType;
 import com.java.koffy.http.Headers.HttpHeader;
 import com.java.koffy.http.Headers.HttpHeaders;
@@ -89,6 +91,17 @@ public final class ResponseEntity {
     public static Builder jsonResponse(Map<String, String> content) {
         return new ResponseEntityFactory().response(ContentType.APPLICATION_JSON.get(),
                 new JSONObject(content).toString());
+    }
+
+    public static Builder jsonResponses(Map<String, Object> content) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return new ResponseEntityFactory()
+                    .response(ContentType.APPLICATION_JSON.get(), objectMapper.writeValueAsString(content));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     /**
