@@ -1,7 +1,9 @@
 package com.java.koffy.database;
 
 import com.java.koffy.database.drivers.DaoDriver;
+import com.java.koffy.exception.DatabaseException;
 
+import javax.persistence.Entity;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -13,11 +15,15 @@ public class SQLDao<T> implements DaoDriver<T> {
 
     private Class<T> entity;
 
-    private SQLQueryHelpers queryHelpers = new SQLQueryHelpers();
+    private final SQLQueryHelpers queryHelpers = new SQLQueryHelpers();
 
     public SQLDao(Class<T> entity) {
-        this.entity = entity;
-        queryHelpers.setEntity(entity);
+        if (entity.getAnnotation(Entity.class) != null) {
+            this.entity = entity;
+            queryHelpers.setEntity(entity);
+        } else {
+           throw new RuntimeException("Not a valid entity: Missing entity annotation");
+        }
     }
 
     @Override
@@ -25,7 +31,7 @@ public class SQLDao<T> implements DaoDriver<T> {
         try {
             queryHelpers.prepareInsertStatement(object).executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Error occurred during insertion", e);
         }
     }
 
@@ -37,7 +43,7 @@ public class SQLDao<T> implements DaoDriver<T> {
                 return createObjectFromResult(resultSet);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Error occurred during selection", e);
         }
         return null;
     }
@@ -52,7 +58,7 @@ public class SQLDao<T> implements DaoDriver<T> {
             }
             return objects;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Error occurred during selection", e);
         }
     }
 
@@ -61,7 +67,7 @@ public class SQLDao<T> implements DaoDriver<T> {
         try {
             queryHelpers.prepareDeleteStatement(object).executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Error occurred during delition", e);
         }
     }
 

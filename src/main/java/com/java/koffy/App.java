@@ -17,7 +17,7 @@ public class App {
 
     private NativeJettyServer server;
 
-    private DatabaseConnection databaseConnection;
+    private DatabaseConnection databaseConnection = Container.singleton(DatabaseConnection.class);
 
     private static DatabaseConfig databaseConfig = new DatabaseConfig();
 
@@ -32,9 +32,8 @@ public class App {
         App app = Container.singleton(App.class);
         app.router = new Router();
         app.server = new NativeJettyServer();
-        app.databaseConnection = Container.singleton(DatabaseConnection.class);
-        app.databaseConnection
-                .connect(databaseConfig.datasourceUrl(), databaseConfig.username(), databaseConfig.password());
+        app.databaseConnection.setDatabaseCredentials(
+                databaseConfig.datasourceUrl(), databaseConfig.username(), databaseConfig.password());
         return app;
     }
 

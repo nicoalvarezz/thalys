@@ -1,6 +1,7 @@
 package com.java.koffy.database;
 
 import com.java.koffy.database.drivers.StatementDriver;
+import com.java.koffy.exception.DatabaseException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,7 +24,7 @@ public class SQLStatement implements StatementDriver {
             ResultSet resultSet = queryHelpers.constructStatement(query, Arrays.stream(params).toList()).executeQuery();
             return constructSelectStatementResult(resultSet);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Error occurred during selection", e);
         }
     }
 
@@ -32,7 +33,7 @@ public class SQLStatement implements StatementDriver {
         try {
             return queryHelpers.constructStatement(query, Arrays.stream(params).toList()).executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Error occurred during data manipulation", e);
         }
     }
 
