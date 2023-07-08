@@ -2,6 +2,7 @@ package com.java.koffy.routing;
 
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.ResponseEntity;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -99,5 +100,14 @@ public class RouteTest {
         assertEquals(expectedParameters, route.parseParameter(uri));
         assertEquals(route.getValidatable(), String.class);
 
+    }
+
+    @Test
+    public void testEmptyRoute() {
+        Route emptyRoute = new Route();
+        Route route = new Route("/", (request) -> testsJsonResponse("message", "test"));
+
+        assertTrue(emptyRoute.isEmpty());
+        assertFalse(route.isEmpty());
     }
 }

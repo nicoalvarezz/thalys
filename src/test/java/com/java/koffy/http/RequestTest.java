@@ -1,6 +1,7 @@
 package com.java.koffy.http;
 
-import com.java.koffy.App;
+import com.java.koffy.routing.Router;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -11,12 +12,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class RequestTest {
 
-    private App app = App.bootstrap();
+    Router router;
+
+    @BeforeEach
+    public void setUp() {
+        router = new Router();
+    }
 
     @Test
     public void testRequestReturnsDataObtainedFromServer() {
         String uri = "/test/route";
-        app.router().post(uri, (request -> ResponseEntity.textResponse("POST OK").status(HttpStatus.OK).build()));
+        router.post(uri, (request -> ResponseEntity.textResponse("POST OK").status(HttpStatus.OK).build()));
 
         Map<String, String> queryParams = new HashMap<>() {{
             put("a", "1");
@@ -44,7 +50,7 @@ public class RequestTest {
     @Test
     public void testRequestPostDataReturnsValueIfKeyGiven() {
         String uri = "/test/route";
-        app.router().post(uri, (request -> ResponseEntity.textResponse("POST OK").status(HttpStatus.OK).build()));
+        router.post(uri, (request -> ResponseEntity.textResponse("POST OK").status(HttpStatus.OK).build()));
         Map<String, String> postData = new HashMap<>() {{
             put("post", "test");
             put("foo", "bar");
@@ -61,6 +67,8 @@ public class RequestTest {
             add("bar");
         }};
 
+        assertTrue(request.getPostData("post").isPresent());
+        assertTrue(request.getPostData("foo").isPresent());
         assertEquals(expectedData.get(0), request.getPostData("post").get());
         assertEquals(expectedData.get(1), request.getPostData("foo").get());
         assertFalse(request.getPostData("does not exist").isPresent());
@@ -69,7 +77,7 @@ public class RequestTest {
     @Test
     public void testRequestQueryDataReturnsValueIfKeyGiven() {
         String uri = "/test/route";
-        app.router().post(uri, (request -> ResponseEntity.textResponse("POST OK").status(HttpStatus.OK).build()));
+        router.post(uri, (request -> ResponseEntity.textResponse("POST OK").status(HttpStatus.OK).build()));
         Map<String, String> queryParams = new HashMap<>() {{
             put("a", "1");
             put("test", "foo");
@@ -92,14 +100,14 @@ public class RequestTest {
     }
 
     @Test
-    public void testRouteParams() {
-        App app = App.bootstrap();
-        app.router().get("/test/{test}/foo/{bar}", (request) -> ResponseEntity.textResponse("GET OK").status(HttpStatus.OK).build());
+    public void testRequestRouteParams() {
+        router.get("/test/{test}/foo/{bar}", (request) -> ResponseEntity.textResponse("GET OK").status(HttpStatus.OK).build());
         String uri = "/test/1/foo/2";
 
         RequestEntity request = RequestEntity.builder()
                 .uri(uri)
                 .method(HttpMethod.GET)
+                .route(router.resolveRoute(uri, HttpMethod.GET))
                 .build();
 
         ArrayList<String> expectedData = new ArrayList<>() {{

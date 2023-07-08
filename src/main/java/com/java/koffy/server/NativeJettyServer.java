@@ -1,9 +1,9 @@
 package com.java.koffy.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.java.koffy.exception.RouteNotFound;
 import com.java.koffy.http.Headers.HttpHeaders;
 import com.java.koffy.http.HttpMethod;
-import com.java.koffy.exception.HttpNotFoundException;
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
@@ -196,6 +196,7 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
                 .headers(resolveHeaders(request))
                 .postData(parsePostData(request))
                 .queryData(parseQueryData(request))
+                .route(router.resolveRoute(request.getRequestURI(), HttpMethod.valueOf(request.getMethod())))
                 .build();
     }
 
@@ -222,7 +223,7 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
     private ResponseEntity buildResponse() {
         try {
             return router.resolve(requestEntity);
-        } catch (HttpNotFoundException e) {
+        } catch (RouteNotFound e) {
             return ResponseEntity.textResponse(e.getMessage()).status(HttpStatus.NOT_FOUND).build();
         } catch (ConstraintViolationException e) {
             return ResponseEntity.textResponse(e.getMessage()).status(HttpStatus.BAD_REQUEST).build();

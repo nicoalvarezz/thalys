@@ -1,7 +1,5 @@
 package com.java.koffy.routing;
 
-import com.java.koffy.App;
-import com.java.koffy.container.Container;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
 import com.java.koffy.http.Middleware;
@@ -56,6 +54,10 @@ public class Route {
                         .matcher(uri).results()
                         .map(matchResult -> matchResult.group(1))
                         .toList();
+    }
+
+    public Route() {
+
     }
 
     /**
@@ -154,10 +156,6 @@ public class Route {
         return IntStream.range(0, parameters.size()).boxed().collect(Collectors.toMap(parameters::get, arguments::get));
     }
 
-    public static Route get(String uri, Function<RequestEntity, ResponseEntity> action) {
-        return Container.resolve(App.class).router().get(uri, action);
-    }
-
     /**
      * Extract the matching URI groups. This method is specifically used to extract the {@link Route} parameters.
      * @param uri {@link String}
@@ -175,5 +173,9 @@ public class Route {
             groups.add(matcher.group(i));
         }
         return groups;
+    }
+
+    public boolean isEmpty() {
+        return uri == null && action == null && regex == null && parameters == null;
     }
 }

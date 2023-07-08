@@ -1,11 +1,8 @@
 package com.java.koffy.http;
 
-import com.java.koffy.App;
-import com.java.koffy.container.Container;
 import com.java.koffy.http.Headers.HttpHeaders;
 import com.java.koffy.routing.Route;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -18,11 +15,6 @@ public final class RequestEntity {
      * HTTP request URI.
      */
     private String uri;
-
-    /**
-     * HTTP request route.
-     */
-    private Optional<Route> route;
 
     /**
      * HTTP request method.
@@ -49,13 +41,15 @@ public final class RequestEntity {
      */
     private Object serialized;
 
+    private Route route;
+
     private RequestEntity(Builder builder) {
         this.uri = builder.uri;
         this.method = builder.method;
         this.data = builder.data;
         this.query = builder.query;
         this.headers = builder.headers;
-        this.route = Container.resolve(App.class).router().resolveRoute(uri, method);
+        this.route = builder.route;
     }
 
     /**
@@ -64,14 +58,6 @@ public final class RequestEntity {
      */
     public String getUri() {
         return uri;
-    }
-
-    /**
-     * Retrieve the route of the request.
-     * @return {@link Optional<Route>}
-     */
-    public Optional<Route> getRoute() {
-        return route;
     }
 
     /**
@@ -138,10 +124,11 @@ public final class RequestEntity {
      * @return {@link Map} with the route parameters
      */
     public Map<String, String> routeParams() {
-        if (route.isPresent()) {
-            return route.get().parseParameter(uri);
-        }
-        return new HashMap<>();
+        return route.parseParameter(uri);
+    }
+
+    public Route getRoute() {
+        return route;
     }
 
     /**
@@ -200,6 +187,8 @@ public final class RequestEntity {
          */
         private HttpHeaders headers;
 
+        private Route route;
+
         private Builder() {
 
         }
@@ -251,6 +240,11 @@ public final class RequestEntity {
          */
         public Builder headers(HttpHeaders headers) {
             this.headers = headers;
+            return this;
+        }
+
+        public Builder route(Route route) {
+            this.route = route;
             return this;
         }
 

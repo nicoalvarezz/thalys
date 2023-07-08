@@ -1,7 +1,7 @@
 package com.java.koffy.routing;
 
+import com.java.koffy.exception.RouteNotFound;
 import com.java.koffy.http.HttpMethod;
-import com.java.koffy.exception.HttpNotFoundException;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
 import com.java.koffy.http.Middleware;
@@ -113,15 +113,15 @@ public class Router {
      * @param uri {@link String}
      * @param method {@link HttpMethod}
      * @return {@link Route}
-     * @throws HttpNotFoundException http not found
+     * @throws RouteNotFound http not found
      */
-    public Optional<Route> resolveRoute(String uri, HttpMethod method) {
+    public Route resolveRoute(String uri, HttpMethod method) {
         for (Route route : routes.get(method)) {
             if (route.matches(uri)) {
-                return Optional.of(route);
+                return route;
             }
         }
-        return Optional.empty();
+        return new Route();
     }
 
     /**
@@ -130,11 +130,11 @@ public class Router {
      * It also validates the request body against the validatable class if one was given.
      * @param request {@link RequestEntity}
      * @return {@link ResponseEntity}
-     * @throws HttpNotFoundException Route not found.
+     * @throws RouteNotFound Route not found.
      */
-    public ResponseEntity resolve(RequestEntity request) throws ConstraintViolationException, HttpNotFoundException {
-        if (request.getRoute().isPresent()) {
-            Route route = request.getRoute().get();
+    public ResponseEntity resolve(RequestEntity request) throws ConstraintViolationException, RouteNotFound {
+        Route route = request.getRoute();
+        if (!route.isEmpty()) {
             if (route.getValidatable() != null) {
                 request.setSerialized(Validator.validate(request.getPostData(), route.getValidatable()));
             }
@@ -143,7 +143,7 @@ public class Router {
             }
             return route.getAction().apply(request);
         }
-        throw new HttpNotFoundException("Route not found");
+        throw new RouteNotFound("Route not found");
     }
 
     /**

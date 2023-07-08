@@ -1,33 +1,20 @@
 package com.java.koffy.routing;
 
-import com.java.koffy.App;
 import com.java.koffy.http.Headers.HttpHeader;
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.routing.helpers.MockMiddleware;
-import com.java.koffy.routing.helpers.MockMiddleware2;
-import com.java.koffy.server.HttpServer;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
-import com.java.koffy.validation.validatables.ValidateAssertFalse;
-import com.java.koffy.validation.validatables.ValidateAssertTrue;
-import com.java.koffy.validation.validatables.ValidateEmail;
-import com.java.koffy.validation.validatables.ValidateMax;
-import com.java.koffy.validation.validatables.ValidateMaxDecimal;
-import com.java.koffy.validation.validatables.ValidateMin;
-import com.java.koffy.validation.validatables.ValidateNegative;
-import com.java.koffy.validation.validatables.ValidateNegativeOrZero;
-import com.java.koffy.validation.validatables.ValidateNotBlank;
-import com.java.koffy.validation.validatables.ValidateNotNull;
+import com.java.koffy.routing.helpers.MockMiddleware2;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -38,26 +25,16 @@ import static org.mockito.Mockito.when;
 
 public class RouterTest {
 
-    private Router router = App.bootstrap().router();
-    private final HttpServer mockServer = mock(HttpServer.class);
+    private Router router;
     private final RequestEntity mockRequest = mock(RequestEntity.class);
-
-    private void mockingRouterHandling(String uri, HttpMethod method) {
-        when(mockServer.getRequest()).thenReturn(
-                RequestEntity.builder()
-                    .uri(uri)
-                    .method(method)
-                    .build());
-        when(mockRequest.getMethod()).thenReturn(method);
-        when(mockRequest.getUri()).thenReturn(uri);
-    }
 
     private ResponseEntity testsJsonResponse(String key, String value) {
         return ResponseEntity.jsonResponse(new HashMap<>() {{ put(key, value); }}).status(HttpStatus.OK).build();
     }
 
-    private String actualContent() {
-        return router.resolveRoute(mockRequest.getUri(), mockRequest.getMethod()).get().getAction().apply(mockRequest).getContent();
+    @BeforeEach
+    public void setUp() {
+        router = new Router();
     }
 
     @Test
@@ -66,11 +43,11 @@ public class RouterTest {
         Function<RequestEntity, ResponseEntity> action = (request) -> testsJsonResponse("message", "test");
 
         router.get(uri, action);
-        mockingRouterHandling(uri, HttpMethod.GET);
+        Route  route = router.resolveRoute(uri, HttpMethod.GET);
 
-        assertEquals(uri, mockServer.getRequest().getUri());
-        assertEquals(HttpMethod.GET, mockServer.getRequest().getMethod());
-        assertEquals(action.apply(mockRequest).getContent(), actualContent());
+        assertEquals(uri, route.getUri());
+        assertEquals(action, route.getAction());
+        assertFalse(route.hasParameters());
     }
 
     @Test
@@ -84,11 +61,11 @@ public class RouterTest {
 
         for (String uri : routes.keySet()) {
             router.get(uri, routes.get(uri));
-            mockingRouterHandling(uri, HttpMethod.GET);
+            Route route = router.resolveRoute(uri, HttpMethod.GET);
 
-            assertEquals(uri, mockServer.getRequest().getUri());
-            assertEquals(HttpMethod.GET, mockServer.getRequest().getMethod());
-            assertEquals(routes.get(uri).apply(mockRequest).getContent(), actualContent());
+            assertEquals(uri, route.getUri());
+            assertEquals(routes.get(uri), route.getAction());
+            assertFalse(route.hasParameters());
 
         }
     }
@@ -117,113 +94,93 @@ public class RouterTest {
     @ParameterizedTest
     @MethodSource("uriWithActionReturns")
     public void testResolveMultipleBasicRoutesWithPostMethod(String uri, String actionReturn) {
-        router.post(uri, (request) -> testsJsonResponse("message", actionReturn));
-        mockingRouterHandling(uri, HttpMethod.POST);
+        Function<RequestEntity, ResponseEntity> action = (request) -> testsJsonResponse("message", actionReturn);
+        router.post(uri, action);
 
-        assertEquals(uri, mockServer.getRequest().getUri());
-        assertEquals(HttpMethod.POST, mockServer.getRequest().getMethod());
-        assertEquals(testsJsonResponse("message", actionReturn).getContent(), actualContent());
+        Route  route = router.resolveRoute(uri, HttpMethod.POST);
 
+        assertEquals(uri, route.getUri());
+        assertEquals(action, route.getAction());
+        assertFalse(route.hasParameters());
 
     }
 
     @ParameterizedTest
     @MethodSource("uriWithActionReturns")
     public void testResolveMultipleBasicRoutesWithPutMethod(String uri, String actionReturn) {
-        router.put(uri, (request) -> testsJsonResponse("message", actionReturn));
-        mockingRouterHandling(uri, HttpMethod.PUT);
+        Function<RequestEntity, ResponseEntity> action = (request) -> testsJsonResponse("message", actionReturn);
+        router.put(uri, action);
 
-        assertEquals(uri, mockServer.getRequest().getUri());
-        assertEquals(HttpMethod.PUT, mockServer.getRequest().getMethod());
-        assertEquals(testsJsonResponse("message", actionReturn).getContent(), actualContent());
+        Route  route = router.resolveRoute(uri, HttpMethod.PUT);
+
+        assertEquals(uri, route.getUri());
+        assertEquals(action, route.getAction());
+        assertFalse(route.hasParameters());
     }
 
     @ParameterizedTest
     @MethodSource("uriWithActionReturns")
     public void testResolveMultipleBasicRoutesWithPatchMethod(String uri, String actionReturn) {
-        router.patch(uri, (request) -> testsJsonResponse("message", actionReturn));
-        mockingRouterHandling(uri, HttpMethod.PATCH);
+        Function<RequestEntity, ResponseEntity> action = (request) -> testsJsonResponse("message", actionReturn);
+        router.patch(uri, action);
 
-        assertEquals(uri, mockServer.getRequest().getUri());
-        assertEquals(HttpMethod.PATCH, mockServer.getRequest().getMethod());
-        assertEquals(testsJsonResponse("message", actionReturn).getContent(), actualContent());
+        Route  route = router.resolveRoute(uri, HttpMethod.PATCH);
+
+        assertEquals(uri, route.getUri());
+        assertEquals(action, route.getAction());
+        assertFalse(route.hasParameters());
     }
 
     @ParameterizedTest
     @MethodSource("uriWithActionReturns")
     public void testResolveMultipleBasicRoutesWithDeleteMethod(String uri, String actionReturn) {
-        router.delete(uri, (request) -> testsJsonResponse("message", actionReturn));
-        mockingRouterHandling(uri, HttpMethod.DELETE);
+        Function<RequestEntity, ResponseEntity> action = (request) -> testsJsonResponse("message", actionReturn);
+        router.delete(uri, action);
 
-        assertEquals(uri, mockServer.getRequest().getUri());
-        assertEquals(HttpMethod.DELETE, mockServer.getRequest().getMethod());
-        assertEquals(testsJsonResponse("message", actionReturn).getContent(), actualContent());
+        Route  route = router.resolveRoute(uri, HttpMethod.DELETE);
+
+        assertEquals(uri, route.getUri());
+        assertEquals(action, route.getAction());
+        assertFalse(route.hasParameters());
+
     }
 
     @Test
     public void testRunMiddlewares() {
         String uri = "/test-middlewares";
-        ResponseEntity expectedResponse = testsJsonResponse("message", "response");
+        Function<RequestEntity, ResponseEntity> action = (request) -> testsJsonResponse("message", "response");
 
-        Route route = router.get(uri, (request) -> expectedResponse);
-        route.setMiddlewares(new ArrayList(){{
+        Route actualRoute = router.get(uri, action);
+        actualRoute.setMiddlewares(new ArrayList(){{
             add(MockMiddleware.class);
         }});
 
-        mockingRouterHandling(uri, HttpMethod.GET);
-        when(mockRequest.getRoute()).thenReturn(Optional.of(route));
+        Route route = router.resolveRoute(uri, HttpMethod.GET);
 
-        assertEquals(expectedResponse, router.resolve(mockRequest));
+        when(mockRequest.getRoute()).thenReturn(route);
+        ResponseEntity expectedResponse = router.resolve(mockRequest);
+
+        assertEquals(action, route.getAction());
         assertEquals(expectedResponse.getHeader(HttpHeader.SERVER.get()).get(), "fake-test-server");
     }
 
     @Test
     public void testMiddlewareStackCanBeStopped() {
         String uri = "/test-middlewares";
-        ResponseEntity unreachableResponse = testsJsonResponse("message", "unreachable");
+        Function<RequestEntity, ResponseEntity> action = (request) -> testsJsonResponse("message", "unreachable");
 
-        Route route = router.get(uri, (request) -> unreachableResponse);
-        route.setMiddlewares(new ArrayList(){{
+        Route actulaRoute = router.get(uri, action);
+        actulaRoute.setMiddlewares(new ArrayList(){{
             add(MockMiddleware2.class);
             add(MockMiddleware.class);
         }});
 
-        when(mockRequest.getRoute()).thenReturn(Optional.of(route));
-        ResponseEntity response = router.resolve(mockRequest);
+        Route route = router.resolveRoute(uri, HttpMethod.GET);
 
-        assertEquals("Stopped", response.getContent());
-        assertFalse(response.getHeader(HttpHeader.SERVER.get()).isPresent());
+        when(mockRequest.getRoute()).thenReturn(actulaRoute);
+        ResponseEntity expectedResponse = router.resolve(mockRequest);
+
+        assertEquals("Stopped", expectedResponse.getContent());
+        assertFalse(expectedResponse.getHeader(HttpHeader.SERVER.get()).isPresent());
     }
-
-    private static Stream<Arguments> validatables() {
-        return Stream.of(
-                Arguments.of(ValidateAssertFalse.class),
-                Arguments.of(ValidateNegative.class),
-                Arguments.of(ValidateNegativeOrZero.class),
-                Arguments.of(ValidateAssertTrue.class),
-                Arguments.of(ValidateEmail.class),
-                Arguments.of(ValidateMax.class),
-                Arguments.of(ValidateMin.class),
-                Arguments.of(ValidateMaxDecimal.class),
-                Arguments.of(ValidateNotBlank.class),
-                Arguments.of(ValidateNotNull.class)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("validatables")
-    public void testRouterWithValidatable(Class<?> validatable) {
-        String uri = "/";
-        ResponseEntity expectedResponse = testsJsonResponse("message", "response");
-
-        router.post(uri, (request) -> expectedResponse, validatable);
-        mockingRouterHandling(uri, HttpMethod.POST);
-        Optional<Route> route = router.resolveRoute(uri, HttpMethod.POST);
-
-        assertEquals(uri, mockServer.getRequest().getUri());
-        assertEquals(HttpMethod.POST, mockServer.getRequest().getMethod());
-        assertEquals(expectedResponse.getContent(), actualContent());
-        assertEquals(route.get().getValidatable(), validatable);
-    }
-
 }
