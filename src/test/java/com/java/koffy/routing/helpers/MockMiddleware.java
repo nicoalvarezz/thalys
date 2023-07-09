@@ -12,7 +12,7 @@ public class MockMiddleware implements Middleware {
     @Override
     public ResponseEntity handle(RequestEntity request, Function<RequestEntity, ResponseEntity> next) {
         ResponseEntity response = next.apply(request);
-        response.setHeader(HttpHeader.SERVER.get(), "fake-test-server");
+        response.setHeader(HttpHeader.SERVER, "fake-test-server");
         return response;
     }
 }

@@ -25,27 +25,27 @@ public class ResponseTest {
             put("test", "foo");
             put("bar", "test");
         }};
-        ResponseEntity response = ResponseEntity.jsonResponse(content).status(HttpStatus.OK).build();
+        ResponseEntity response = ResponseEntity.jsonResponse(content, HttpStatus.OK);
 
         String expectedJson = jsonEncode(content);
-        expectedHeaders.add(HttpHeader.CONTENT_TYPE.get(), ContentType.APPLICATION_JSON.get());
+        expectedHeaders.add(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_JSON.get());
 
         assertEquals(HttpStatus.OK  , response.getStatus());
         assertEquals(expectedJson, response.getContent());
-        assertEquals(expectedHeaders.getHeaders(), response.getHeaders());
+        assertEquals(expectedHeaders.headers(), response.getHttpHeaders().headers());
         assertEquals(expectedJson, response.getContent());
     }
 
     @Test
     public void testTextResponse() {
         String content = "test message";
-        ResponseEntity response = ResponseEntity.textResponse(content).status(HttpStatus.OK).build();
+        ResponseEntity response = ResponseEntity.textResponse(content, HttpStatus.OK);
 
-        expectedHeaders.add(HttpHeader.CONTENT_TYPE.get(), ContentType.TEXT_PLAIN.get());
+        expectedHeaders.add(HttpHeader.CONTENT_TYPE, ContentType.TEXT_PLAIN.get());
 
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(content, response.getContent());
-        assertEquals(expectedHeaders.getHeaders(), response.getHeaders());
+        assertEquals(expectedHeaders.headers(), response.getHttpHeaders().headers());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ResponseTest {
 
         assertEquals(HttpStatus.FOUND, response.getStatus());
         assertEquals("", response.getContent());
-        assertEquals(expectedHeaders.getHeaders(), response.getHeaders());
+        assertEquals(expectedHeaders.headers(), response.getHttpHeaders().headers());
     }
 
     @Test
@@ -66,21 +66,21 @@ public class ResponseTest {
         expectedHeaders.add(HttpHeader.CONTENT_TYPE.get(), ContentType.APPLICATION_JSON.get());
         expectedHeaders.add(HttpHeader.SERVER.get(), "Jetty");
 
-        ResponseEntity response = ResponseEntity.textResponse(content).status(HttpStatus.OK).headers(expectedHeaders).build();
+        ResponseEntity response = ResponseEntity.textResponse(content, HttpStatus.OK, expectedHeaders);
 
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(content, response.getContent());
-        assertEquals(expectedHeaders.getHeaders(), response.getHeaders());
-        assertEquals(2, response.getHeaders().size());
+        assertEquals(expectedHeaders.headers(), response.getHttpHeaders().headers());
+        assertEquals(2, response.getHttpHeaders().size());
 
-        response.removeHeader(HttpHeader.SERVER.get());
+        response.removeHeader(HttpHeader.SERVER);
         expectedHeaders.removeHeader(HttpHeader.SERVER.get());
 
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(content, response.getContent());
-        assertEquals(expectedHeaders.getHeaders(), response.getHeaders());
-        assertEquals(1, response.getHeaders().size());
-        assertEquals(expectedHeaders.get(HttpHeader.CONTENT_TYPE.get()), response.getHeaders().get(HttpHeader.CONTENT_TYPE.get()));
+        assertEquals(expectedHeaders.headers(), response.getHttpHeaders().headers());
+        assertEquals(1, response.getHttpHeaders().size());
+        assertEquals(expectedHeaders.get(HttpHeader.CONTENT_TYPE.get()), response.getHttpHeaders().get(HttpHeader.CONTENT_TYPE.get()));
     }
 
     @Test
@@ -90,24 +90,24 @@ public class ResponseTest {
             put("test2", "bar");
         }};
         expectedHeaders.add(HttpHeader.CONTENT_TYPE.get(), ContentType.APPLICATION_JSON.get());
-        expectedHeaders.add(HttpHeader.SERVER.get(), "Jetty");
+        expectedHeaders.add(HttpHeader.SERVER, "Jetty");
 
-        ResponseEntity response = ResponseEntity.jsonResponse(content).status(HttpStatus.OK).headers(expectedHeaders).build();
+        ResponseEntity response = ResponseEntity.jsonResponse(content, HttpStatus.OK, expectedHeaders);
 
         String expectedJson = jsonEncode(content);
 
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(expectedJson, response.getContent());
-        assertEquals(expectedHeaders.getHeaders(), response.getHeaders());
-        assertEquals(2, response.getHeaders().size());
+        assertEquals(expectedHeaders.headers(), response.getHttpHeaders().headers());
+        assertEquals(2, response.getHttpHeaders().size());
 
-        response.removeHeader(HttpHeader.SERVER.get());
+        response.removeHeader(HttpHeader.SERVER);
         expectedHeaders.removeHeader(HttpHeader.SERVER.get());
 
         assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals(expectedJson, response.getContent());
-        assertEquals(expectedHeaders.getHeaders(), response.getHeaders());
-        assertEquals(1, response.getHeaders().size());
-        assertEquals(expectedHeaders.get(HttpHeader.CONTENT_TYPE.get()), response.getHeaders().get(HttpHeader.CONTENT_TYPE.get()));
+        assertEquals(expectedHeaders.headers(), response.getHttpHeaders().headers());
+        assertEquals(1, response.getHttpHeaders().size());
+        assertEquals(expectedHeaders.get(HttpHeader.CONTENT_TYPE.get()), response.getHttpHeaders().get(HttpHeader.CONTENT_TYPE.get()));
     }
 }

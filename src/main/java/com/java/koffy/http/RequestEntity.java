@@ -1,5 +1,6 @@
 package com.java.koffy.http;
 
+import com.java.koffy.http.Headers.HttpHeader;
 import com.java.koffy.http.Headers.HttpHeaders;
 import com.java.koffy.routing.Route;
 
@@ -107,7 +108,7 @@ public final class RequestEntity {
      * @return {@link Map} headers
      */
     public Map<String, String> getHeaders() {
-        return headers.getHeaders();
+        return headers.headers();
     }
 
     /**
@@ -115,7 +116,7 @@ public final class RequestEntity {
      * @param header {@link HttpHeaders}
      * @return {@link Optional<String>}
      */
-    public Optional<String> getHeader(String header) {
+    public Optional<String> getHeader(HttpHeader header) {
         return Optional.ofNullable(headers.get(header));
     }
 
@@ -129,23 +130,6 @@ public final class RequestEntity {
 
     public Route getRoute() {
         return route;
-    }
-
-    /**
-     * Saving serialized object after validation.
-     * @param serialized
-     */
-    public void setSerialized(Object serialized) {
-        this.serialized = serialized;
-    }
-
-    /***
-     * Return the serialized object given a specific class type.
-     * @param type
-     * @return Serialized object
-     */
-    public <T> T getSerialized(Class<T> type) {
-       return type.cast(serialized);
     }
 
     /**

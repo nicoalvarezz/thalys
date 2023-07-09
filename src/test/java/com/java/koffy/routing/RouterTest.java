@@ -29,7 +29,7 @@ public class RouterTest {
     private final RequestEntity mockRequest = mock(RequestEntity.class);
 
     private ResponseEntity testsJsonResponse(String key, String value) {
-        return ResponseEntity.jsonResponse(new HashMap<>() {{ put(key, value); }}).status(HttpStatus.OK).build();
+        return ResponseEntity.jsonResponse(new HashMap<>() {{ put(key, value); }}, HttpStatus.OK);
     }
 
     @BeforeEach
@@ -161,7 +161,7 @@ public class RouterTest {
         ResponseEntity expectedResponse = router.resolve(mockRequest);
 
         assertEquals(action, route.getAction());
-        assertEquals(expectedResponse.getHeader(HttpHeader.SERVER.get()).get(), "fake-test-server");
+        assertEquals(expectedResponse.getHeader(HttpHeader.SERVER).get(), "fake-test-server");
     }
 
     @Test
@@ -181,6 +181,6 @@ public class RouterTest {
         ResponseEntity expectedResponse = router.resolve(mockRequest);
 
         assertEquals("Stopped", expectedResponse.getContent());
-        assertFalse(expectedResponse.getHeader(HttpHeader.SERVER.get()).isPresent());
+        assertFalse(expectedResponse.getHeader(HttpHeader.SERVER).isPresent());
     }
 }

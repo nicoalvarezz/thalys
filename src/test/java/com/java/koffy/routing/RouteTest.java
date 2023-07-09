@@ -41,7 +41,7 @@ public class RouteTest {
     }
 
     private ResponseEntity testsJsonResponse(String key, String value) {
-        return ResponseEntity.jsonResponse(new HashMap<>() {{ put(key, value); }}).status(HttpStatus.OK).build();
+        return ResponseEntity.jsonResponse(new HashMap<>() {{ put(key, value); }}, HttpStatus.OK);
     }
 
     @ParameterizedTest

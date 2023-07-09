@@ -21,9 +21,7 @@ public class Kinetic {
     /**
      * Initializes and configures the necessary components of the application.
      * Creates a new instance of the {@link Kinetic} class, sets up a {@link Router}, and a {@link NativeJettyServer}.
-     * It creates a singleton of the App class saved it in the singleton {@link Container}.
-     *
-     * @return The initialized {@link Kinetic} object.
+     * It creates a singleton of the App class saved it in the singleton {@link Container}.`
      */
     private static void initialize() {
         router = Container.singleton(Router.class);

@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * HttP Headers class.
+ * Http Headers class.
  * Data structure to store headers and its values.
  */
 public class HttpHeaders {
@@ -21,7 +21,7 @@ public class HttpHeaders {
      * Return all headers.
      * @return {@link Map}
      */
-    public Map<String, String> getHeaders() {
+    public Map<String, String> headers() {
         return headers;
     }
 
@@ -34,12 +34,8 @@ public class HttpHeaders {
         headers.put(header, value);
     }
 
-    /**
-     * Add various headers and their values at once.
-     * @param headers {@link Map}
-     */
-    public void addAll(Map<String, String> headers) {
-        this.headers.putAll(headers);
+    public void add(HttpHeader header, String value) {
+        headers.put(header.get(), value);
     }
 
     /**
@@ -51,6 +47,10 @@ public class HttpHeaders {
         return headers.get(header);
     }
 
+    public String get(HttpHeader header) {
+        return headers.get(header.get());
+    }
+
     /**
      * Check if a header name exits.
      * @param header header name
@@ -60,11 +60,19 @@ public class HttpHeaders {
         return headers.containsKey(header);
     }
 
+    public boolean containsHeader(HttpHeader header) {
+        return headers.containsKey(header.get());
+    }
+
     /**
      * Remove a header.
      * @param header header name
      */
     public void removeHeader(String header) {
+        headers.remove(header);
+    }
+
+    public void removeHeader(HttpHeader header) {
         headers.remove(header);
     }
 

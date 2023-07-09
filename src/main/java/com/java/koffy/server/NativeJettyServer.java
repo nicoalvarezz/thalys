@@ -2,6 +2,7 @@ package com.java.koffy.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.koffy.exception.RouteNotFound;
+import com.java.koffy.http.Headers.HttpHeader;
 import com.java.koffy.http.Headers.HttpHeaders;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.HttpStatus;
@@ -130,8 +131,8 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
     private void handleServerResponse(HttpServletResponse response) throws IOException {
         response.setStatus(responseEntity.getStatus().statusCode());
         response.getWriter().println(responseEntity.getContent());
-        for (String header : responseEntity.getHeaders().keySet()) {
-            response.addHeader(header, responseEntity.getHeaders().get(header));
+        for (String header : responseEntity.getHttpHeaders().getAllHeaderNames()) {
+            response.addHeader(header, responseEntity.getHttpHeaders().get(header));
         }
     }
 
@@ -162,7 +163,7 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
         HttpHeaders headers = new HttpHeaders();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
-            headers.add(headerName.toLowerCase(), request.getHeader(headerName));
+            headers.add(HttpHeader.valueOf(headerName.toLowerCase()), request.getHeader(headerName));
         }
         return headers;
     }
@@ -176,9 +177,9 @@ public class NativeJettyServer extends AbstractHandler implements HttpServer {
         try {
             return router.resolve(requestEntity);
         } catch (RouteNotFound e) {
-            return ResponseEntity.textResponse(e.getMessage()).status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.textResponse(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (ConstraintViolationException e) {
-            return ResponseEntity.textResponse(e.getMessage()).status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.textResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 

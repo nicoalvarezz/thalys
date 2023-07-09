@@ -46,8 +46,8 @@ public final class ResponseEntity {
      * Return the HTTP headers of the response.
      * @return {@link Map} HTTP headers of the response
      */
-    public Map<String, String> getHeaders() {
-        return headers.getHeaders();
+    public HttpHeaders getHttpHeaders() {
+        return headers;
     }
 
     /**
@@ -56,7 +56,7 @@ public final class ResponseEntity {
      * @param header
      * @return {@link Optional<String>}
      */
-    public Optional<String> getHeader(String header) {
+    public Optional<String> getHeader(HttpHeader header) {
         return Optional.ofNullable(headers.get(header));
     }
 
@@ -72,11 +72,11 @@ public final class ResponseEntity {
      * Delete a specific header form the response.
      * @param header header name to be removed
      */
-    public void removeHeader(String header) {
+    public void removeHeader(HttpHeader header) {
         headers.removeHeader(header);
     }
 
-    public void setHeader(String header, String value) {
+    public void setHeader(HttpHeader header, String value) {
         headers.add(header, value);
     }
 
@@ -86,9 +86,43 @@ public final class ResponseEntity {
      * @param content content of the response
      * @return {@link ResponseEntity object with given status, and given content in json format
      */
-    public static Builder jsonResponse(Map<String, String> content) {
-        return new ResponseEntityFactory().response(ContentType.APPLICATION_JSON.get(),
-                new JSONObject(content).toString());
+    public static ResponseEntity jsonResponse(Map<String, String> content, HttpStatus status) {
+        return new ResponseEntityFactory()
+                .response(ContentType.APPLICATION_JSON, new JSONObject(content).toString(), status)
+                .build();
+    }
+
+    public static ResponseEntity jsonResponse(Map<String, String> content, HttpStatus status, HttpHeaders headers) {
+        return new ResponseEntityFactory()
+                .response(ContentType.APPLICATION_JSON, new JSONObject(content).toString(), status)
+                .headers(headers)
+                .build();
+    }
+
+    public static ResponseEntity jsonResponse(JSONObject content, HttpStatus status) {
+        return new ResponseEntityFactory()
+                .response(ContentType.APPLICATION_JSON, content.toString(), status)
+                .build();
+    }
+
+    public static ResponseEntity jsonResponse(JSONObject content, HttpStatus status, HttpHeaders headers) {
+        return new ResponseEntityFactory()
+                .response(ContentType.APPLICATION_JSON, content.toString(), status)
+                .headers(headers)
+                .build();
+    }
+
+    public static ResponseEntity jsonResponse(String content, HttpStatus status) {
+        return new ResponseEntityFactory()
+                .response(ContentType.APPLICATION_JSON, content, status)
+                .build();
+    }
+
+    public static ResponseEntity jsonResponse(String content, HttpStatus status, HttpHeaders headers) {
+        return new ResponseEntityFactory()
+                .response(ContentType.APPLICATION_JSON, content, status)
+                .headers(headers)
+                .build();
     }
 
     /**
@@ -97,8 +131,15 @@ public final class ResponseEntity {
      * @param text content of the response
      * @return {@link ResponseEntity } object with given status, and given data in text format
      */
-    public static Builder textResponse(String text) {
-        return new ResponseEntityFactory().response(ContentType.TEXT_PLAIN.get(), text);
+    public static ResponseEntity textResponse(String text, HttpStatus status) {
+        return new ResponseEntityFactory().response(ContentType.TEXT_PLAIN, text, status).build();
+    }
+
+    public static ResponseEntity textResponse(String text, HttpStatus status, HttpHeaders headers) {
+        return new ResponseEntityFactory()
+                .response(ContentType.TEXT_PLAIN, text, status)
+                .headers(headers)
+                .build();
     }
 
     /**
@@ -107,11 +148,39 @@ public final class ResponseEntity {
      * @return {@link ResponseEntity } object in the form of redirect
      */
     public static ResponseEntity redirectResponse(String uri) {
-        return new ResponseEntityFactory()
-                .response()
+        return new Builder()
                 .status(HttpStatus.FOUND)
-                .header(HttpHeader.LOCATION.get(), uri)
+                .header(HttpHeader.LOCATION, uri)
                 .build();
+    }
+
+    public static ResponseEntity redirectResponse(String uri, HttpHeaders headers) {
+        return new Builder()
+                .status(HttpStatus.FOUND)
+                .header(HttpHeader.LOCATION, uri)
+                .headers(headers)
+                .build();
+    }
+
+    public static ResponseEntity xmlResponse(String content, HttpStatus status) {
+        return new ResponseEntityFactory()
+                .response(ContentType.APPLICATION_XML, content, status).build();
+    }
+
+    public static ResponseEntity xmlResponse(String content, HttpStatus status, HttpHeaders headers) {
+        return new ResponseEntityFactory()
+                .response(ContentType.APPLICATION_XML, content, status)
+                .headers(headers)
+                .build();
+    }
+
+    public static ResponseEntity response(String content, ContentType contentType,
+                                          HttpHeaders headers, HttpStatus status) {
+        return new ResponseEntityFactory()
+                .response(contentType, content, status)
+                .headers(headers)
+                .build();
+
     }
 
     /**
@@ -138,7 +207,6 @@ public final class ResponseEntity {
          */
         private HttpHeaders headers = new HttpHeaders();
 
-
         /**
          * Response content.
          */
@@ -164,7 +232,7 @@ public final class ResponseEntity {
          * @param value header value
          * @return Builder of {@link ResponseEntity} instance
          */
-        public Builder header(String header, String value) {
+        public Builder header(HttpHeader header, String value) {
             this.headers.add(header, value);
             return this;
         }
@@ -176,7 +244,7 @@ public final class ResponseEntity {
          * @return Builder of {@link ResponseEntity} instance
          */
         public Builder headers(HttpHeaders headers) {
-            this.headers.addAll(headers.getHeaders());
+            this.headers = headers;
             return this;
         }
 
@@ -195,8 +263,8 @@ public final class ResponseEntity {
          * @param contentType value of the content type header
          * @return Builder of the {@link ResponseEntity} instance
          */
-        public Builder contentType(String contentType) {
-            headers.add(HttpHeader.CONTENT_TYPE.get(), contentType);
+        public Builder contentType(ContentType contentType) {
+            headers.add(HttpHeader.CONTENT_TYPE, contentType.get());
             return this;
         }
 
@@ -222,19 +290,11 @@ public final class ResponseEntity {
          * @return {@link Builder}
          */
         @Override
-        public Builder response(String contentType, String content) {
+        public Builder response(ContentType contentType, String content, HttpStatus status) {
             return ResponseEntity.builder()
                     .contentType(contentType)
+                    .status(status)
                     .content(content);
-        }
-
-        /**
-         * Response method that returns empty response builder.
-         * @return {@link Builder}
-         */
-        @Override
-        public Builder response() {
-            return ResponseEntity.builder();
         }
     }
 }
