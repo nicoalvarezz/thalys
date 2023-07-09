@@ -27,7 +27,6 @@ public class Kinetic {
         router = Container.singleton(Router.class);
         server = new NativeJettyServer();
         server.setPort(appConfig.getAppPort());
-        server.setRouter(router);
     }
 
     public static void start() {

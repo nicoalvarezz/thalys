@@ -16,7 +16,7 @@ public class ClassPathScanner {
         try (ScanResult scanResult = new ClassGraph()
                 .enableClassInfo()
                 .enableAnnotationInfo()
-                .whitelistPackages(basePackage)
+                .acceptPackages(basePackage)
                 .scan()) {
             List<Class<?>> annotatedClasses = new ArrayList<>();
             for (ClassInfo classInfo : scanResult.getClassesWithAnnotation(annotation.getName())) {

@@ -164,7 +164,7 @@ public enum HttpHeader {
      * @return {@link HttpHeader}
      * @throws IllegalArgumentException
      */
-    public HttpHeader headerOf(String header) {
+    public static HttpHeader headerOf(String header) {
         HttpHeader currentHeader = resolve(header);
         if (currentHeader == null) {
             throw new IllegalArgumentException("No matching content for header:" + header);
