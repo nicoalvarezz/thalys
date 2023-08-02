@@ -1,4 +1,7 @@
-package com.java.koffy.http;
+package com.java.koffy.middlewares;
+
+import com.java.koffy.http.RequestEntity;
+import com.java.koffy.http.ResponseEntity;
 
 import java.util.function.Function;
 

@@ -2,7 +2,7 @@ package com.java.koffy.routing;
 
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
-import com.java.koffy.http.Middleware;
+import com.java.koffy.middlewares.Middleware;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,9 +82,9 @@ public class Route {
     /**
      * Takes the list of middleware classes. These classes must implement the {@link Middleware} interface.
      * This method creates a new instance of each element and saves it the middlewares list.
-     * @param middlewares {@link ArrayList<Class<?>>} middleware classes for this route.
+     * @param middlewares {@link List<Class<? extends Middleware>>} middleware classes for this route.
      */
-    public void setMiddlewares(ArrayList<Class<?>> middlewares) {
+    public void setMiddlewares(List<Class<? extends Middleware>> middlewares) {
         this.middlewares = middlewares
                 .stream()
                 .map(clazz -> {

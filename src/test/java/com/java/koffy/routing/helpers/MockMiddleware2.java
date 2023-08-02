@@ -1,7 +1,7 @@
 package com.java.koffy.routing.helpers;
 
 import com.java.koffy.http.HttpStatus;
-import com.java.koffy.http.Middleware;
+import com.java.koffy.middlewares.Middleware;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
 

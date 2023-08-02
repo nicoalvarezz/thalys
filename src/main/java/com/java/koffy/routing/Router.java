@@ -1,10 +1,10 @@
 package com.java.koffy.routing;
 
-import com.java.koffy.exception.RouteNotFound;
+import com.java.koffy.exception.RouteNotFoundException;
 import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
-import com.java.koffy.http.Middleware;
+import com.java.koffy.middlewares.Middleware;
 
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
@@ -94,7 +94,7 @@ public class Router {
      * @param uri {@link String}
      * @param method {@link HttpMethod}
      * @return {@link Route}
-     * @throws RouteNotFound http not found
+     * @throws RouteNotFoundException http not found
      */
     public Route resolveRoute(String uri, HttpMethod method) {
         for (Route route : routes.get(method)) {
@@ -110,9 +110,9 @@ public class Router {
      * This method is also in charge of running the middlewares if this {@link Route} has any middleware assigned.
      * @param request {@link RequestEntity}
      * @return {@link ResponseEntity}
-     * @throws RouteNotFound Route not found.
+     * @throws RouteNotFoundException Route not found.
      */
-    public ResponseEntity resolve(RequestEntity request) throws ConstraintViolationException, RouteNotFound {
+    public ResponseEntity resolve(RequestEntity request) throws ConstraintViolationException, RouteNotFoundException {
         Route route = request.getRoute();
         if (!route.isEmpty()) {
             if (route.hasMiddlewares()) {
@@ -120,7 +120,7 @@ public class Router {
             }
             return route.getAction().apply(request);
         }
-        throw new RouteNotFound("Route not found");
+        throw new RouteNotFoundException("Route not found");
     }
 
     /**

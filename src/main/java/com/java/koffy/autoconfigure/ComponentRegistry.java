@@ -1,7 +1,9 @@
 package com.java.koffy.autoconfigure;
 
+import com.java.koffy.annotation.Configurable;
 import com.java.koffy.annotation.DeletePath;
 import com.java.koffy.annotation.GetPath;
+import com.java.koffy.annotation.Middlewares;
 import com.java.koffy.annotation.PostPath;
 import com.java.koffy.annotation.PutPath;
 import com.java.koffy.annotation.RequestPath;
@@ -9,8 +11,12 @@ import com.java.koffy.annotation.RestController;
 import com.java.koffy.container.Container;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
+import com.java.koffy.middlewares.AuthDriver;
+import com.java.koffy.middlewares.Middleware;
+import com.java.koffy.routing.Route;
 import com.java.koffy.routing.Router;
 
+import java.util.Arrays;
 import java.util.function.Function;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,47 +25,90 @@ import java.util.List;
 
 public class ComponentRegistry {
 
+    private static ClassConfigs clazzConfigs = Container.singleton(ClassConfigs.class);
+
+    private static MethodWrapper methodWrapper = new MethodWrapper();
+
+    private static final Router ROUTER = Container.resolve(Router.class);
+
     public static void registerComponents(String basePackage) {
         registerRoutes(basePackage);
+        registerMiddlewareConfigs(basePackage);
     }
 
     private static void registerRoutes(String basePackage) {
         List<Class<?>> annotatedBeans = ClassPathScanner.scanClasses(basePackage, RestController.class);
-        MethodWrapper methodWrapper = new MethodWrapper();
 
         for (Class<?> clazz : annotatedBeans) {
-            Method[] methods = clazz.getDeclaredMethods();
-            for (Method method : methods) {
-                try {
-                    Function<RequestEntity, ResponseEntity> action =
-                            methodWrapper.asFunction(method, clazz.getDeclaredConstructor().newInstance());
-                    routerHandler(clazz, method, action);
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                         NoSuchMethodException e) {
-                    throw new RuntimeException("Failed to create instance for " + clazz.getName(), e);
-                }
+            registerMethods(clazz, clazz.getDeclaredMethods());
+        }
+    }
+
+    private static void registerMethods(Class<?> clazz, Method[] methods) {
+        for (Method method : methods) {
+            try {
+                Function<RequestEntity, ResponseEntity> action =
+                        methodWrapper.asFunction(method, clazz.getDeclaredConstructor().newInstance());
+                routerHandler(clazz, method, action);
+            } catch (InstantiationException | IllegalAccessException |
+                     InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException("Failed to create instance for " + clazz.getName(), e);
             }
         }
     }
 
     private static void routerHandler(Class<?> clazz, Method method, Function<RequestEntity, ResponseEntity> action) {
-        Router router = Container.singleton(Router.class);
+        Route route = new Route();
 
         if (method.isAnnotationPresent(GetPath.class)) {
-            router.get(requestPath(clazz) + method.getAnnotation(GetPath.class).value(), action);
+            route = ROUTER.get(requestPath(clazz) + method.getAnnotation(GetPath.class).value(), action);
         } else if (method.isAnnotationPresent(PostPath.class)) {
-            router.post(requestPath(clazz) + method.getAnnotation(PostPath.class).value(), action);
+            route = ROUTER.post(requestPath(clazz) + method.getAnnotation(PostPath.class).value(), action);
         } else if (method.isAnnotationPresent(PutPath.class)) {
-            router.put(requestPath(clazz) + method.getAnnotation(PutPath.class).value(), action);
+            route = ROUTER.put(requestPath(clazz) + method.getAnnotation(PutPath.class).value(), action);
         } else if (method.isAnnotationPresent(DeletePath.class)) {
-            router.delete(requestPath(clazz) + method.getAnnotation(DeletePath.class).value(), action);
+            route = ROUTER.delete(requestPath(clazz) + method.getAnnotation(DeletePath.class).value(), action);
+        }
+
+        if (method.isAnnotationPresent(Middlewares.class)) {
+            registerMiddlewares(route, Arrays.stream(method.getAnnotation(Middlewares.class).value()).toList());
         }
     }
 
     private static String requestPath(Class<?> clazz) {
-        if (clazz.isAnnotationPresent(RequestPath.class)) {
-            return clazz.getAnnotation(RequestPath.class).value();
+        return clazz.isAnnotationPresent(RequestPath.class) ? clazz.getAnnotation(RequestPath.class).value() : "";
+    }
+
+    private static void registerMiddlewares(Route route, List<Class<? extends Middleware>> middlewares) {
+        route.setMiddlewares(middlewares);
+    }
+
+    private static void registerMiddlewareConfigs(String basePackage) {
+        List<Class<?>> annotatedBeans = ClassPathScanner.scanClasses(basePackage, Configurable.class);
+
+        for (Class<?> clazz : annotatedBeans) {
+            registerAuthMiddlewareConfigs(clazz);
         }
-        return "";
+    }
+
+    private static void registerAuthMiddlewareConfigs(Class<?> clazz) {
+        for (Class<?> interfaze : clazz.getInterfaces()) {
+            if (interfaze == AuthDriver.class) {
+                clazzConfigs.setAuthClazz((Class<? extends AuthDriver>) clazz);
+            }
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+//HOLAAAAAAAAA TONTORROOOOOON
+//TE ESCRIBO ESTO PARA QUE TE ACUERDES DE MI

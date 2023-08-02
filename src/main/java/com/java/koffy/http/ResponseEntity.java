@@ -180,7 +180,12 @@ public final class ResponseEntity {
                 .response(contentType, content, status)
                 .headers(headers)
                 .build();
+    }
 
+    public static ResponseEntity unauthorized() {
+        return new ResponseEntityFactory()
+                .response(ContentType.TEXT_PLAIN, "Unauthorized: Invalid API token", HttpStatus.UNAUTHORIZED)
+                .build();
     }
 
     /**

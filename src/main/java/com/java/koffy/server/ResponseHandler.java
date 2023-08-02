@@ -1,7 +1,7 @@
 package com.java.koffy.server;
 
 import com.java.koffy.container.Container;
-import com.java.koffy.exception.RouteNotFound;
+import com.java.koffy.exception.RouteNotFoundException;
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
@@ -38,7 +38,7 @@ public class ResponseHandler {
     private ResponseEntity constructResponse(RequestEntity request) {
         try {
             return router.resolve(request);
-        } catch (RouteNotFound e) {
+        } catch (RouteNotFoundException e) {
             return ResponseEntity.textResponse(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (ConstraintViolationException e) {
             return ResponseEntity.textResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
