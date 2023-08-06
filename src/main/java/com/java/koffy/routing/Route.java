@@ -153,6 +153,10 @@ public class Route {
         return groups;
     }
 
+    /**
+     * Check that the route exists and has been registered.
+     * @return {@link Boolean}
+     */
     public boolean isEmpty() {
         return uri == null && action == null && regex == null && parameters == null;
     }

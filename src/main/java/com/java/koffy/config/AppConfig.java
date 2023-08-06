@@ -6,6 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * The ConfigAccessor class serves as an interface for accessing application configurations
+ * stored in the properties file. These configurations are user-defined settings that interact
+ * with the framework's behavior and functionalities.
+ */
 public class AppConfig {
 
     private String appName = "";

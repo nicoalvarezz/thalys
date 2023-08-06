@@ -20,8 +20,6 @@ public class Kinetic {
 
     /**
      * Initializes and configures the necessary components of the application.
-     * Creates a new instance of the {@link Kinetic} class, sets up a {@link Router}, and a {@link NativeJettyServer}.
-     * It creates a singleton of the App class saved it in the singleton {@link Container}.`
      */
     private static void initialize() {
         router = Container.singleton(Router.class);
@@ -29,6 +27,9 @@ public class Kinetic {
         server.setPort(appConfig.getAppPort());
     }
 
+    /**
+     * Start kinetic application.
+     */
     public static void start() {
         initialize();
         ComponentRegistry.registerComponents(appConfig.getBasePackage());
@@ -36,11 +37,9 @@ public class Kinetic {
     }
 
     /**
-     * Starts the server on the specified port.
-     * Sets the port number and assigns the Router to the NativeJettyServer instance.
-     * Calls the startServer() method of the NativeJettyServer to initiate the server startup process.
+     * Run the server.
      *
-     * @throws Exception If an exception occurs during server startup.
+     * @throws Exception
      */
     private static void run() {
         try {

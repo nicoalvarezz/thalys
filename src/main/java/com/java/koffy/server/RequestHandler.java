@@ -17,6 +17,11 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The `RequestHandler` class is responsible for processing and handling incoming HTTP requests within
+ * the Koffy framework. It constructs a `RequestEntity` object that encapsulates various aspects of
+ * the incoming request, such as URI, method, headers, and data.
+ */
 public class RequestHandler {
 
     private Router router = Container.resolve(Router.class);

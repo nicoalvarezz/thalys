@@ -171,6 +171,9 @@ public final class RequestEntity {
          */
         private HttpHeaders headers;
 
+        /**
+         * HTTP route.
+         */
         private Route route;
 
         private Builder() {

@@ -23,21 +23,30 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+/**
+ * Class responsible for registering different components within the framework.
+ */
 public class ComponentRegistry {
 
-    private static ClassConfigs clazzConfigs = Container.singleton(ClassConfigs.class);
+    private static MiddlewareConfigs clazzConfigs = Container.singleton(MiddlewareConfigs.class);
 
     private static MethodWrapper methodWrapper = new MethodWrapper();
 
     private static final Router ROUTER = Container.resolve(Router.class);
 
+    /**
+     * Register components by scanning the provided base packages.
+     *
+     * @param basePackage
+     */
     public static void registerComponents(String basePackage) {
         registerRoutes(basePackage);
         registerMiddlewareConfigs(basePackage);
     }
 
     private static void registerRoutes(String basePackage) {
-        List<Class<?>> annotatedBeans = ClassPathScanner.scanClasses(basePackage, RestController.class);
+        List<Class<?>> annotatedBeans = ClassPathScanner
+                .scanClassesForGivenAnnotation(basePackage, RestController.class);
 
         for (Class<?> clazz : annotatedBeans) {
             registerMethods(clazz, clazz.getDeclaredMethods());
@@ -84,7 +93,7 @@ public class ComponentRegistry {
     }
 
     private static void registerMiddlewareConfigs(String basePackage) {
-        List<Class<?>> annotatedBeans = ClassPathScanner.scanClasses(basePackage, Configurable.class);
+        List<Class<?>> annotatedBeans = ClassPathScanner.scanClassesForGivenAnnotation(basePackage, Configurable.class);
 
         for (Class<?> clazz : annotatedBeans) {
             registerAuthMiddlewareConfigs(clazz);

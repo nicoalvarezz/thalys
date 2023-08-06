@@ -92,6 +92,14 @@ public final class ResponseEntity {
                 .build();
     }
 
+    /**
+     * Creates a JSON response with the specified content, HTTP status, and headers.
+     *
+     * @param content The content to be included in the JSON response.
+     * @param status The HTTP status code for the response.
+     * @param headers The HttpHeaders to be added to the response.
+     * @return A ResponseEntity containing the JSON response with the provided content, status, and headers.
+     */
     public static ResponseEntity jsonResponse(Map<String, String> content, HttpStatus status, HttpHeaders headers) {
         return new ResponseEntityFactory()
                 .response(ContentType.APPLICATION_JSON, new JSONObject(content).toString(), status)
@@ -99,12 +107,27 @@ public final class ResponseEntity {
                 .build();
     }
 
+    /**
+     * Creates a JSON response with the specified JSONObject content and HTTP status.
+     *
+     * @param content The JSONObject content to be included in the JSON response.
+     * @param status The HTTP status code for the response.
+     * @return A ResponseEntity containing the JSON response with the provided content and status.
+     */
     public static ResponseEntity jsonResponse(JSONObject content, HttpStatus status) {
         return new ResponseEntityFactory()
                 .response(ContentType.APPLICATION_JSON, content.toString(), status)
                 .build();
     }
 
+    /**
+     * Creates a JSON response with the specified JSONObject content, HTTP status, and headers.
+     *
+     * @param content The JSONObject content to be included in the JSON response.
+     * @param status The HTTP status code for the response.
+     * @param headers The HttpHeaders to be added to the response.
+     * @return A ResponseEntity containing the JSON response with the provided content, status, and headers.
+     */
     public static ResponseEntity jsonResponse(JSONObject content, HttpStatus status, HttpHeaders headers) {
         return new ResponseEntityFactory()
                 .response(ContentType.APPLICATION_JSON, content.toString(), status)
@@ -112,12 +135,28 @@ public final class ResponseEntity {
                 .build();
     }
 
+    /**
+     * Creates a JSON response with the specified content and HTTP status.
+     *
+     * @param content The content to be included in the JSON response.
+     * @param status The HTTP status code for the response.
+     * @return A ResponseEntity containing the JSON response with the provided content and status.
+     */
     public static ResponseEntity jsonResponse(String content, HttpStatus status) {
         return new ResponseEntityFactory()
                 .response(ContentType.APPLICATION_JSON, content, status)
                 .build();
     }
 
+
+    /**
+     * Creates a JSON response with the specified content, HTTP status, and headers.
+     *
+     * @param content The content to be included in the JSON response.
+     * @param status The HTTP status code for the response.
+     * @param headers The HttpHeaders to be added to the response.
+     * @return A ResponseEntity containing the JSON response with the provided content, status, and headers.
+     */
     public static ResponseEntity jsonResponse(String content, HttpStatus status, HttpHeaders headers) {
         return new ResponseEntityFactory()
                 .response(ContentType.APPLICATION_JSON, content, status)
@@ -135,6 +174,14 @@ public final class ResponseEntity {
         return new ResponseEntityFactory().response(ContentType.TEXT_PLAIN, text, status).build();
     }
 
+    /**
+     * Creates a plain text response with the specified text content, HTTP status, and headers.
+     *
+     * @param text The plain text content to be included in the response.
+     * @param status The HTTP status code for the response.
+     * @param headers The HttpHeaders to be added to the response.
+     * @return A ResponseEntity containing the plain text response with the provided content, status, and headers.
+     */
     public static ResponseEntity textResponse(String text, HttpStatus status, HttpHeaders headers) {
         return new ResponseEntityFactory()
                 .response(ContentType.TEXT_PLAIN, text, status)
@@ -154,6 +201,13 @@ public final class ResponseEntity {
                 .build();
     }
 
+    /**
+     * Creates a response that performs a redirect to the specified URI with optional headers.
+     *
+     * @param uri The URI to redirect to.
+     * @param headers The HttpHeaders to be added to the response.
+     * @return A ResponseEntity that performs a redirect to the provided URI with the given headers.
+     */
     public static ResponseEntity redirectResponse(String uri, HttpHeaders headers) {
         return new Builder()
                 .status(HttpStatus.FOUND)
@@ -162,11 +216,26 @@ public final class ResponseEntity {
                 .build();
     }
 
+    /**
+     * Creates an XML response with the specified content and HTTP status.
+     *
+     * @param content The XML content to be included in the response.
+     * @param status The HTTP status code for the response.
+     * @return A ResponseEntity containing the XML response with the provided content and status.
+     */
     public static ResponseEntity xmlResponse(String content, HttpStatus status) {
         return new ResponseEntityFactory()
                 .response(ContentType.APPLICATION_XML, content, status).build();
     }
 
+    /**
+     * Creates an XML response with the specified content, HTTP status, and headers.
+     *
+     * @param content The XML content to be included in the response.
+     * @param status The HTTP status code for the response.
+     * @param headers The HttpHeaders to be added to the response.
+     * @return A ResponseEntity containing the XML response with the provided content, status, and headers.
+     */
     public static ResponseEntity xmlResponse(String content, HttpStatus status, HttpHeaders headers) {
         return new ResponseEntityFactory()
                 .response(ContentType.APPLICATION_XML, content, status)
@@ -174,6 +243,15 @@ public final class ResponseEntity {
                 .build();
     }
 
+    /**
+     * Creates a response with the specified content, content type, headers, and HTTP status.
+     *
+     * @param content The content to be included in the response.
+     * @param contentType The ContentType of the content.
+     * @param headers The HttpHeaders to be added to the response.
+     * @param status The HTTP status code for the response.
+     * @return A ResponseEntity with the provided content, content type, headers, and status.
+     */
     public static ResponseEntity response(String content, ContentType contentType,
                                           HttpHeaders headers, HttpStatus status) {
         return new ResponseEntityFactory()
@@ -182,9 +260,14 @@ public final class ResponseEntity {
                 .build();
     }
 
+    /**
+     * Creates an unauthorized response with a plain text message indicating unauthorized access.
+     *
+     * @return A ResponseEntity representing an unauthorized request response.
+     */
     public static ResponseEntity unauthorized() {
         return new ResponseEntityFactory()
-                .response(ContentType.TEXT_PLAIN, "Unauthorized: Invalid API token", HttpStatus.UNAUTHORIZED)
+                .response(ContentType.TEXT_PLAIN, "Unauthorized request", HttpStatus.UNAUTHORIZED)
                 .build();
     }
 
@@ -283,10 +366,9 @@ public final class ResponseEntity {
     }
 
     /**
-     * This class implements {@link ResponseFactory} interface to implement the different types of responses.
-     * This class is used to implement the factory pattern
+     * This class is used to implement the factory pattern.
      */
-    static class ResponseEntityFactory implements ResponseFactory {
+    static class ResponseEntityFactory {
         /**
          * Response method that takes the content-type and content.
          * Returns response builder with given content-type and content.
@@ -294,7 +376,6 @@ public final class ResponseEntity {
          * @param content content of the response
          * @return {@link Builder}
          */
-        @Override
         public Builder response(ContentType contentType, String content, HttpStatus status) {
             return ResponseEntity.builder()
                     .contentType(contentType)

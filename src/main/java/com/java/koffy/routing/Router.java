@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -90,7 +89,7 @@ public class Router {
     /**
      * Resolve the route of the request. Checks if the route matches the URI,
      * and if so returns the {@link Route} assigned to a specific URI and Method.
-     * If no route is found {@link Optional} is returned
+     * If no route is found, an empty route is returned.
      * @param uri {@link String}
      * @param method {@link HttpMethod}
      * @return {@link Route}

@@ -34,6 +34,11 @@ public class HttpHeaders {
         headers.put(header, value);
     }
 
+    /**
+     * Add header and value to the headers {@link Map}.
+     * @param header header name
+     * @param value header value
+     */
     public void add(HttpHeader header, String value) {
         headers.put(header.get(), value);
     }
@@ -47,6 +52,11 @@ public class HttpHeaders {
         return headers.get(header);
     }
 
+    /**
+     * Return the value of a specific header.
+     * @param header header name
+     * @return {@link String} header value
+     */
     public String get(HttpHeader header) {
         return headers.get(header.get());
     }
@@ -60,6 +70,11 @@ public class HttpHeaders {
         return headers.containsKey(header);
     }
 
+    /**
+     * Check if a header name exists.
+     * @param header header name
+     * @return {@link Boolean}
+     */
     public boolean containsHeader(HttpHeader header) {
         return headers.containsKey(header.get());
     }
@@ -72,6 +87,10 @@ public class HttpHeaders {
         headers.remove(header);
     }
 
+    /**
+     * Remove a header.
+     * @param header header name
+     */
     public void removeHeader(HttpHeader header) {
         headers.remove(header);
     }
