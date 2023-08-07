@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * HttP Headers class.
+ * Http Headers class.
  * Data structure to store headers and its values.
  */
 public class HttpHeaders {
@@ -21,7 +21,7 @@ public class HttpHeaders {
      * Return all headers.
      * @return {@link Map}
      */
-    public Map<String, String> getHeaders() {
+    public Map<String, String> headers() {
         return headers;
     }
 
@@ -35,11 +35,12 @@ public class HttpHeaders {
     }
 
     /**
-     * Add various headers and their values at once.
-     * @param headers {@link Map}
+     * Add header and value to the headers {@link Map}.
+     * @param header header name
+     * @param value header value
      */
-    public void addAll(Map<String, String> headers) {
-        this.headers.putAll(headers);
+    public void add(HttpHeader header, String value) {
+        headers.put(header.get(), value);
     }
 
     /**
@@ -52,6 +53,15 @@ public class HttpHeaders {
     }
 
     /**
+     * Return the value of a specific header.
+     * @param header header name
+     * @return {@link String} header value
+     */
+    public String get(HttpHeader header) {
+        return headers.get(header.get());
+    }
+
+    /**
      * Check if a header name exits.
      * @param header header name
      * @return {@link Boolean}
@@ -61,10 +71,27 @@ public class HttpHeaders {
     }
 
     /**
+     * Check if a header name exists.
+     * @param header header name
+     * @return {@link Boolean}
+     */
+    public boolean containsHeader(HttpHeader header) {
+        return headers.containsKey(header.get());
+    }
+
+    /**
      * Remove a header.
      * @param header header name
      */
     public void removeHeader(String header) {
+        headers.remove(header);
+    }
+
+    /**
+     * Remove a header.
+     * @param header header name
+     */
+    public void removeHeader(HttpHeader header) {
         headers.remove(header);
     }
 

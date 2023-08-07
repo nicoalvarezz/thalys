@@ -2,6 +2,7 @@ package com.java.koffy.routing;
 
 import com.java.koffy.http.HttpStatus;
 import com.java.koffy.http.ResponseEntity;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -40,7 +41,7 @@ public class RouteTest {
     }
 
     private ResponseEntity testsJsonResponse(String key, String value) {
-        return ResponseEntity.jsonResponse(new HashMap<>() {{ put(key, value); }}).status(HttpStatus.OK).build();
+        return ResponseEntity.jsonResponse(new HashMap<>() {{ put(key, value); }}, HttpStatus.OK);
     }
 
     @ParameterizedTest
@@ -78,26 +79,12 @@ public class RouteTest {
         assertEquals(expectedParameters, route.parseParameter(uri));
     }
 
-    @ParameterizedTest
-    @MethodSource("routeWithNoParameters")
-    public void routeWithVlaidatable(String uri) {
-        Route route = new Route(uri, (request) -> testsJsonResponse("message", "test"));
-        route.setValidatable(String.class);
+    @Test
+    public void testEmptyRoute() {
+        Route emptyRoute = new Route();
+        Route route = new Route("/", (request) -> testsJsonResponse("message", "test"));
 
-        assertTrue(route.matches(uri));
-        assertFalse(route.hasParameters());
-        assertEquals(route.getValidatable(), String.class);
-    }
-
-    @ParameterizedTest
-    @MethodSource("routeWithParameters")
-    public void routeWithParametersAndValidatable(String definition, String uri, Map<String , String> expectedParameters) {
-        Route route = new Route(definition, (request) -> testsJsonResponse("message", "test"));
-        route.setValidatable(String.class);
-
-        assertTrue(route.hasParameters());
-        assertEquals(expectedParameters, route.parseParameter(uri));
-        assertEquals(route.getValidatable(), String.class);
-
+        assertTrue(emptyRoute.isEmpty());
+        assertFalse(route.isEmpty());
     }
 }

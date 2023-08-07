@@ -1,18 +1,16 @@
 package com.java.koffy.routing;
 
+import com.java.koffy.exception.RouteNotFoundException;
 import com.java.koffy.http.HttpMethod;
-import com.java.koffy.exception.HttpNotFoundException;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
-import com.java.koffy.http.Middleware;
-import com.java.koffy.utils.Validator;
+import com.java.koffy.middlewares.Middleware;
 
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -43,14 +41,6 @@ public class Router {
         return route;
     }
 
-    private Route registerRoute(HttpMethod method, String uri,
-                                Function<RequestEntity, ResponseEntity> action, Class<?> validatable) {
-        Route route = new Route(uri, action);
-        route.setValidatable(validatable);
-        routes.get(method).add(route);
-        return route;
-    }
-
     /**
      * Register route for GET request.
      * @param uri request URI
@@ -67,16 +57,6 @@ public class Router {
      */
     public Route post(String uri, Function<RequestEntity, ResponseEntity> action) {
         return registerRoute(HttpMethod.POST, uri, action);
-    }
-
-    /**
-     * Register route for POST request with validatable.
-     * @param uri request URI
-     * @param action URI action
-     * @param validatable Validatable class
-     */
-    public Route post(String uri, Function<RequestEntity, ResponseEntity> action, Class<?> validatable) {
-        return registerRoute(HttpMethod.POST, uri, action, validatable);
     }
 
     /**
@@ -109,41 +89,37 @@ public class Router {
     /**
      * Resolve the route of the request. Checks if the route matches the URI,
      * and if so returns the {@link Route} assigned to a specific URI and Method.
-     * If no route is found {@link Optional} is returned
+     * If no route is found, an empty route is returned.
      * @param uri {@link String}
      * @param method {@link HttpMethod}
      * @return {@link Route}
-     * @throws HttpNotFoundException http not found
+     * @throws RouteNotFoundException http not found
      */
-    public Optional<Route> resolveRoute(String uri, HttpMethod method) {
+    public Route resolveRoute(String uri, HttpMethod method) {
         for (Route route : routes.get(method)) {
             if (route.matches(uri)) {
-                return Optional.of(route);
+                return route;
             }
         }
-        return Optional.empty();
+        return new Route();
     }
 
     /**
      * Returns the response assigned to the action of the {@link Route}.
      * This method is also in charge of running the middlewares if this {@link Route} has any middleware assigned.
-     * It also validates the request body against the validatable class if one was given.
      * @param request {@link RequestEntity}
      * @return {@link ResponseEntity}
-     * @throws HttpNotFoundException Route not found.
+     * @throws RouteNotFoundException Route not found.
      */
-    public ResponseEntity resolve(RequestEntity request) throws ConstraintViolationException, HttpNotFoundException {
-        if (request.getRoute().isPresent()) {
-            Route route = request.getRoute().get();
-            if (route.getValidatable() != null) {
-                request.setSerialized(Validator.validate(request.getPostData(), route.getValidatable()));
-            }
+    public ResponseEntity resolve(RequestEntity request) throws ConstraintViolationException, RouteNotFoundException {
+        Route route = request.getRoute();
+        if (!route.isEmpty()) {
             if (route.hasMiddlewares()) {
                 return runMiddlewares(request, route.getMiddlewares(), route.getAction());
             }
             return route.getAction().apply(request);
         }
-        throw new HttpNotFoundException("Route not found");
+        throw new RouteNotFoundException("Route not found");
     }
 
     /**

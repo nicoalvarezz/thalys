@@ -1,10 +1,8 @@
 package com.java.koffy.routing;
 
-import com.java.koffy.App;
-import com.java.koffy.container.Container;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
-import com.java.koffy.http.Middleware;
+import com.java.koffy.middlewares.Middleware;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,11 +41,6 @@ public class Route {
      */
     private List<Middleware> middlewares = new ArrayList<>();
 
-    /**
-     * Validatable class.
-     */
-    private Class<?> validatable;
-
     public Route(String uri, Function<RequestEntity, ResponseEntity> action) {
         this.uri = uri;
         this.action = action;
@@ -58,21 +51,8 @@ public class Route {
                         .toList();
     }
 
-    /**
-     * Set validatable class.
-     * @param validatable
-     */
-    public void setValidatable(Class<?> validatable) {
-        this.validatable = validatable;
-    }
+    public Route() {
 
-    /**
-     * Get validatable class.
-     * It returns Class that will be used to validate the post body
-     * @return {@link Class}
-     */
-    public Class<?> getValidatable() {
-        return validatable;
     }
 
     /**
@@ -102,9 +82,9 @@ public class Route {
     /**
      * Takes the list of middleware classes. These classes must implement the {@link Middleware} interface.
      * This method creates a new instance of each element and saves it the middlewares list.
-     * @param middlewares {@link ArrayList<Class<?>>} middleware classes for this route.
+     * @param middlewares {@link List<Class<? extends Middleware>>} middleware classes for this route.
      */
-    public void setMiddlewares(ArrayList<Class<?>> middlewares) {
+    public void setMiddlewares(List<Class<? extends Middleware>> middlewares) {
         this.middlewares = middlewares
                 .stream()
                 .map(clazz -> {
@@ -154,10 +134,6 @@ public class Route {
         return IntStream.range(0, parameters.size()).boxed().collect(Collectors.toMap(parameters::get, arguments::get));
     }
 
-    public static Route get(String uri, Function<RequestEntity, ResponseEntity> action) {
-        return Container.resolve(App.class).router().get(uri, action);
-    }
-
     /**
      * Extract the matching URI groups. This method is specifically used to extract the {@link Route} parameters.
      * @param uri {@link String}
@@ -175,5 +151,13 @@ public class Route {
             groups.add(matcher.group(i));
         }
         return groups;
+    }
+
+    /**
+     * Check that the route exists and has been registered.
+     * @return {@link Boolean}
+     */
+    public boolean isEmpty() {
+        return uri == null && action == null && regex == null && parameters == null;
     }
 }

@@ -1,11 +1,9 @@
 package com.java.koffy.http;
 
-import com.java.koffy.App;
-import com.java.koffy.container.Container;
+import com.java.koffy.http.Headers.HttpHeader;
 import com.java.koffy.http.Headers.HttpHeaders;
 import com.java.koffy.routing.Route;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -18,11 +16,6 @@ public final class RequestEntity {
      * HTTP request URI.
      */
     private String uri;
-
-    /**
-     * HTTP request route.
-     */
-    private Optional<Route> route;
 
     /**
      * HTTP request method.
@@ -49,13 +42,15 @@ public final class RequestEntity {
      */
     private Object serialized;
 
+    private Route route;
+
     private RequestEntity(Builder builder) {
         this.uri = builder.uri;
         this.method = builder.method;
         this.data = builder.data;
         this.query = builder.query;
         this.headers = builder.headers;
-        this.route = Container.resolve(App.class).router().resolveRoute(uri, method);
+        this.route = builder.route;
     }
 
     /**
@@ -64,14 +59,6 @@ public final class RequestEntity {
      */
     public String getUri() {
         return uri;
-    }
-
-    /**
-     * Retrieve the route of the request.
-     * @return {@link Optional<Route>}
-     */
-    public Optional<Route> getRoute() {
-        return route;
     }
 
     /**
@@ -121,7 +108,7 @@ public final class RequestEntity {
      * @return {@link Map} headers
      */
     public Map<String, String> getHeaders() {
-        return headers.getHeaders();
+        return headers.headers();
     }
 
     /**
@@ -129,7 +116,7 @@ public final class RequestEntity {
      * @param header {@link HttpHeaders}
      * @return {@link Optional<String>}
      */
-    public Optional<String> getHeader(String header) {
+    public Optional<String> getHeader(HttpHeader header) {
         return Optional.ofNullable(headers.get(header));
     }
 
@@ -138,27 +125,11 @@ public final class RequestEntity {
      * @return {@link Map} with the route parameters
      */
     public Map<String, String> routeParams() {
-        if (route.isPresent()) {
-            return route.get().parseParameter(uri);
-        }
-        return new HashMap<>();
+        return route.parseParameter(uri);
     }
 
-    /**
-     * Saving serialized object after validation.
-     * @param serialized
-     */
-    public void setSerialized(Object serialized) {
-        this.serialized = serialized;
-    }
-
-    /***
-     * Return the serialized object given a specific class type.
-     * @param type
-     * @return Serialized object
-     */
-    public <T> T getSerialized(Class<T> type) {
-       return type.cast(serialized);
+    public Route getRoute() {
+        return route;
     }
 
     /**
@@ -199,6 +170,11 @@ public final class RequestEntity {
          * HTTP headers.
          */
         private HttpHeaders headers;
+
+        /**
+         * HTTP route.
+         */
+        private Route route;
 
         private Builder() {
 
@@ -251,6 +227,11 @@ public final class RequestEntity {
          */
         public Builder headers(HttpHeaders headers) {
             this.headers = headers;
+            return this;
+        }
+
+        public Builder route(Route route) {
+            this.route = route;
             return this;
         }
 
