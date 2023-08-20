@@ -8,6 +8,8 @@ import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.routing.Router;
 import org.eclipse.jetty.server.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,6 +33,8 @@ public class RequestHandler {
      */
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    private static Logger LOGGER  = LoggerFactory.getLogger(RequestHandler.class);
+
     /**
      * Build {@link RequestEntity} from the server request.
      * @param request Server request
@@ -38,7 +42,8 @@ public class RequestHandler {
      * @throws IOException
      */
     public RequestEntity handleRequest(Request request) throws IOException {
-        return RequestEntity.builder()
+
+        RequestEntity requestEntity = RequestEntity.builder()
                 .uri(request.getRequestURI())
                 .method(HttpMethod.valueOf(request.getMethod()))
                 .headers(resolveHeaders(request))
@@ -46,6 +51,10 @@ public class RequestHandler {
                 .queryData(parseQueryData(request))
                 .route(router.resolveRoute(request.getRequestURI(), HttpMethod.valueOf(request.getMethod())))
                 .build();
+
+        LOGGER.info("{} {} - Request received", requestEntity.getMethod().get(), requestEntity.getUri());
+
+        return requestEntity;
     }
 
     /**

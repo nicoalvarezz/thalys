@@ -5,6 +5,8 @@ import com.java.koffy.http.HttpMethod;
 import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
 import com.java.koffy.middlewares.Middleware;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ public class Router {
      * HTTP routes.
      */
     private Map<HttpMethod, ArrayList<Route>> routes = new HashMap<>();
+
+    private static Logger LOGGER  = LoggerFactory.getLogger(Router.class);
 
     public Router() {
         for (HttpMethod method : HttpMethod.values()) {
@@ -134,7 +138,14 @@ public class Router {
         if (middlewares.isEmpty()) {
             return target.apply(request);
         }
-        return middlewares.get(0).handle(request, (baseRequest)
-                -> runMiddlewares(request, middlewares.subList(1, middlewares.size()), target));
+
+        Middleware currentMiddleware = middlewares.get(0);
+        LOGGER.info("Middleware - {} [Executing]", currentMiddleware.getClass().getSimpleName());
+
+        return currentMiddleware.handle(request, (baseRequest) -> {
+            ResponseEntity response = runMiddlewares(request, middlewares.subList(1, middlewares.size()), target);
+            LOGGER.info("Middleware - {} [Completed]", currentMiddleware.getClass().getSimpleName());
+            return response;
+        });
     }
 }

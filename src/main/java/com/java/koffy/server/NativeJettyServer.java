@@ -7,6 +7,8 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -25,6 +27,10 @@ public class NativeJettyServer extends AbstractHandler {
 
     private final ResponseHandler responseHandler = new ResponseHandler();
 
+    private int serverPort;
+
+    private static Logger LOGGER  = LoggerFactory.getLogger(NativeJettyServer.class);
+
     public NativeJettyServer() {
         jettyServer = new Server();
         jettyServer.setHandler(this);
@@ -38,6 +44,7 @@ public class NativeJettyServer extends AbstractHandler {
         ServerConnector connector = new ServerConnector(jettyServer);
         connector.setPort(serverPort);
         jettyServer.addConnector(connector);
+        this.serverPort = serverPort;
     }
 
     /**
@@ -45,8 +52,8 @@ public class NativeJettyServer extends AbstractHandler {
      * @throws Exception
      */
     public void startServer() throws Exception {
+        LOGGER.info("Jetty running on port: {}", serverPort);
         jettyServer.start();
-        jettyServer.join();
     }
 
     /**
@@ -66,8 +73,13 @@ public class NativeJettyServer extends AbstractHandler {
     @Override
     public void handle(String target, Request request, HttpServletRequest httpServletRequest,
                        HttpServletResponse httpServletResponse) throws IOException {
+        long startRequestTime = System.currentTimeMillis();
+
         RequestEntity requestEntity = requestHandler.handleRequest(request);
         responseHandler.handleResponse(httpServletResponse, requestEntity);
         request.setHandled(true);
+
+        long endRequestTime = System.currentTimeMillis();
+        LOGGER.info("Request processing time: {} ms", endRequestTime - startRequestTime);
     }
 }
