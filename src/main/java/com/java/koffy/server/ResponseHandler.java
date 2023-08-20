@@ -7,6 +7,8 @@ import com.java.koffy.http.RequestEntity;
 import com.java.koffy.http.ResponseEntity;
 import com.java.koffy.routing.Router;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.ConstraintViolationException;
 import java.io.IOException;
@@ -21,6 +23,8 @@ public class ResponseHandler {
      * The router used to resolve routes and handle requests.
      */
     private Router router = Container.resolve(Router.class);
+
+    private static Logger LOGGER  = LoggerFactory.getLogger(ResponseHandler.class);
 
     /**
      * Handles the server's response by setting the appropriate status, returning content,
@@ -40,6 +44,9 @@ public class ResponseHandler {
         for (String header : response.getHttpHeaders().getAllHeaderNames()) {
             servletResponse.addHeader(header, response.getHttpHeaders().get(header));
         }
+
+        LOGGER.info("{} {} - Response sent (Status: {})",
+                request.getMethod().get(), request.getUri(), response.getStatus().statusCode());
     }
 
     /**

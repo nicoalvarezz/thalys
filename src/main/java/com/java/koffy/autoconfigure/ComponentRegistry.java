@@ -4,6 +4,7 @@ import com.java.koffy.annotation.Configurable;
 import com.java.koffy.annotation.DeletePath;
 import com.java.koffy.annotation.GetPath;
 import com.java.koffy.annotation.Middlewares;
+import com.java.koffy.annotation.PatchPath;
 import com.java.koffy.annotation.PostPath;
 import com.java.koffy.annotation.PutPath;
 import com.java.koffy.annotation.RequestPath;
@@ -75,6 +76,8 @@ public class ComponentRegistry {
             route = ROUTER.post(requestPath(clazz) + method.getAnnotation(PostPath.class).value(), action);
         } else if (method.isAnnotationPresent(PutPath.class)) {
             route = ROUTER.put(requestPath(clazz) + method.getAnnotation(PutPath.class).value(), action);
+        } else if (method.isAnnotationPresent(PatchPath.class)) {
+            route = ROUTER.patch(requestPath(clazz) + method.getAnnotation(PatchPath.class).value(), action);
         } else if (method.isAnnotationPresent(DeletePath.class)) {
             route = ROUTER.delete(requestPath(clazz) + method.getAnnotation(DeletePath.class).value(), action);
         }
