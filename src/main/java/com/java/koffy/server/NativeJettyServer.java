@@ -27,8 +27,6 @@ public class NativeJettyServer extends AbstractHandler {
 
     private final ResponseHandler responseHandler = new ResponseHandler();
 
-    private int serverPort;
-
     private static Logger LOGGER  = LoggerFactory.getLogger(NativeJettyServer.class);
 
     public NativeJettyServer() {
@@ -44,7 +42,7 @@ public class NativeJettyServer extends AbstractHandler {
         ServerConnector connector = new ServerConnector(jettyServer);
         connector.setPort(serverPort);
         jettyServer.addConnector(connector);
-        this.serverPort = serverPort;
+        LOGGER.info("Jetty running on port: {}", serverPort);
     }
 
     /**
@@ -52,7 +50,6 @@ public class NativeJettyServer extends AbstractHandler {
      * @throws Exception
      */
     public void startServer() throws Exception {
-        LOGGER.info("Jetty running on port: {}", serverPort);
         jettyServer.start();
     }
 
