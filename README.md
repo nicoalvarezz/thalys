@@ -1,2 +1,2 @@
-# koffy
+# Thalys
 Java Framework
