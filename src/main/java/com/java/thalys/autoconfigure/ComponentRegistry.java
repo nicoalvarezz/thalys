@@ -10,6 +10,7 @@ import com.java.thalys.annotation.PutPath;
 import com.java.thalys.annotation.RequestPath;
 import com.java.thalys.annotation.RestController;
 import com.java.thalys.container.Container;
+import com.java.thalys.exception.MissingApplicationProperty;
 import com.java.thalys.http.RequestEntity;
 import com.java.thalys.http.ResponseEntity;
 import com.java.thalys.middlewares.AuthDriver;
@@ -41,6 +42,9 @@ public class ComponentRegistry {
      * @param basePackage
      */
     public static void registerComponents(String basePackage) {
+        if (basePackage == null) {
+            throw new MissingApplicationProperty("base package");
+        }
         registerRoutes(basePackage);
         registerMiddlewareConfigs(basePackage);
     }

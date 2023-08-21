@@ -1,5 +1,6 @@
 package com.java.thalys.server;
 
+import com.java.thalys.exception.MissingApplicationProperty;
 import com.java.thalys.http.RequestEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,9 +39,13 @@ public class NativeJettyServer extends AbstractHandler {
      * Set the port the jetty server will be listening to.
      * @param serverPort port number
      */
-    public void setPort(int serverPort) {
+    public void setPort(String serverPort) {
         ServerConnector connector = new ServerConnector(jettyServer);
-        connector.setPort(serverPort);
+        try {
+            connector.setPort(Integer.parseInt(serverPort));
+        } catch (Exception e) {
+            throw new MissingApplicationProperty("server port");
+        }
         jettyServer.addConnector(connector);
         LOGGER.info("Jetty running on port: {}", serverPort);
     }
