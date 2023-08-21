@@ -24,6 +24,8 @@ import java.util.function.Function;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class responsible for registering different components within the framework.
@@ -42,11 +44,18 @@ public class ComponentRegistry {
      * @param basePackage
      */
     public static void registerComponents(String basePackage) {
-        if (basePackage == null) {
+        if (basePackage == null || !isValidPackageName(basePackage)) {
             throw new MissingApplicationProperty("base package");
         }
         registerRoutes(basePackage);
         registerMiddlewareConfigs(basePackage);
+    }
+
+    private static boolean isValidPackageName(String basePackage) {
+        String packageNamePattern = "^(?:[a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z0-9_]*)*)?$";
+        Pattern pattern = Pattern.compile(packageNamePattern);
+        Matcher matcher = pattern.matcher(basePackage);
+        return matcher.matches();
     }
 
     private static void registerRoutes(String basePackage) {
