@@ -1,0 +1,51 @@
+name: Code Coverage Summary
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  code-coverage:
+    name: Calculate Code Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
+      - name: Build with Maven
+        run: mvn clean install
+
+      - name: Generate JaCoCo report
+        run: mvn jacoco:report
+
+      - name: Calculate code coverage
+        id: coverage
+        run: echo "::set-output name=coverage::$(awk '/Total/{print substr($NF, 1, length($NF)-1)}' target/site/jacoco/index.html)"
+
+      - name: Post comment with code coverage
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const coverage = parseFloat('${{ steps.coverage.outputs.coverage }}');
+            let message = `Code coverage: ${coverage.toFixed(2)}%`;
+            if (coverage < 80) {
+              message += ' :x:';
+            } else {
+              message += ' :heavy_check_mark:';
+            }
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
