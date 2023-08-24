@@ -45,10 +45,9 @@ jobs:
           script: |
             const coverage = `${{ steps.coverage.outputs.coverage }}%`;
             const prNumber = context.payload.pull_request.number;
-            const octokit = github.getOctokit('${{ secrets.GH_TOKEN }}');
             const comment = `Code Coverage: ${coverage}`;
-
-            await octokit.issues.createComment({
+            
+            github.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
