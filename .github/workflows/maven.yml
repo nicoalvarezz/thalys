@@ -35,28 +35,13 @@ jobs:
           name: code-coverage-summary
           path: target/site/jacoco/index.html
 
-      - name: Extract Code Coverage Percentage
-        id: coverage
-        run: echo "::set-output name=coverage::$(grep -oP '(?<=<td class=\"ctr2\">)[^<]+' target/site/jacoco/index.html)"
-
-#      - name: Post PR Comment with Code Coverage
-#        uses: actions/github-script@v5
-#        with:
-#          script: |
-#            const coverage = `${{ steps.coverage.outputs.coverage }}%`;
-#            const prNumber = context.payload.pull_request.number;
-#            const comment = `Code Coverage: ${coverage}`;
-#
-#            github.issues.createComment({
-#              owner: context.repo.owner,
-#              repo: context.repo.repo,
-#              issue_number: prNumber,
-#              body: comment
-#            })
+      - name: Extract Code Coverage Percentage [Instructions]
+        id: instructions_coverage
+        run: echo "grep -A 1 '<tfoot>' index.html | grep -A 1 'Total' | grep -o '[0-9]* %' | tr -d '\n' | awk -F' ' '{print $2}' | cut -d% -f2"
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-                  Code Coverage: `${{ steps.coverage.outputs.coverage }}% :rocket:
+                  Code Coverage: `${{ steps.coverage.outputs.instructions_coverage }}% :rocket:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
