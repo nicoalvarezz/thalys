@@ -39,17 +39,22 @@ jobs:
         id: coverage
         run: echo "::set-output name=coverage::$(grep -oP '(?<=<td class=\"ctr2\">)[^<]+' target/site/jacoco/index.html)"
 
-      - name: Post PR Comment with Code Coverage
-        uses: actions/github-script@v5
+#      - name: Post PR Comment with Code Coverage
+#        uses: actions/github-script@v5
+#        with:
+#          script: |
+#            const coverage = `${{ steps.coverage.outputs.coverage }}%`;
+#            const prNumber = context.payload.pull_request.number;
+#            const comment = `Code Coverage: ${coverage}`;
+#
+#            github.issues.createComment({
+#              owner: context.repo.owner,
+#              repo: context.repo.repo,
+#              issue_number: prNumber,
+#              body: comment
+#            })
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
         with:
-          script: |
-            const coverage = `${{ steps.coverage.outputs.coverage }}%`;
-            const prNumber = context.payload.pull_request.number;
-            const comment = `Code Coverage: ${coverage}`;
-            
-            github.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              body: comment
-            })
+          message: |
+            Hello world ! :wave:
