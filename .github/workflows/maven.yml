@@ -54,9 +54,24 @@ jobs:
 #              body: comment
 #            })
 
-      - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v2
+#      - name: Comment PR
+#        uses: thollander/actions-comment-pull-request@v2
+#        with:
+#          message: |
+#                  Code Coverage: "::set-output name=coverage::$(grep -oP '(?<=<td class=\"ctr2\">)[^<]+' target/site/jacoco/index.html)" :rocket:
+#          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Post PR Comment with Code Coverage
+        uses: actions/github-script@v5
         with:
-          message: |
-                  Code Coverage: "::set-output name=coverage::$(grep -oP '(?<=<td class=\"ctr2\">)[^<]+' target/site/jacoco/index.html)" :rocket:
+          script: |
+            const coverage = `${{ steps.coverage.outputs.coverage }}%`;
+            const prNumber = context.payload.pull_request.number;
+            const comment = `Code Coverage: ${coverage}`;
+
+            github.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: comment
+            })
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
