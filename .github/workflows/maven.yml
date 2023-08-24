@@ -46,12 +46,17 @@ jobs:
 #                  Code Coverage: ${{ steps.coverage.outputs.instructions_coverage }}% :rocket:
 #          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}: 60
 
+      - name: Run Tests and Coverage
+        run: |
+            chmod +x mvnw
+            ./mvnw clean test jacoco:report
+
       - name: Add coverage to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         with:
-            paths: |
-              ${{ github.workspace }}/target/site/jacoco/jacoco.xml
-            token: ${{ secrets.GITHUB_TOKEN }}
-            min-coverage-overall: 40
-            min-coverage-changed-files: 60
+          paths: |
+            ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 60
