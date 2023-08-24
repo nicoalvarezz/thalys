@@ -35,13 +35,29 @@ jobs:
           name: code-coverage-summary
           path: target/site/jacoco/index.html
 
-      - name: Extract Code Coverage Percentage [Instructions]
-        id: instructions_coverage
-        run: grep -A 1 '<tfoot>' target/site/jacoco/index.html | grep -A 1 'Total' | grep -o '[0-9]* %' | tr -d '\n' | awk -F' ' '{print $1}'
+#      - name: Extract Code Coverage Percentage [Instructions]
+#        id: instructions_coverage
+#        run: grep -A 1 '<tfoot>' target/site/jacoco/index.html | grep -A 1 'Total' | grep -o '[0-9]* %' | tr -d '\n' | awk -F' ' '{print $1}'
+#
+#      - name: Comment PR
+#        uses: thollander/actions-comment-pull-request@v2
+#        with:
+#          message: |
+#                  Code Coverage: ${{ steps.coverage.outputs.instructions_coverage }}% :rocket:
+#          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          message: |
-                  Code Coverage: ${{ steps.coverage.outputs.instructions_coverage }}% :rocket:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Run Coverage
+        run: |
+          chmod +x gradlew
+          ./gradlew testCoverage
+
+          - name: Add coverage to PR
+            id: jacoco
+            uses: madrapps/jacoco-report@v1.6.1
+            with:
+              paths: |
+                ${{ github.workspace }}/**/build/reports/jacoco/prodNormalDebugCoverage/prodNormalDebugCoverage.xml,
+                ${{ github.workspace }}/**/build/reports/jacoco/**/debugCoverage.xml
+              token: ${{ secrets.GITHUB_TOKEN }}
+              min-coverage-overall: 40
+              min-coverage-changed-files: 60
