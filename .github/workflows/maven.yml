@@ -23,17 +23,32 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+      - name: Build and Test
+        run: mvn clean test
 
-      - name: Generate JaCoCo Report
-        run: mvn jacoco:report --file pom.xml
-
-      - name: Upload Code Coverage Summary
-        uses: actions/upload-artifact@v2
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
         with:
-          name: code-coverage-summary
-          path: target/site/jacoco/index.html
+          paths: |
+            ${{ github.workspace }}/**/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 60
+
+#      - name: Build with Maven
+#        run: mvn -B package --file pom.xml
+
+
+
+#      - name: Generate JaCoCo Report
+#        run: mvn jacoco:report --file pom.xml
+#
+#      - name: Upload Code Coverage Summary
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: code-coverage-summary
+#          path: target/site/jacoco/index.html
 
 #      - name: Extract Code Coverage Percentage [Instructions]
 #        id: instructions_coverage
@@ -45,18 +60,3 @@ jobs:
 #          message: |
 #                  Code Coverage: ${{ steps.coverage.outputs.instructions_coverage }}% :rocket:
 #          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}: 60
-
-      - name: Run Tests and Coverage
-        run: |
-            chmod +x mvnw
-            ./mvnw clean test jacoco:report
-
-      - name: Add coverage to PR
-        id: jacoco
-        uses: madrapps/jacoco-report@v1.6.1
-        with:
-          paths: |
-            ${{ github.workspace }}/target/site/jacoco/jacoco.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 40
-          min-coverage-changed-files: 60
