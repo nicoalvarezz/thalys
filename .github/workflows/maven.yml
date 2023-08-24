@@ -25,10 +25,19 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn -B package --file pom.xml
+
       - name: Generate JaCoCo Report
         run: mvn jacoco:report --file pom.xml
+
       - name: Upload Code Coverage Summary
         uses: actions/upload-artifact@v2
         with:
           name: code-coverage-summary
           path: target/site/jacoco/index.html
+
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          recreate: true
+          path: code-coverage-results.md
