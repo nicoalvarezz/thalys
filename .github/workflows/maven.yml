@@ -42,6 +42,7 @@ jobs:
       - name: Post PR Comment with Code Coverage
         uses: actions/github-script@v5
         with:
+          token: ${{ secrets.GH_TOKEN }}  # Use the GH_TOKEN secret as the token
           script: |
             const coverage = `${{ steps.coverage.outputs.coverage }}%`;
             const prNumber = context.payload.pull_request.number;
@@ -49,7 +50,7 @@ jobs:
             const comment = `Code Coverage: ${coverage}`;
             
             await octokit.issues.createComment({
-              owner: context.repo.owner,
+              owner: context.repo.owner, 
               repo: context.repo.repo,
               issue_number: prNumber,
               body: comment
