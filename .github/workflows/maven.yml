@@ -37,7 +37,7 @@ jobs:
 
       - name: Extract Code Coverage Percentage [Instructions]
         id: instructions_coverage
-        run: echo "grep -A 1 '<tfoot>' index.html | grep -A 1 'Total' | grep -o '[0-9]* %' | tr -d '\n' | awk -F' ' '{print $2}' | cut -d% -f2"
+        run: grep -A 1 '<tfoot>' index.html | grep -A 1 'Total' | grep -o '[0-9]* %' | tr -d '\n' | awk -F' ' '{print $2}' | cut -d% -f2
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v2
