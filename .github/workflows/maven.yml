@@ -58,5 +58,5 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-                  Hello world ! :wave:
+                  Code Coverage: "::set-output name=coverage::$(grep -oP '(?<=<td class=\"ctr2\">)[^<]+' target/site/jacoco/index.html)" :rocket:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
