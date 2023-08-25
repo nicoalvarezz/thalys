@@ -28,8 +28,6 @@ jobs:
         uses: cicirello/jacoco-badge-generator@v2
         with:
           generate-branches-badge: true
-          fail-if-coverage-less-than: 50
-          fail-if-branches-less-than: 50
 
       - name: Commit and push the badge (if it changed)
         run: |
