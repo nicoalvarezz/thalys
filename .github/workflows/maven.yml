@@ -47,24 +47,10 @@ jobs:
           name: jacoco-report
           path: target/site/jacoco/
 
-
-
-#      - name: Generate JaCoCo Report
-#        run: mvn jacoco:report --file pom.xml
-#
-#      - name: Upload Code Coverage Summary
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: code-coverage-summary
-#          path: target/site/jacoco/index.html
-
-#      - name: Extract Code Coverage Percentage [Instructions]
-#        id: instructions_coverage
-#        run: grep -A 1 '<tfoot>' target/site/jacoco/index.html | grep -A 1 'Total' | grep -o '[0-9]* %' | tr -d '\n' | awk -F' ' '{print $1}'
-#
-#      - name: Comment PR
-#        uses: thollander/actions-comment-pull-request@v2
-#        with:
-#          message: |
-#                  Code Coverage: ${{ steps.coverage.outputs.instructions_coverage }}% :rocket:
-#          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}: 60
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+                  Coverage: ${{ steps.jacoco.outputs.coverage }}
+                  Branch Coverage: ${{ steps.jacoco.outputs.branches }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
