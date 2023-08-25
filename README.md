@@ -1,4 +1,6 @@
-# Thalys
-Java Framework
+![Alt text](.github/logo/logo.png)
 ---
-![Coverage](.github/badges/jacoco.svg) ![Branches](.github/badges/branches.svg)
+<p align="center">
+    <img src=".github/badges/jacoco.svg" />
+    <img src=".github/badges/branches.svg" />
+</p>
