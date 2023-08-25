@@ -31,11 +31,13 @@ jobs:
 
       - name: Commit and push the badge (if it changed)
         run: |
-          git config --global user.name "github_actions"
-          git config --global user.email "github-actions@github.com"
-          git add '*.svg'
-          git commit -m 'commit badge'
-          git push
+          if [[ `git status --porcelain` ]]; then
+            git config --global user.name "github_actions"
+            git config --global user.email "github-actions@github.com"
+            git add '*.svg'
+            git commit -m 'commit badge'
+            git push
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
