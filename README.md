@@ -6,5 +6,3 @@
     <img src="https://github.com/NicolasAlvarez16/thalys/actions/workflows/merge_build.yml/badge.svg">
 </p>
 
-![example workflow](https://github.com/NicolasAlvarez16/thalys/actions/workflows/merge_build.yml/badge.svg)
-
