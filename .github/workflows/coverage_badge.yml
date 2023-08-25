@@ -30,12 +30,14 @@ jobs:
           generate-branches-badge: true
 
       - name: Commit and push the badge (if it changed)
-        uses: EndBug/add-and-commit@v7
-        with:
-          default_author: github_actions
-          message: 'commit badge'
-          add: '*.svg'
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          git config --global user.name "github_actions"
+          git config --global user.email "github-actions@github.com"
+          git add '*.svg'
+          git commit -m 'commit badge'
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload JaCoCo coverage report
         uses: actions/upload-artifact@v2
