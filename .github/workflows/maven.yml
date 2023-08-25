@@ -47,12 +47,13 @@ jobs:
           name: jacoco-report
           path: target/site/jacoco/
 
-      - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          message: |
-            ## Coverage Summary
-            | Coverage | Branch Coverage |
-            | ------------- | ------------- |
-            | ${{ steps.jacoco.outputs.coverage }} | ${{ steps.jacoco.outputs.branches }}|
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+# Commented for now
+#      - name: Comment PR
+#        uses: thollander/actions-comment-pull-request@v2
+#        with:
+#          message: |
+#            ## Coverage Summary
+#            | Coverage | Branch Coverage |
+#            | ------------- | ------------- |
+#            | ${{ steps.jacoco.outputs.coverage }} | ${{ steps.jacoco.outputs.branches }}|
+#          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
