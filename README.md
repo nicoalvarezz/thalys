@@ -4,3 +4,6 @@
     <img src=".github/badges/jacoco.svg" />
     <img src=".github/badges/branches.svg" />
 </p>
+
+![example workflow](https://github.com/NicolasAlvarez16/thalys/actions/workflows/merge_build.yml/badge.svg)
+
