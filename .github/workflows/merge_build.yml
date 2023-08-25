@@ -1,4 +1,4 @@
-name: JaCoCo Badge
+name: Build & Test
 
 on:
   push:
