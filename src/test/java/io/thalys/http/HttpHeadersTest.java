@@ -3,6 +3,7 @@ package io.thalys.http;
 import io.thalys.http.Headers.ContentType;
 import io.thalys.http.Headers.HttpHeader;
 import io.thalys.http.Headers.HttpHeaders;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -130,5 +131,15 @@ public class HttpHeadersTest {
 
         headers.add(HttpHeader.CONTENT_TYPE.get(), ContentType.TEXT_PLAIN.get());
         assertFalse(headers.isEmpty());
+    }
+
+    @Test
+    public void testHeaderOf() {
+        assertEquals(HttpHeader.LOCATION, HttpHeader.headerOf("location"));
+    }
+
+    @Test
+    public void testInvalidHeaderOf() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> HttpHeader.headerOf("something_something"));
     }
 }

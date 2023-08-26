@@ -110,4 +110,58 @@ public class ResponseTest {
         assertEquals(1, response.getHttpHeaders().size());
         assertEquals(expectedHeaders.get(HttpHeader.CONTENT_TYPE.get()), response.getHttpHeaders().get(HttpHeader.CONTENT_TYPE.get()));
     }
+
+    @Test
+    public void testJSONResponseWithSpecifiedJSONObject() {
+        JSONObject content = new JSONObject(new HashMap<>() {{
+            put("test", "foo");
+            put("test2", "bar");
+        }});
+        ResponseEntity response = ResponseEntity.jsonResponse(content, HttpStatus.OK);
+        expectedHeaders.add(HttpHeader.CONTENT_TYPE, ContentType.APPLICATION_JSON.get());
+
+        assertEquals(HttpStatus.OK  , response.getStatus());
+        assertEquals(content.toString(), response.getContent());
+        assertEquals(expectedHeaders.headers(), response.getHttpHeaders().headers());
+    }
+
+    @Test
+    public void testJSONResponseWithSpecifiedJSONObjectHeaderAndStatus() {
+        JSONObject content = new JSONObject(new HashMap<>() {{
+            put("test", "foo");
+            put("test2", "bar");
+        }});
+
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.add(HttpHeader.SERVER, "Server");
+        ResponseEntity response = ResponseEntity.jsonResponse(content, HttpStatus.OK, headers);
+
+
+        assertEquals(HttpStatus.OK  , response.getStatus());
+        assertEquals(content.toString(), response.getContent());
+        assertEquals(headers, response.getHttpHeaders());
+    }
+
+    @Test
+    public void testJSONResponseWithStringContent() {
+        String content = "{test:foo, test2:bar}";
+        ResponseEntity response = ResponseEntity.jsonResponse(content, HttpStatus.OK);
+
+        assertEquals(HttpStatus.OK  , response.getStatus());
+        assertEquals(content, response.getContent());
+    }
+
+    @Test
+    public void testJSONResponseWithStringContentAndHeaders() {
+        String content = "{test:foo, test2:bar}";
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.add(HttpHeader.SERVER, "Server");
+        ResponseEntity response = ResponseEntity.jsonResponse(content, HttpStatus.OK, headers);
+
+        assertEquals(HttpStatus.OK  , response.getStatus());
+        assertEquals(content, response.getContent());
+        assertEquals(headers, response.getHttpHeaders());
+    }
 }
