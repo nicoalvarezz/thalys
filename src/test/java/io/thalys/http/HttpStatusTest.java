@@ -1,5 +1,6 @@
 package io.thalys.http;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -97,5 +98,22 @@ public class HttpStatusTest {
         assertNotEquals(category, HttpStatus.Category.valueOf(300));
         assertNotEquals(category, HttpStatus.Category.valueOf(400));
         assertNotEquals(category, HttpStatus.Category.valueOf(500));
+    }
+
+    @Test
+    public void testInvalidStatusCodeForValueOf() {
+        Assertions.assertThrows(IllegalArgumentException.class,  () -> HttpStatus.valueOf(600));
+    }
+
+    @Test
+    public void testInvalidCategoryForValueOf() {
+        Assertions.assertThrows(IllegalArgumentException.class,  () -> HttpStatus.Category.valueOf(600));
+    }
+
+    @Test
+    public void testCategoryValue() {
+        HttpStatus.Category category = HttpStatus.Category.SUCCESSFUL;
+
+        assertEquals(category.value(),2);
     }
 }

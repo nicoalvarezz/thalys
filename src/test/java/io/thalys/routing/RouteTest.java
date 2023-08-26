@@ -2,16 +2,21 @@ package io.thalys.routing;
 
 import io.thalys.http.HttpStatus;
 import io.thalys.http.ResponseEntity;
+import io.thalys.middlewares.Middleware;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 public class RouteTest {
 
@@ -86,5 +91,19 @@ public class RouteTest {
 
         assertTrue(emptyRoute.isEmpty());
         assertFalse(route.isEmpty());
+    }
+
+    @Test
+    public void testSetMiddlewaresThrowsException() {
+        Route route = new Route("/", (request) -> testsJsonResponse("message", "test"));
+
+        List<Class<? extends Middleware>> middlewares = new ArrayList<>();
+        middlewares.add(MiddlewareException.class); // Provide an abstract class or interface
+
+        assertThrows(RuntimeException.class, () -> route.setMiddlewares(middlewares));
+    }
+
+    abstract class MiddlewareException implements Middleware {
+
     }
 }

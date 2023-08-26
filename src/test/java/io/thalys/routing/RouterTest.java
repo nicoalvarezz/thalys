@@ -7,6 +7,7 @@ import io.thalys.http.HttpMethod;
 import io.thalys.http.RequestEntity;
 import io.thalys.http.ResponseEntity;
 import io.thalys.routing.helpers.MockMiddleware2;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,6 +21,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -137,12 +139,19 @@ public class RouterTest {
         Function<RequestEntity, ResponseEntity> action = (request) -> testsJsonResponse("message", actionReturn);
         router.delete(uri, action);
 
-        Route  route = router.resolveRoute(uri, HttpMethod.DELETE);
+        Route route = router.resolveRoute(uri, HttpMethod.DELETE);
 
         assertEquals(uri, route.getUri());
         assertEquals(action, route.getAction());
         assertFalse(route.hasParameters());
+    }
 
+    @Test
+    public void testResolveEmptyRoute() {
+        String uri = "empty-route";
+        Route route = router.resolveRoute(uri, HttpMethod.DELETE);
+
+        assertTrue(route.isEmpty());
     }
 
     @Test
@@ -150,8 +159,7 @@ public class RouterTest {
         String uri = "/test-middlewares";
         Function<RequestEntity, ResponseEntity> action = (request) -> testsJsonResponse("message", "response");
 
-        Route actualRoute = router.get(uri, action);
-        actualRoute.setMiddlewares(new ArrayList(){{
+        router.get(uri, action).setMiddlewares(new ArrayList(){{
             add(MockMiddleware.class);
         }});
 
@@ -182,5 +190,32 @@ public class RouterTest {
 
         assertEquals("Stopped", expectedResponse.getContent());
         assertFalse(expectedResponse.getHeader(HttpHeader.SERVER).isPresent());
+    }
+
+    @Test
+    public void testResolveWithNoMiddlewares() {
+        String uri = "/test-middlewares";
+        Function<RequestEntity, ResponseEntity> action = (request) -> testsJsonResponse("message", "unreachable");
+
+        router.get(uri, action);
+
+        Route route = router.resolveRoute(uri, HttpMethod.GET);
+
+        when(mockRequest.getRoute()).thenReturn(route);
+        ResponseEntity expectedResponse = router.resolve(mockRequest);
+
+        assertEquals(action, route.getAction());
+        assertEquals(expectedResponse.getStatus(), HttpStatus.OK);
+    }
+
+    @Test
+    public void testResolveMiddlewaresWithEmptyRoute() {
+        when(mockRequest.getRoute()).thenReturn(new Route());
+
+        RuntimeException exception = Assertions.assertThrows(RuntimeException.class, () -> {
+            router.resolve(mockRequest);
+        });
+
+        assertEquals("Route not found", exception.getMessage());
     }
 }
